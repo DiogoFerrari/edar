@@ -1,0 +1,5 @@
+
+NumericVector func_cpp(NumericVector x)
+{
+  return(5*x);
+}

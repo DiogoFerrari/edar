@@ -1,0 +1,129 @@
+---
+title: "Workflow usind edar Exploratory Data Analysis for R"
+author: "Diogo Ferrari"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Workflow usind edar package: Exploratory Data Analysis for R
+
+This package provides a variety of simple wrap functions to performe EDA in R. The goal is to simplify the EDA, so that the researcher can (really) focus on the exploration of the data. It provides:
+
+Before we start, lets set some options to make the vizualization in this page better:
+
+```{r}
+options(width=150)
+options(dplyr.print_max = 28)
+options(dplyr.width = 150)
+options(scipen=999)
+```
+
+## Describing the data
+
+Lets load and use the data set `edar_survey` in the examples. We fisrt look at the content of the data set. The function `edar_describe()` shows the content of the data set in two tables (using the [tibble](https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html)). So the function retuns a list os two tables that describes the data set.
+
+```{r}
+devtools::load_all()
+## library(edar)
+data(edar_survey)
+data = edar_survey
+edar_describe(data)
+```
+
+We can use [pipe](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) with the functions, and we cansave the content and manipulate the summary output as desired.
+
+```{r}
+tab = edar_describe(data)
+tab$Cat %>%
+    filter(name=="gender") %>%
+    select(freq_tables) %>%
+    unnest
+tab$Cat %>%
+    filter(name=="gender") %>%
+    select(distribution)
+```
+
+This data set contains a variable `treat`, a dummy variable indicating the treatment group. We can quickly generate a summary by treatment and control groups of the variables using `edar_balance`. This function follows the recomendations from:
+
+* Imbens, G. W., & Rubin, D. B., Causal inference in statistics, social, and biomedical sciences: an introduction (2015), : Cambridge University Press. 
+
+```{r}
+edar_balance(data, treatmentVar='treat')
+```
+
+We can use, obviously, any dummy variable to check the balance of the covariates between the two groups.
+
+It is common, particularly in survey data, to have categorical variables that share the same categories. The package provides the function `edar_bundle_cat()`, which provides a summary of the categorical variables and bundle the ones that have the same categories in a single table. The lines of the tables represent the variables, and the columns the categories. The cells contain the proportion of cases, the counts, and/or both. 
+
+```{r}
+data %>% edar_bundle_cat(print.summary='count')
+```
+The output is a tibble, and can be stored in a variable for further use.
+
+```{r}
+tb = edar_survey %>% edar_bundle_cat()
+tb
+## the counts
+tb$table.n
+## the proportions
+tb$table.p
+## the proportions and the counts
+tb$table.pn
+```
+
+## Univariate Analysis
+### Tables
+
+
+------------------------------------------------------------------------------------------
+
+Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+
+## Styles
+
+The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+
+    output: 
+      rmarkdown::html_vignette:
+        css: mystyles.css
+
+## Figures
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold'}
+plot(1:10)
+plot(10:1)
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))

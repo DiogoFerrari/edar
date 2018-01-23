@@ -1,0 +1,57 @@
+#' edar: A package for quick Exploratory Data Analysis in R
+#'
+#' The package provide functions that summarize the data set,
+#' generate tables and plots with subset of the variables,
+#' among other features. 
+#'
+#' @section Univariate EDA
+#' 
+#'
+#' @section Bivariate EDA
+#' 
+#' @docType package
+#' @name edar
+NULL
+
+
+#' A National Survey from Brazil
+#' 
+#' The data set is a subset of a national suvery conducted in Brazil in 2013.
+#' The survey measures preferences of individuals for interpersonal and interregional
+#' redistribution of income as well as preferences for centralization
+#' of political authority.
+#'
+#' @format A data frame with 700 rows and 16 columns:
+#'
+#' \describe{
+#'  \item{gender}{factor with "men" and "woman"}
+#'  \item{educ}{factor with "high" if the individual completed high school or more, and "low" otherwise}
+#'  \item{age}{integer with age in years}
+#'  \item{yi}{numeric variable with household income per capita}
+#'  \item{yi.iht}{inverse hyperbolic transformation of yi}
+#'  \item{state}{factor with the state in which the individual lives}
+#'  \item{region}{factor with macroregion}
+#'  \item{ys.mean}{average household percapita income in the state, computed using the 2013 Brazilian National Household Survey (PNAD)}
+#'  \item{true}{factor, "high" or "low" trust in the federal government}
+#'  \item{ys.gini}{numeric, Gini coefficient of the state computed using the 2013 Brazilian National Household Survey (PNAD)}
+#'  \item{racial.frag.ratio}{numeric, racial fractionalization at the state over racial fractionalization at the national level}
+#'  \item{reduce.income.gat}{factor, "A"=Agree, "A+"=Strongly Agree, "D"=Disagree, "D+"=Strongly Disagree, "N"=Neither Agree or Disagree that "Government should reduce income gap between rich and poor"}
+#'  \item{transfer.state.tax}{factor, "A"=Agree, "A+"=Strongly Agree, "D"=Disagree, "D+"=Strongly Disagree, "N"=Neither Agree or Disagree that the "Government should redistribute resources from rich to poor states"}
+#'  \item{minimum.wate}{factor, captures the answer to "Who should decide about the minimum wage policy?". The levels are "Each city should decide", "Each state should decide", "Should be the same accros the country"}
+#'  \item{unemployment.policy}{factor, captures the answer to "Who should decide about the unemployment policy?". The levels are "Each city should decide", "Each state should decide", "Should be the same accros the country"}
+#'  \item{red.to.poor}{factor, captures the answer to "Who should decide about policies to redistribute income to poor?". The levels are "Each city should decide", "Each state should decide", "Should be the same accros the country"}
+#' }
+#'
+#' @usage data(edar_survey)
+#' @docType data
+#' @source \url{http://web.fflch.usp.br/centrodametropole/}
+"edar_survey"
+
+
+
+#' Data set with information about movies.
+#'
+#' @usage data(edar_movies)
+#' @docType data
+#' @source \url{http://www2.stat.duke.edu/~mc301/data/movies.html}
+"edar_movies"

@@ -1,0 +1,14 @@
+Package: edar
+Title: edar: Exploratory Data Analysis for R
+Version: 0.0.0.9000
+Authors@R: person("Diogo", "Ferrari", "diogoferrari@gmail.com", role=c("aut", "cre"))
+Description: Exploratory Data Analysis for R. The package contains a variety of wrap functions that facilitate the exploratory data analysis and some simple multivariate models to ve used as EDA.
+Depends: R (>= 3.4.2)
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Imports: magrittr,
+    tidyverse,
+    ggplot2
+URL: https://github.com/DiogoFerrari/edar
+BugReport: https://github.com/DiogoFerrari/edar/issues

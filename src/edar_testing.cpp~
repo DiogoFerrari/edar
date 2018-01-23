@@ -1,0 +1,14 @@
+#include <Rcpp.h>
+
+using namespace Rcpp;
+
+//' Multiply an number by 4
+//'
+//' @param x a single integer
+//'
+//'@export
+// [[Rcpp::export]]
+NumericVector eda_rcpp (NumericVector x)
+{
+  return (4*x);
+}

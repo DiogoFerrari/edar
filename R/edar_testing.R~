@@ -1,0 +1,6 @@
+
+#' 
+edar <- function(x)
+{
+    print(2*x)
+}
