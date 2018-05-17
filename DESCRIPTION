@@ -28,7 +28,8 @@ Imports: ggplot2,
     corrplot,
     GGally,
     tm,
-    wordcloud
+    wordcloud,
+    viridis
 URL: https://github.com/DiogoFerrari/edar
 BugReport: https://github.com/DiogoFerrari/edar/issues
 LinkingTo: Rcpp

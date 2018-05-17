@@ -1,7 +1,3 @@
-# required (by devtools) to link the cpp code 
-#' @useDynLib edar
-#' @importFrom Rcpp sourceCpp
-NULL
 
 
 ## general
@@ -72,7 +68,7 @@ NULL
 
 ## regression
 ## ----------
-.edar_sig                       <- function(pvalues){
+edar_sig                       <- function(pvalues){
     significance                <- rep(' ', times=length(pvalues))
     significance[pvalues<0.1]   <- '.'
     significance[pvalues<0.05]  <- '*'
@@ -81,7 +77,7 @@ NULL
     return(significance)
     
 }
-.edar_get_new_data_cat_vars     <- function(model, n){
+edar_get_new_data_cat_vars     <- function(model, n){
     dat = model$model
     cat.vars = names( which(attr(attr(model$model, 'terms'), 'dataClasses') =='factor') ) 
     cat.vars.tbl = data.frame(id=NA)
@@ -89,11 +85,12 @@ NULL
         cat.vars.tbl = cbind(cat.vars.tbl, levels(dat[,cat.vars[i]])[1])
     }
     cat.vars.tbl = cat.vars.tbl[,-1]
+    print(cat.vars.tbl)
     names(cat.vars.tbl ) =  cat.vars
     cat.vars.tbl = cat.vars.tbl[rep(1, n), ] 
     return(cat.vars.tbl)
 }
-.edar_get_new_data_num_vars     <- function(model, n, variable){
+edar_get_new_data_num_vars     <- function(model, n, variable){
     dat = model$model
     num.vars = names( which(attr(attr(model$model, 'terms'), 'dataClasses') =='numeric') ) 
     num.vars.tbl= model$model %>%
@@ -106,19 +103,7 @@ NULL
         setNames(num.vars[num.vars != variable])
     return(num.vars.tbl)
 }
-.edar_get_new_data              <- function(model, n, x){
-    cat_vars = edar_get_new_data_cat_vars(model,n)
-    num_vars = edar_get_new_data_num_vars(model, n, x)
-    new_var = dplyr::data_frame( seq(min(model.matrix(model)[,x]),
-                                     max(model.matrix(model)[,x]), length=n )) %>% setNames(x)
-    response = setdiff(attr(attr(attr(model$model, "terms"),"dataClasses"), 'names'),
-                       attr(attr(model$model, "terms"),"term.labels") )
-    new_data = cbind(num_vars, cat_vars, new_var)
-    new_data = new_data[,names(new_data)!=response]
-    row.names(new_data) = NULL
-    return(new_data)
-}
-.edar_get_predicted_lm          <- function(model, variable=NULL, new_data=NULL){
+edar_get_predicted_lm          <- function(model, variable=NULL, new_data=NULL){
     if(is.null(variable)){
         if(is.null(new_data)){
             return(broom::augment( model ))
@@ -133,7 +118,7 @@ NULL
         return(broom::augment( model, newdata=new_data))
     }
 }
-.edar_get_new_data_new          <- function(data, x, n=200){
+edar_get_new_data_new          <- function(data, x, n=200){
     x.min = min(data[,x])
     x.max = max(data[,x])
      new_data = data %>%
@@ -142,4 +127,30 @@ NULL
         dplyr::bind_rows(rep(list(.),n-1))
      new_data[,x] = seq(x.min, x.max,length=n)
     return(new_data)
+}
+
+
+## Colors for Plot
+## ---------------
+addalpha <- function(colors, alpha=1.0) {
+    r <- col2rgb(colors, alpha=T)
+                                        # Apply alpha
+    r[4,] <- alpha*255
+    r <- r/255.0
+    return(rgb(r[1,], r[2,], r[3,], r[4,]))
+}
+colorRampPaletteAlpha <- function(colors, n=32, interpolate='linear') {
+                                        # Create the color ramp normally
+    cr <- colorRampPalette(colors, interpolate=interpolate)(n)
+                                        # Find the alpha channel
+    a <- col2rgb(colors, alpha=T)[4,]
+                                        # Interpolate
+    if (interpolate=='linear') {
+        l <- approx(a, n=n)
+    } else {
+        l <- spline(a, n=n)
+    }
+    l$y[l$y > 255] <- 255 # Clamp if spline is > 255
+    cr <- addalpha(cr, l$y/255.0)
+    return(cr)
 }

@@ -4,3 +4,5 @@
 .R/
 dev.R
 inst/doc
+*~
+tmp.org
