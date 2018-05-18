@@ -19,8 +19,6 @@ NULL
 
 .onUnload <- function(libpath)
 {
-    ## unload the Cpp files
-    library.dynam.unload("edar", libpath)
 }
 .onAttach <- function(libname, pkgname)
 {
