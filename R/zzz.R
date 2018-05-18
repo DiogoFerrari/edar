@@ -1,6 +1,4 @@
 # required (by devtools) to link the cpp code 
-#' @useDynLib edar
-#' @importFrom Rcpp sourceCpp
 #' @importFrom magrittr "%>%"
 NULL
 

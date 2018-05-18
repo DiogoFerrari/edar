@@ -19,9 +19,6 @@ Usage
 ``` {.r .rundoc-block rundoc-language="R" rundoc-exports="both" rundoc-output="raw" rundoc-hlines="yes" rundoc-colnames="yes"}
 library(edar)
 
-## some printing options
-options(tibble.max_extra_cols=0, tibble.print_max=15, tibble.width=100, pillar.bold=T)
-
 data(edar_survey)
 data = edar_survey
 # help(data)
