@@ -1,5 +1,4 @@
 
-
 ## general
 ## -------
 .edar_select_numerical   <- function(data){
@@ -50,19 +49,20 @@
         }
     }
 }
-.edar_get_layout         <-function(n, bycol=T){
-    if(bycol){
-        ncols = ceiling(sqrt(n))
+.edar_get_layout         <-function(n, by.col=T){
+    if (by.col)
+    {
         nlines  = floor(sqrt(n))
+        ncols   = ceiling(sqrt(n))
         m=ifelse(n - nlines*ncols>0, 1,0)
-        grid=c(nlines=nlines+m, ncols=ncolsm)
-    }else{
-        nlines = ceiling(sqrt(n))
+        return(c(nlines=nlines+m, ncols=ncols))
+    }else
+    {
         ncols  = floor(sqrt(n))
-        m=ifelse(n - nlines*ncols>0, 1,0)
-        grid=c(nlines=nlines, ncols=ncols+m)
+        nlines = ceiling(sqrt(n))
+        m      = ifelse(n - nlines*ncols>0, 1,0)
+        return(c(nlines=nlines, ncols=ncols+m))
     }
-    return(grid)
 }
 
 
@@ -118,7 +118,7 @@ edar_get_predicted_lm          <- function(model, variable=NULL, new_data=NULL){
         return(broom::augment( model, newdata=new_data))
     }
 }
-edar_get_new_data_new          <- function(data, x, n=200){
+.edar_get_new_data              <- function(data, x, n=200){
     x.min = min(data[,x])
     x.max = max(data[,x])
      new_data = data %>%

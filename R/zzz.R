@@ -28,7 +28,7 @@ NULL
 {
     packageStartupMessage('
 ## =====================================================
-## edar: Exploratory Data Analysis for R
+## edar: Exploratory Data Analysis in R
 ## =====================================================
 ')
 }

@@ -911,10 +911,11 @@ gge_density <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.int=
 
     ## KS test if two groups
     if (length(unique(df[,group] %>% pull))==2) {
+        gr = df[,group]
         ks = tab %>%
             dplyr::group_by(var) %>%
-            dplyr::summarise(d1 = list(split(value, year)[[1]]),
-                             d2 = list(split(value, year)[[2]])) %>%
+            dplyr::summarise(d1 = list(split(value, gr)[[1]]),
+                             d2 = list(split(value, gr)[[2]])) %>%
             dplyr::mutate(KS.test = map2_dbl(d1,d2, ~ks.test(.x,.y)$p.value),
                           KS.text = paste0("K-S test : ", round(KS.test,4)) ) %>%
             dplyr::select(var, dplyr::contains("KS")) 

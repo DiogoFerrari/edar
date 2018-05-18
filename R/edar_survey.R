@@ -138,11 +138,11 @@ epower <- function(mu1=NULL,mu2=NULL, power_ideal=.8, n.current=NULL, n1.current
     power_current=c()
 
     for (i in 1:length(ESs)){
-        power_current[i] = pwr.2p.test(h=ESs[i], n=n.current, alternative='two.sided')$power
-        n_ideal[i]       = pwr.2p.test(h=ESs[i], power=power_ideal, alternative='two.sided')$n
-        n_max            = ifelse(power_current[i] >1, n.current, pwr.2p.test(h=ESs[i], power=.99, alternative='two.sided')$n)
+        power_current[i] = pwr::pwr.2p.test(h=ESs[i], n=n.current, alternative='two.sided')$power
+        n_ideal[i]       = pwr::pwr.2p.test(h=ESs[i], power=power_ideal, alternative='two.sided')$n
+        n_max            = ifelse(power_current[i] >1, n.current, pwr::pwr.2p.test(h=ESs[i], power=.99, alternative='two.sided')$n)
         N                = seq(1,n_max, length=20)
-        power[[i]] = cbind(power=pwr.2p.test(h=ESs[i], n=N, alternative='two.sided')$power, n = N)
+        power[[i]] = cbind(power=pwr::pwr.2p.test(h=ESs[i], n=N, alternative='two.sided')$power, n = N)
     }
     ES = tibble::data_frame(mu1 = mu1, mu2=mu2, ES = ESs, power_ideal=power_ideal, n_ideal=n_ideal, power_current=power_current, n_current=n.current, n_and_power=power)
 
