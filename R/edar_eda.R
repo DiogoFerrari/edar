@@ -907,7 +907,7 @@ gge_density <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.int=
         g = g + ggplot2::geom_vline(ggplot2::aes_string(xintercept="q.25", col=group, linetype="q25")) +
             ggplot2::geom_vline(ggplot2::aes_string(xintercept="q.75", col=group, linetype="q75")) 
 
-    g = g + theme(legend.position = "top") 
+    g = g + theme_bw() + theme(legend.position = "top") 
 
     ## KS test if two groups
     if (length(unique(df[,group] %>% pull))==2) {
@@ -934,12 +934,14 @@ gge_density <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.int=
     return(g)
 }
 ## {{{ docs }}}
+
 #' Plot histograms
 #'
 #' @inheritParams gge_describe
 #'
 #' @details All the variables in the data frame will be plotted
 #' @export
+
 ## }}}
 gge_histogram <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.int=T, quantile=F, ...)
 {
