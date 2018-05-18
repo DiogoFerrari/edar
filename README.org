@@ -1,0 +1,57 @@
+
+* Overview
+
+Exploratory Data Analysis in R (~edar~)  is a R package designed to reduce the amount of code needed to do EDA in R. It provides a set of wrap functions that incapsulate some [[https://www.tidyverse.org/][tideverse]] functionalities. 
+
+
+* Instalation
+
+# Install the development version (requires the package "devtools", so install it first if it is not installed already)
+
+#+BEGIN_SRC R :exports code
+devtools::install_github("DiogoFerrari/edar")
+#+END_SRC
+
+* Usage
+
+#+NAME: 
+#+BEGIN_SRC R :exports both :output raw :hlines yes :colnames yes
+  library(edar)
+
+  ## some printing options
+  options(tibble.max_extra_cols=0, tibble.print_max=15, tibble.width=100, pillar.bold=T)
+
+  data(edar_survey)
+  data = edar_survey
+  # help(data)
+
+  ## summarise all numerical variables
+  data %>% summarise_alln(., group=NULL, weight=NULL, spread=F)
+  data %>% summarise_alln(., group="gender", weight=NULL, spread=F)
+
+  ## summarise all categorical variables
+  data %>% summarise_allc(., group=NULL)
+  data %>% summarise_allc(., group="gender")
+
+  ## bundle all cateorical variables based on their categories and summarise them
+  tab = data %>% summarise_allcbundle(., group=NULL)
+  tab
+  tab$Table[[1]]  ## Table with counts
+  tab$Tablep[[1]] ## Table with percentages
+  tab$Tablel[[1]] ## Table with counts and percentages
+
+  ## check balance of covariates between two groups (ex: treatment vs control, see Imbens, G. W., & Rubin, D. B., Causal inference in statistics, social, and biomedical sciences: an introduction (2015), : Cambridge University Press.) 
+  data %>% ebalance(., treatmentVar='treat')
+
+#+END_SRC
+
+See other functions in the package vignette.
+
+#+NAME: 
+#+BEGIN_SRC R :exports code
+vignette(edar)
+#+END_SRC
+
+* More information
+
+
