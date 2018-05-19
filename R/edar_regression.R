@@ -316,33 +316,41 @@ gge_coef <- function(model, xlab="Coefficient Estimate", ylab="", var.order=NULL
 #'
 #' @param model a \code{lm} of \code{glm} model
 #' @param digits integer, the number of significant digitis to use
+#' @param hc boolean, if \code{TRUE}  robust standard errors (homoskedasticity corrected) are returned
+#' @param hc.type a string with the method to compute the standard errors (see \code{\link[car]{hccm}}) 
 #'
 #' @export
 
 ## }}}
-tidye  <- function(model, digits=4)
+tidye  <- function(model, digits=4, hc=FALSE, hc.type=c("hc3", "hc0", "hc1", "hc2", "hc4"))
 {
-    if (class(model)[1]=='multinom' & class(model)[2]=='nnet') {
-        model = tidye_multin(model, digits=digits)
-    }else{
-        model       = broom::tidy( model , conf.int=TRUE)
-        model[,-1]  = round(model[,-1],digits)
-    }
-    return(model)
+    options(warn=-1)
+    on.exit(options(warn=0))
+
+    if(class(model)[1]!="list") {model = list(Model=model); list.provided=FALSE}else{list.provided=TRUE}
+    if(is.null(names(model))) names(model) = paste0("Model ", 1:length(model)) 
+    tab = tibble::data_frame(estimation = model, 
+                             model      = names(model),
+                             family     = purrr::map_chr(estimation, ~ paste0(class(.x), collapse='-') ),
+                             tidye_func = dplyr::case_when(family == "glm-lm"        & !hc ~ list(tidye_glm),
+                                                           family == "glm-lm"        &  hc ~ list(tidyehc_glm),
+                                                           family == "multinom-nnet" & !hc ~ list(tidye_multin),
+                                                           family == "multinom-nnet" &  hc ~ list(tidyehc_multin),
+                                                           )) %>%
+        dplyr::mutate(summary = purrr::pmap(list(est=estimation, f=tidye_func, model.label=model), function(est, f, model.label) f(model=est, digits=digits, hc=hc, hc.type=hc.type) %>% dplyr::mutate(model=model.label)  ))  %>%
+        dplyr::select(summary)  %>% 
+        dplyr::pull(.) %>%
+        dplyr::bind_rows(.) %>%
+        dplyr::select(dplyr::contains("multin"), model, dplyr::everything())
+
+    if(!list.provided) tab = tab %>% dplyr::select(-model) 
+    tab = tab %>% tibble::as_data_frame(.) 
+    return(tab)
 }
-## {{{ docs }}}
 
-#' Tidy linear model summary with robust std error
-#'
-#' This function returns a tidy data.frame with output summaries for \code{lm} and \code{glm} models. Both robust standard errors (homoskedasticity corrected) and default standard errors are returned
-#'
-#' @inheritParams tidye
-#' @param type a string with the method to compute the standard errors (see \code{\link[car]{hccm}}) 
-#'
-#' @export
-
-## }}}
-tidyehc <- function(model, type=c("hc3", "hc0", "hc1", "hc2", "hc4"), digits=4)
+## anxillary for multinomial models (from nnet package)
+## --------------------------------
+tidyehc_glm <- function(model, digits=4, hc=FALSE, hc.type=c("hc3", "hc0", "hc1", "hc2", "hc4") )
 {
  
     ## "hc0"    White SE
@@ -350,11 +358,8 @@ tidyehc <- function(model, type=c("hc3", "hc0", "hc1", "hc2", "hc4"), digits=4)
     ## "hc2"    Unbiased under homoskedasticity
     ## "hc3"    Default (conservative)
 
-    if (class(model)[1]=='multinom' & class(model)[2]=='nnet') 
-        stop("\n\nFunction is not implemented to handle models from class multinom from package nnet\n\n")
+    type = hc.type[1]
 
-
-    type <- match.arg(type)
     V <- car::hccm(model, type=type)
     sumry <- summary(model)
     class(sumry) = 'summary.lm'
@@ -367,22 +372,26 @@ tidyehc <- function(model, type=c("hc3", "hc0", "hc1", "hc2", "hc4"), digits=4)
     p <- nrow(table)
     hyp <- cbind(0, diag(p - 1))
     sumry$fstatistic[1] <- car::linearHypothesis(model, hyp,white.adjust=type)[2,"F"]
+
     
     sumry = broom::tidy(sumry, conf.int=T)
     sumry = sumry %>% 
-        dplyr::mutate(conf.low.hc  = estimate - 1.96*std.error,
-                      conf.high.hc = estimate + 1.96*std.error,)  %>%
-        dplyr::full_join(., broom::tidy(model, conf.int=T) , by=c("estimate", "term"), suffix=c(".hc", ""))  %>%
+        dplyr::mutate(conf.low  = estimate - 1.96*std.error,
+                      conf.high = estimate + 1.96*std.error,)  %>%
+        dplyr::full_join(., broom::tidy(model, conf.int=T) , by=c("estimate", "term"), suffix=c("", ".nonhc"))  %>%
         dplyr::mutate_if(is.numeric, round, digits=digits)  %>%
-        dplyr::select(term, estimate, dplyr::contains("std.error"), dplyr::contains("p.value"), conf.low.hc, conf.high.hc, dplyr::contains("conf.")) 
+        dplyr::select(term, estimate, std.error, conf.low, conf.high, statistic, p.value, dplyr::everything()) 
 
-    cat("Note: Heteroscedasticity-corrected standard errors using adjustment", type, "\n")
     return(sumry)
 }
-
-## anxillary for multinomial models (from nnet package)
-## --------------------------------
-tidye_multin <- function(model, show.ci=T, digits=4)
+tidye_glm <- function(model, digits=4, hc=FALSE, hc.type=c("hc3", "hc0", "hc1", "hc2", "hc4"))
+{
+    tab       = broom::tidy( model , conf.int=TRUE)
+    tab[,-1]  = round(tab[,-1],digits)
+    tab = tab  %>% dplyr::select(term, estimate, std.error, dplyr::contains("conf"), statistic, p.value) 
+    return(tab)
+}
+tidye_multin <- function(model, digits=4, hc=FALSE, hc.type=c("hc3", "hc0", "hc1", "hc2", "hc4"))
 {
     covars <- summary(model)$coefficients %>% colnames
     Beta   <- summary(model)$coefficients
@@ -390,45 +399,29 @@ tidye_multin <- function(model, show.ci=T, digits=4)
     z      <- summary(model)$coefficients/summary(model)$standard.errors
     ci     <- confint(model)
     p      <- 2*(1 - stats::pnorm(abs(z), 0, 1))
-    ncaty <- nrow(Beta)
-    yj <- rownames(Beta)
+    ncaty  <- nrow(Beta)
+    yj     <- rownames(Beta)
     results <- list()
-    if (!show.ci){    
-        for (i in 1:length(yj)){
-            results[[i]] <- 
-                data.frame(term = covars,
-                           estimate=Beta[i,],
-                           std.error=seBeta[i,],
-                           z=z[i,],
-                           'p.value'=p[i,],
-                           'sig'= edar_sig(p[i,]))
-        }
-    }else{   
-        for (i in 1:length(yj)){
-            ci.l <- ci[,1,i]
-            ci.u <- ci[,2,i]
-            results[[i]] <- 
-                data.frame(term = covars,
-                           estimate=Beta[i,],
-                           std.error=seBeta[i,],
-                           z=z[i,],
-                           'p.value'=p[i,],
-                           'sig'= edar_sig(p[i,]),
-                           conf.low =ci.l,
-                           conf.high=ci.u)
-        }
+    for (i in 1:length(yj)){
+        ci.l <- ci[,1,i]
+        ci.u <- ci[,2,i]
+        results[[i]] <-data.frame(y.multin.cat = yj[i],
+                                  term         = covars,
+                                  estimate     = Beta[i,],
+                                  std.error    = seBeta[i,],
+                                  conf.low     = ci.l,
+                                  conf.high    = ci.u,
+                                  statistic    = z[i,],
+                                  p.value      = p[i,]) %>% 
+            dplyr::mutate_if(is.numeric, round, digits=digits)
     }
-    names(results) <- yj
-    tab= results[[1]]%>%dplyr::mutate(y=names(results)[1])  %>% 
-        dplyr::bind_rows(., results[[2]]%>%dplyr::mutate(y=names(results)[2]))   %>%
-        dplyr::select(y, term, estimate, std.error, dplyr::contains("conf"), z, p.value, sig)  %>%
-        dplyr::mutate_if(is.numeric, round, digits=digits)
-    attr(tab, 'sig') = c('Signif. codes:  <0.001 \'***\';  <0.01 \'**\'; <0.05 \'*\'; <0.1 \'.\'')
-    attr(tab, 'deviance') = deviance(model)
-
+    tab = base::do.call(base::rbind, results)
     return(tab)
 }
-
+tidyehc_multin <- function(model, digits=4, hc=FALSE, hc.type=c("hc3", "hc0", "hc1", "hc2", "hc4") )
+{
+    stop("\n\nFunction is not implemented to handle models from class multinom from package nnet\n\n")
+}
 ## }}}
 ## {{{ Diagnostics (lm) }}}
 

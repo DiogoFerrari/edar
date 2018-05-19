@@ -4,12 +4,17 @@
 \alias{tidye}
 \title{Tidy linear model summary}
 \usage{
-tidye(model, digits = 4)
+tidye(model, digits = 4, hc = FALSE, hc.type = c("hc3", "hc0", "hc1",
+  "hc2", "hc4"))
 }
 \arguments{
 \item{model}{a \code{lm} of \code{glm} model}
 
 \item{digits}{integer, the number of significant digitis to use}
+
+\item{hc}{boolean, if \code{TRUE}  robust standard errors (homoskedasticity corrected) are returned}
+
+\item{hc.type}{a string with the method to compute the standard errors (see \code{\link[car]{hccm}})}
 }
 \description{
 This function uses \code{\link[broom]{tidy}} to create a data.frame with model results from \code{lm} or \code{\link[stats]{glm}} functions
