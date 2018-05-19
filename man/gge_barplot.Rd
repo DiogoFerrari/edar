@@ -4,7 +4,7 @@
 \alias{gge_barplot}
 \title{Plot categorical Variables using barplot}
 \usage{
-gge_barplot(df, group = NULL, ...)
+gge_barplot(df, group = NULL)
 }
 \arguments{
 \item{df}{a data frame}

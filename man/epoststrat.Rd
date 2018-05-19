@@ -11,14 +11,11 @@ epoststrat(data, pop.prop, strata)
 
 \item{pop.prop}{a data frame with the population frequencies. Each column must be a (post) stratification variable. It must include a column \code{Freq} with the percentage of the population in each strata. The name of the stratification variables and their categories must match those provided in the data}
 
-\item{strata}{a formula with the name of the variables for stratification. See \link{survey::postStratify} for details}
+\item{strata}{a formula with the name of the variables for stratification. See \code{\link[survey]{postStratify}} for details}
 }
 \value{
-It returns a list with two elements. The first element is the weight, the second is the trimmed weights. See \link{survey::trimWeights} for details
+It returns a list with two elements. The first element is the weight, the second is the trimmed weights. See \code{\link[survey]{trimWeights}} for details
 }
 \description{
 This is a wrap function to compute post-stratification weights based on simple sample design (probability sampling)
-}
-\examples{
-
 }

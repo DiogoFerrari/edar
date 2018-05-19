@@ -15,12 +15,13 @@
  \item{state}{factor with the state in which the individual lives}
  \item{region}{factor with macroregion}
  \item{ys.mean}{average household percapita income in the state, computed using the 2013 Brazilian National Household Survey (PNAD)}
- \item{true}{factor, "high" or "low" trust in the federal government}
+ \item{trust}{factor, "high" or "low" trust in the federal government}
+ \item{treat}{numeric, 0 for control group or 1 for treatment group. It is a randomly generated variable for used for ilustration of the examples and vignettes only}
  \item{ys.gini}{numeric, Gini coefficient of the state computed using the 2013 Brazilian National Household Survey (PNAD)}
  \item{racial.frag.ratio}{numeric, racial fractionalization at the state over racial fractionalization at the national level}
- \item{reduce.income.gat}{factor, "A"=Agree, "A+"=Strongly Agree, "D"=Disagree, "D+"=Strongly Disagree, "N"=Neither Agree or Disagree that "Government should reduce income gap between rich and poor"}
+ \item{reduce.income.gap}{factor, "A"=Agree, "A+"=Strongly Agree, "D"=Disagree, "D+"=Strongly Disagree, "N"=Neither Agree or Disagree that "Government should reduce income gap between rich and poor"}
  \item{transfer.state.tax}{factor, "A"=Agree, "A+"=Strongly Agree, "D"=Disagree, "D+"=Strongly Disagree, "N"=Neither Agree or Disagree that the "Government should redistribute resources from rich to poor states"}
- \item{minimum.wate}{factor, captures the answer to "Who should decide about the minimum wage policy?". The levels are "Each city should decide", "Each state should decide", "Should be the same accros the country"}
+ \item{minimum.wage}{factor, captures the answer to "Who should decide about the minimum wage policy?". The levels are "Each city should decide", "Each state should decide", "Should be the same accros the country"}
  \item{unemployment.policy}{factor, captures the answer to "Who should decide about the unemployment policy?". The levels are "Each city should decide", "Each state should decide", "Should be the same accros the country"}
  \item{red.to.poor}{factor, captures the answer to "Who should decide about policies to redistribute income to poor?". The levels are "Each city should decide", "Each state should decide", "Should be the same accros the country"}
 }}

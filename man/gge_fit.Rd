@@ -4,17 +4,17 @@
 \alias{gge_fit}
 \title{Plot fitted values}
 \usage{
-gge_fit(data, model, y, x, n = 200, show.points = T, title = NULL,
+gge_fit(model, data, y, x, n = 200, show.points = T, title = NULL,
   cat.var = NULL, cat.value = NULL, col.group = NULL, facet1 = NULL,
   facet1.ncol = NULL, facet2 = NULL, facet2.ncol = NULL, col.pch = NULL,
   subtitle = NULL, footnote = NULL, legend.position = NULL,
-  legend.omit = F, title.position = "center", grid = T, ylim = NULL,
-  xlim = NULL, xlab = NULL, ylab = NULL, scales = "fixed", ...)
+  legend.omit = F, title.position = "left", grid = T, ylim = NULL,
+  xlim = NULL, xlab = NULL, ylab = NULL, scales = "fixed")
 }
 \arguments{
-\item{data}{the original data set used to fit the model}
+\item{model}{the output of either \code{\link[stats]{lm} } or the \code{\link[stats]{glm}} functions}
 
-\item{model}{the output of either \code{\link{lm}} or the \code{\link{glm}} functions}
+\item{data}{the original data set used to fit the model}
 
 \item{y}{a string with the name of the dependent variable}
 
@@ -23,6 +23,8 @@ gge_fit(data, model, y, x, n = 200, show.points = T, title = NULL,
 \item{n}{an integer, the number of points of \code{x} generated to produce the predicted/fitted values}
 
 \item{show.points}{boolean, indicating if the points from the original data set must be plotted or not}
+
+\item{title}{a string, the title of the plot}
 
 \item{cat.var}{a string with the name of the categorical variable whose value will be set in the parameter \code{cat.value}. It allows one to set the category to use to get the fitted/predicted values}
 
@@ -50,86 +52,74 @@ gge_fit(data, model, y, x, n = 200, show.points = T, title = NULL,
 
 \item{title.position}{a string (or an number) with \code{center} (or .5), \code{left} (or 0), or \code{right} (or 1)}
 
-\item{scales}{used when facets are used. See \link{ggplot2::facet_wrap}}
+\item{grid}{boolean, if \code{TRUE} add grid in the plot}
 
-\item{...}{Arguments to be passed to methods, such as
-    \link{graphical parameters} (see \code{\link{par}}).
-    Many methods will accept the following arguments:
-    \describe{
-    \item{\code{type}}{what type of plot should be drawn.  Possible types are
-      \itemize{
-        \item \code{"p"} for \bold{p}oints,
-        \item \code{"l"} for \bold{l}ines,
-        \item \code{"b"} for \bold{b}oth,
-        \item \code{"c"} for the lines part alone of \code{"b"},
-        \item \code{"o"} for both \sQuote{\bold{o}verplotted},
-        \item \code{"h"} for \sQuote{\bold{h}istogram} like (or
-        \sQuote{high-density}) vertical lines,
-        \item \code{"s"} for stair \bold{s}teps,
-        \item \code{"S"} for other \bold{s}teps, see \sQuote{Details} below,
-        \item \code{"n"} for no plotting.
-      }
-      All other \code{type}s give a warning or an error; using, e.g.,
-      \code{type = "punkte"} being equivalent to \code{type = "p"} for S
-      compatibility.  Note that some methods,
-      e.g.\ifelse{{latex}{\out{~}}{ }}{}\code{\link{plot.factor}}, do not accept this.
-    }
-    \item{\code{main}}{an overall title for the plot: see \code{\link{title}}.}
-    \item{\code{sub}}{a sub title for the plot: see \code{\link{title}}.}
-    \item{\code{xlab}}{a title for the x axis: see \code{\link{title}}.}
-    \item{\code{ylab}}{a title for the y axis: see \code{\link{title}}.}
-    \item{\code{asp}}{the \eqn{y/x} aspect ratio,
-      see \code{\link{plot.window}}.}
-    }
-  }
+\item{ylim}{two-dimensional numeric vector with the limits of the y-axis}
 
-\item{tittle}{a string, the title of the plot}
+\item{xlim}{two-dimensional numeric vector with the limits of the x-axis}
+
+\item{xlab}{string to display in the x-axis}
+
+\item{ylab}{string to display in the y-axis}
+
+\item{scales}{used when facets are used. See \code{\link[ggplot2]{facet_wrap}}}
 }
 \description{
-This function plot the fitted value or the predicted probability given the model estimated using \code{\link{lm}} or \code{\link{glm}} and the original data.
+This function plot the fitted value or the predicted probability given the model estimated using \code{lm} or \code{glm} and the original data.
 }
 \examples{
-
+library(magrittr)
+set.seed(777)
 data = tibble::data_frame(x1 = rnorm(200,3,1),
                           x2 = rexp(200),
-                          cat.var  = sample(c(0,1), 200, replace=T),
-                          cat.var2 = sample(letters[1:4], 200, replace=T),
+                          cat.var  = sample(c(0,1), 200, replace=TRUE),
+                          cat.var2 = sample(letters[1:4], 200, replace=TRUE),
                           y = -10*x1*cat.var+rnorm(200,0,10) +
                               10*x2*(3*(cat.var2=='a') -3*(cat.var2=='b') +
                                      1*(cat.var2=='c') -1*(cat.var2=='d')))  \%>\%
     dplyr::mutate(cat.var=as.factor(cat.var)) 
 model = lm(y ~ x1*cat.var+x2*cat.var2, data)
 
-data \%>\% gge_fit(., model, 'y', 'x1')
-data \%>\% gge_fit(., model, 'y', 'x2')
-data \%>\% gge_fit(., model, 'y', 'x1', cat.var='cat.var', cat.value="0")
-data \%>\% gge_fit(., model, 'y', 'x1', cat.var='cat.var2', cat.value="b")
-data \%>\% gge_fit(., model, 'y', 'x1', cat.var='cat.var', cat.value="1", col.group='cat.var2')
-data \%>\% gge_fit(., model, 'y', 'x2', cat.var='cat.var', cat.value="1", col.group="cat.var")
-data \%>\% gge_fit(., model, 'y', 'x2', cat.var='cat.var', cat.value=c("0","1"), col.group="cat.var")
-data \%>\% gge_fit(., model, 'y', 'x2', cat.var='cat.var2', cat.value=c("a","b"), col.group="cat.var2")
-data \%>\% gge_fit(., model, 'y', 'x2', cat.var='cat.var2', cat.value=c("a","b", 'c','d'), col.group="cat.var2")
-data \%>\% gge_fit(., model, 'y', 'x2', facet1="cat.var")
-data \%>\% gge_fit(., model, 'y', 'x2', facet1="cat.var2")
-data \%>\% gge_fit(., model, 'y', 'x2', facet1="cat.var2", facet1.ncol=1)
-data \%>\% gge_fit(., model, 'y', 'x2', facet1="cat.var2", facet1.ncol=1, , cat.var='cat.var2', cat.value=c("a","b", 'c','d'), col.group="cat.var2")
-data \%>\% gge_fit(., model, 'y', 'x2', facet1="cat.var2", facet2='cat.var')
-data \%>\% gge_fit(., model, 'y', 'x2', facet1="cat.var2", facet2='cat.var')
+model \%>\% gge_fit(., data, 'y', 'x1')
+model \%>\% gge_fit(., data, 'y', 'x2')
+model \%>\% gge_fit(., data, 'y', 'x1', cat.var='cat.var', cat.value="0")
+model \%>\% gge_fit(., data, 'y', 'x1', cat.var='cat.var2', cat.value="b")
+model \%>\% gge_fit(., data, 'y', 'x1', cat.var='cat.var',
+                 cat.value="1", col.group='cat.var2')
+model \%>\% gge_fit(., data, 'y', 'x2', cat.var='cat.var',
+                 cat.value="1", col.group="cat.var")
+model \%>\% gge_fit(., data, 'y', 'x2', cat.var='cat.var',
+                 cat.value=c("0","1"), col.group="cat.var")
+model \%>\% gge_fit(., data, 'y', 'x2', cat.var='cat.var2',
+                 cat.value=c("a","b"), col.group="cat.var2")
+model \%>\% gge_fit(., data, 'y', 'x2', cat.var='cat.var2',
+                 cat.value=c("a","b", 'c','d'), col.group="cat.var2")
+model \%>\% gge_fit(., data, 'y', 'x2', facet1="cat.var")
+model \%>\% gge_fit(., data, 'y', 'x2', facet1="cat.var2")
+model \%>\% gge_fit(., data, 'y', 'x2', facet1="cat.var2", facet1.ncol=1)
+model \%>\% gge_fit(., data, 'y', 'x2', facet1="cat.var2",
+                 facet1.ncol=1, , cat.var='cat.var2',
+                 cat.value=c("a","b", 'c','d'), col.group="cat.var2")
+model \%>\% gge_fit(., data, 'y', 'x2', facet1="cat.var2", facet2='cat.var')
+model \%>\% gge_fit(., data, 'y', 'x2', facet1="cat.var2", facet2='cat.var')
 ## variable var.cat2 fixed at level 'a'
-data \%>\% gge_fit(., model, 'y', 'x2', cat.var='cat.var', cat.value=c("0","1"), facet1="cat.var2", facet2='cat.var')
+model \%>\% gge_fit(., data, 'y', 'x2', cat.var='cat.var',
+                 cat.value=c("0","1"), facet1="cat.var2", facet2='cat.var')
 ## variable var.cat fixed at level '0'
-data \%>\% gge_fit(., model, 'y', 'x2', cat.var='cat.var2', cat.value=c("a","b", 'c','d'), col.group="cat.var2", facet1="cat.var2", facet2='cat.var')
+model \%>\% gge_fit(., data, 'y', 'x2', cat.var='cat.var2',
+                 cat.value=c("a","b", 'c','d'), col.group="cat.var2",
+                 facet1="cat.var2", facet2='cat.var')
 
 ## logistic regression
 ## -------------------
 data = tibble::data_frame(x1 = rnorm(200,0,1),
                           x2 = rexp(200),
-                          cat.var  = sample(c(0,1), 200, replace=T),
-                          cat.var2 = sample(letters[1:4], 200, replace=T),
+                          cat.var  = sample(c(0,1), 200, replace=TRUE),
+                          cat.var2 = sample(letters[1:4], 200, replace=TRUE),
                           mu = 7*x1 + 2*x2*(3*(cat.var2=='a') -3*(cat.var2=='b') +
                                           1*(cat.var2=='c') -1*(cat.var2=='d'))+rnorm(200,0,1) ,
-                          p        = 1/(1+exp(- mu)),
-                          y        = sapply(p, function(eta) sample(c(0, 1), size=1, prob=c(eta, 1-eta))),
+                          p  = 1/(1+exp(- mu)),
+                          y  = sapply(p, function(eta) sample(c(0, 1), size=1, prob=c(eta, 1-eta))),
                           )  \%>\%
     dplyr::mutate(cat.var=as.factor(cat.var),
                   cat.var2=as.factor(cat.var2),
@@ -138,19 +128,19 @@ data = tibble::data_frame(x1 = rnorm(200,0,1),
 model = glm(y ~ x1+x2*cat.var2, data=data, family='binomial')
 
 
-data \%>\% edar::gge_fit(., model, 'y', 'x1')
-data \%>\% edar::gge_fit(., model, 'y', 'x1', facet1="cat.var2")
-data \%>\% edar::gge_fit(., model, 'y', 'x1', cat.var='cat.var', cat.vale='d')
+model \%>\% edar::gge_fit(., data, 'y', 'x1')
+model \%>\% edar::gge_fit(., data, 'y', 'x1', facet1="cat.var2")
+model \%>\% edar::gge_fit(., data, 'y', 'x1', cat.var='cat.var', cat.val='d')
 
-data \%>\% edar::gge_fit(., model, 'y', 'x2')
-data \%>\% edar::gge_fit(., model, 'y', 'x2', col.group='cat.var2')
-data \%>\% edar::gge_fit(., model, 'y', 'x2', facet1="cat.var2")
+model \%>\% edar::gge_fit(., data, 'y', 'x2')
+model \%>\% edar::gge_fit(., data, 'y', 'x2', col.group='cat.var2')
+model \%>\% edar::gge_fit(., data, 'y', 'x2', facet1="cat.var2")
 
 ## note: gge_fit produces the same result as geom_smooth under the same model
 ## -----
 model = glm(y ~ x1, data=data, family='binomial')
 
-data \%>\% edar::gge_fit(., model, 'y', 'x1')
+model \%>\% edar::gge_fit(., data, 'y', 'x1')
 data \%>\%
     ggplot2::ggplot(.,ggplot2::aes(x=x1, y=y) ) +
     ggplot2::geom_point(size=2) +

@@ -1,5 +1,4 @@
 
-
 ## {{{ Describe data (dplyr extension) }}}
 
 ## {{{ docs }}}
@@ -16,28 +15,31 @@
 #' @return It returns a tibble data frame with summaries for all numerical variables
 #'
 #' @examples
-#' data(starwars)
+#' data(starwars, package='dplyr')
 #' 
-#' starwars  %>% summarise_alln(., group=NULL, weight=NULL, spread=F)
-#' starwars  %>% summarise_alln(., group="gender", weight=NULL, spread=F)
-#' starwars  %>% summarise_alln(., group="gender", weight=NULL, spread=T)
+#' summarise_alln(starwars, group=NULL, weight=NULL, spread=FALSE)
+#' summarise_alln(starwars, group="gender", weight=NULL, spread=FALSE)
+#' summarise_alln(starwars, group="gender", weight=NULL, spread=TRUE)
+#'
+#' # or use with pipe
+#' # starwars  %>% summarise_alln(., group="gender", weight=NULL, spread=T)
 #' @export
 
 ## }}}
-summarise_alln <- function(df, group=NULL, weight=NULL, spread=F, ...)
+summarise_alln <- function(df, group=NULL, weight=NULL, spread=F)
 {
     options(warn=-1)
     on.exit(options(warn=0))
     
     flag=FALSE
-    ifelse(is.null(weight), df$weight<-1, df$weight <- df %>% dplyr::select_(weight) %>% pull) 
+    ifelse(is.null(weight), df$weight<-1, df$weight <- df %>% dplyr::select_(weight) %>% dplyr::pull) 
     if (is.null(group)) {
         flag=TRUE
         df$grouping_null__ = 1
         group="grouping_null__"
     }
     tab = df %>%
-        dplyr::select(-one_of(group))  %>% 
+        dplyr::select(-dplyr::one_of(group))  %>% 
         dplyr::select_if(is.numeric) %>%
         dplyr::bind_cols(., df[,group])  %>%
         tidyr::gather(var, value,  -group, -weight) %>%
@@ -58,9 +60,9 @@ summarise_alln <- function(df, group=NULL, weight=NULL, spread=F, ...)
                          )  %>%
         dplyr::mutate(sd = dplyr::case_when(is.nan(sd) ~ 0, TRUE ~ sd)) %>%   
         dplyr::arrange(var)  %>%
-        ungroup
+        dplyr::ungroup(.)
     if (flag) {
-        tab = tab %>% dplyr::select(-one_of(group)) 
+        tab = tab %>% dplyr::select(-dplyr::one_of(group)) 
     }
     if(spread){
         tab = tab %>%
@@ -81,15 +83,18 @@ summarise_alln <- function(df, group=NULL, weight=NULL, spread=F, ...)
 #' @return It returns a tibble data frame with summaries for all categorical variables. 
 #'
 #' @examples
-#' data(starwars)
+#' data(starwars, package='dplyr')
 #'
-#' starwars  %>% summarise_allc(., group=NULL)
-#' starwars  %>% summarise_allc(., group="gender")
-#' starwars  %>% summarise_allc(., group=c("gender", "eye_color"))
+#' summarise_allc(starwars, group=NULL)
+#' summarise_allc(starwars, group="gender")
+#' summarise_allc(starwars, group=c("gender", "eye_color"))
+#'
+#' # or with pipe
+#' # starwars %>% summarise_allc(., group=c("gender", "eye_color"))
 #' 
 #' @export
 ## }}}
-summarise_allc <- function(df, group=NULL, ...)
+summarise_allc <- function(df, group=NULL)
 {
     options(warn=-1)
     on.exit(options(warn=0))
@@ -102,7 +107,7 @@ summarise_allc <- function(df, group=NULL, ...)
     }
     tab = df %>%
         dplyr::select_if(function(col) class(col)[1] != 'list') %>% 
-        dplyr::select(-one_of(group))  %>% 
+        dplyr::select(-dplyr::one_of(group))  %>% 
         dplyr::select_if(function(col) !is.numeric(col)) %>%
         dplyr::bind_cols(., df[,group]) %>%
         tidyr::gather(var, value,  -group) %>%
@@ -111,15 +116,15 @@ summarise_allc <- function(df, group=NULL, ...)
         dplyr::summarise(N      = sum(na),
                          NAs    = sum(is.na(value)),
                          Categories = length(unique(value)),
-                         Frequency = paste0(str_pad(str_sub(names(table(value)),1,5), width=5, side='right'), " (", formatC(100*table(value)/sum(table(value)),format="f",digits=2), " %)",collapse=", ") ,
+                         Frequency = paste0(stringr::str_pad(stringr::str_sub(names(table(value)),1,5), width=5, side='right'), " (", formatC(100*table(value)/sum(table(value)),format="f",digits=2), " %)",collapse=", ") ,
                          ## Table     = list(table(value, useNA="always") %>% stats::setNames(., nm=c(names(.)[1:(length(.)-1)], "NAs")) %>% rbind %>% tibble::as_data_frame(.)  %>% cbind(Variable=unique(var)) %>% dplyr::select(Variable, dplyr::everything())  ),
                          Table     = list(table(value, useNA="always") %>% stats::setNames(., nm=(names(.) %>% sapply(., toString)) ) %>% rbind %>% tibble::as_data_frame(.)  %>% cbind(Variable=unique(var)) %>% dplyr::select(Variable, dplyr::everything())  ),
                          Categories.Labels = paste0(sort(unique(value)), collapse=", ") ,
                          )   %>% 
-        ungroup %>% 
+        dplyr::ungroup(.) %>% 
         dplyr::arrange(var) 
     if (flag) {
-        tab = tab %>% dplyr::select(-one_of(group)) 
+        tab = tab %>% dplyr::select(-dplyr::one_of(group)) 
     }
     return(tab)
 }
@@ -136,28 +141,31 @@ summarise_allc <- function(df, group=NULL, ...)
 #' @examples
 #'
 #' data(edar_survey)
-#' help(edar_survey)
-#' tab = edar_survey  %>% summarise_allcbundle(.)
+#' ## help(edar_survey)
+#' tab =  summarise_allcbundle(edar_survey)
 #' tab
 #' tab$Table[[4]]
 #' tab$Tablep[[4]]
 #' tab$Tablel[[4]]
-#' tab = edar_survey  %>% summarise_allcbundle(., group="gender")
+#' tab = summarise_allcbundle( edar_survey, group="gender")
 #' tab
 #' tab$Table[[5]]
 #' tab$Tablep[[5]]
 #' tab$Tablel[[5]]
-#'  
+#'
+#' # or with pipe
+#' # edar_survey  %>% summarise_allcbundle(., group="gender")
+#' 
 #' @export
 
 ## }}}
-summarise_allcbundle <- function(df, group=NULL, ...)
+summarise_allcbundle <- function(df, group=NULL)
 {
     if( is.null(group) )    return( summarise_allcbundle_g0(df, group) )
     if( length(group) == 1) return( summarise_allcbundle_g1(df, group) )
     if( length(group) > 1 ) return( cat("\n\nCurrently, this function only supports aggragation by 1 group\n\n"))
 }
-summarise_allcbundle_g0 <- function(df, group=NULL, ...)
+summarise_allcbundle_g0 <- function(df, group=NULL)
 {
     options(warn=-1)
     on.exit(options(warn=0))
@@ -165,15 +173,15 @@ summarise_allcbundle_g0 <- function(df, group=NULL, ...)
     vars = df %>%  summarise_allc(., group=group) %>%
         dplyr::group_by(Categories.Labels) %>%
         dplyr::summarise(Variables = list(var),
-                         N.Variables = map_int(.x=Variables, ~length(.x)))
+                         N.Variables = purrr::map_int(.x=Variables, ~length(.x)))
     tab = df %>% summarise_allc(., group=group) %>%
         dplyr::group_by(Categories.Labels) %>%
         dplyr::select(Categories.Labels, Table)  %>%
         dplyr::summarise(Table   = list(do.call(rbind,Table))) %>%
         dplyr::full_join(., vars , by=c("Categories.Labels"))  %>%
         dplyr::select(N.Variables, Variables, dplyr::contains("Labels"), Table)  %>%
-        ungroup %>%
-        dplyr::mutate(Tablep = map(.x=Table, ~ .x %>% 
+        dplyr::ungroup(.) %>%
+        dplyr::mutate(Tablep = purrr::map(.x=Table, ~ .x %>% 
                                                  tidyr::gather(key = cat, value=N, -Variable)  %>%
                                                  dplyr::group_by(Variable) %>% 
                                                  dplyr::mutate(Frequency = round(100*N/sum(N),2)) %>%
@@ -182,10 +190,10 @@ summarise_allcbundle_g0 <- function(df, group=NULL, ...)
                                                  tidyr::spread(., key=cat, value=Frequency) %>%
                                                  dplyr::ungroup(.)  %>%
                                                  as.data.frame %>%
-                                                 dplyr::select(Variable,   'NA', everything() ) %>% 
+                                                 dplyr::select(Variable,   'NA', dplyr::everything() ) %>% 
                                                  dplyr::select(c(1, 3:ncol(.)), 2 )
                                    ),
-                      Tablel = map(.x=Table, ~ .x %>% 
+                      Tablel = purrr::map(.x=Table, ~ .x %>% 
                                                  tidyr::gather(key = cat, value=N, -Variable)  %>%
                                                  dplyr::group_by(Variable) %>% 
                                                  dplyr::mutate(Frequency = paste0(round(100*N/sum(N),2), " % (N=",  N,")") ) %>%
@@ -194,14 +202,14 @@ summarise_allcbundle_g0 <- function(df, group=NULL, ...)
                                                  tidyr::spread(., key=cat, value=Frequency) %>%
                                                  dplyr::ungroup(.)  %>%
                                                  as.data.frame %>%
-                                                 dplyr::select(Variable,   'NA', everything() ) %>% 
+                                                 dplyr::select(Variable,   'NA', dplyr::everything() ) %>% 
                                                  dplyr::select(c(1, 3:ncol(.)), 2 )
                                      ),
                       ) 
 
     return(tab)
 }
-summarise_allcbundle_g1 <- function(df, group=NULL, ...)
+summarise_allcbundle_g1 <- function(df, group=NULL)
 {
     options(warn=-1)
     on.exit(options(warn=0))
@@ -210,7 +218,7 @@ summarise_allcbundle_g1 <- function(df, group=NULL, ...)
         dplyr::rename(group=!!group) %>% 
         dplyr::group_by(Categories.Labels, group) %>%
         dplyr::summarise(Variables = list(var),
-                         N.Variables = map_int(.x=Variables, ~length(.x)))
+                         N.Variables = purrr::map_int(.x=Variables, ~length(.x)))
     tab = df %>% summarise_allc(., group=group) %>%
         dplyr::rename(group=!!group) %>% 
         dplyr::group_by(Categories.Labels, group) %>%
@@ -220,8 +228,8 @@ summarise_allcbundle_g1 <- function(df, group=NULL, ...)
         dplyr::select(group, N.Variables, Variables, dplyr::contains("Labels"), Table)  %>%
         dplyr::group_by(Categories.Labels) %>%
         dplyr::summarise(Table   = list(purrr::map2(.x=group,.y = Table, .f=function(.x,.y) cbind(group=.x,.y)) %>% do.call(rbind,. )%>% dplyr::arrange(Variable, group))  ) %>% 
-        ungroup %>%
-        dplyr::mutate(Tablep = map(.x=Table, ~ .x %>% 
+        dplyr::ungroup(.) %>%
+        dplyr::mutate(Tablep = purrr::map(.x=Table, ~ .x %>% 
                                                  tidyr::gather(key = cat, value=N, -Variable, -group)  %>%
                                                  dplyr::group_by(Variable, group) %>% 
                                                  dplyr::mutate(Frequency = round(100*N/sum(N),2)) %>%
@@ -230,11 +238,11 @@ summarise_allcbundle_g1 <- function(df, group=NULL, ...)
                                                  tidyr::spread(., key=cat, value=Frequency) %>%
                                                  dplyr::ungroup(.)  %>%
                                                  as.data.frame %>%
-                                                 dplyr::select(group, Variable,   'NA', everything() ) %>% 
+                                                 dplyr::select(group, Variable,   'NA', dplyr::everything() ) %>% 
                                                  dplyr::select(c(1, 2, 4:ncol(.)), 3 ) %>%
                                                  dplyr::arrange(Variable, group) 
                                    ),
-                      Tablel = map(.x=Table, ~ .x %>% 
+                      Tablel = purrr::map(.x=Table, ~ .x %>% 
                                                  tidyr::gather(key = cat, value=N, -Variable, -group)  %>%
                                                  dplyr::group_by(Variable, group) %>% 
                                                  dplyr::mutate(Frequency = paste0(N, " (", round(100*N/sum(N),2) ," %)") ) %>%
@@ -243,7 +251,7 @@ summarise_allcbundle_g1 <- function(df, group=NULL, ...)
                                                  tidyr::spread(., key=cat, value=Frequency) %>%
                                                  dplyr::ungroup(.)  %>%
                                                  as.data.frame %>%
-                                                 dplyr::select(group, Variable,   'NA', everything() ) %>% 
+                                                 dplyr::select(group, Variable,   'NA', dplyr::everything() ) %>% 
                                                  dplyr::select(c(1, 2, 4:ncol(.)), 3 ) %>%
                                                  dplyr::arrange(Variable, group) 
                                    ),
@@ -251,7 +259,6 @@ summarise_allcbundle_g1 <- function(df, group=NULL, ...)
 
     return(tab)
 }
-
 
 ## }}}
 ## {{{ Describe data (tables) }}}
@@ -293,11 +300,17 @@ summarise_allcbundle_g1 <- function(df, group=NULL, ...)
 #'
 #' @examples
 #' data(edar_survey)
-#' edar_survey  %>% edar_balance(., treatmentVar='treat')
+#'
+#' ebalance(edar_survey , treatmentVar='treat')
+#' 
+#' # or with paper
+#' # edar_survey  %>% ebalance(., treatmentVar='treat')
 #' 
 #' @export
+
 ## }}}
-ebalance   <- function(data, treatmentVar, alpha=0.05, ttest=F, showMahalanobisDist=T,showpscore=T,showLinPscore=T, col.size=120){
+ebalance   <- function(data, treatmentVar, alpha=0.05, ttest=F, showMahalanobisDist=T,showpscore=T,showLinPscore=T, col.size=120)
+{
     op.default <- options()
     on.exit(options(op.default), add=TRUE)
 
@@ -305,13 +318,13 @@ ebalance   <- function(data, treatmentVar, alpha=0.05, ttest=F, showMahalanobisD
     data    = data %>% dplyr::rename(treatmentVar=!!treatmentVar) %>% dplyr::mutate(treatmentVar=as.numeric(treatmentVar)) %>% dplyr::select_if(is.numeric)
     treated = data %>% dplyr::filter(treatmentVar==1) %>%  dplyr::select(-treatmentVar)
     control = data %>% dplyr::filter(treatmentVar==0) %>%  dplyr::select(-treatmentVar)
-    Tr      = data  %>% dplyr::select(treatmentVar)  %>% pull
+    Tr      = data  %>% dplyr::select(treatmentVar)  %>% dplyr::pull(.)
     ## Std diff in mean
     ## ----------------
     muc = apply(control,2, mean,na.rm=T)
     mut = apply(treated,2,mean,na.rm=T)
-    s2t = apply(treated,2,function(x)var(x,na.rm=T))
-    s2c = apply(control,2,function(x)var(x,na.rm=T))
+    s2t = apply(treated,2,function(x) stats::var(x,na.rm=T))
+    s2c = apply(control,2,function(x) stats::var(x,na.rm=T))
     delta = (mut - muc)/sqrt((s2t+s2c)/2)
 
     ## t-test difference in means
@@ -320,7 +333,7 @@ ebalance   <- function(data, treatmentVar, alpha=0.05, ttest=F, showMahalanobisD
     nc     <- nrow(control)
     t      <- (mut-muc) / sqrt( s2t/nt + s2c/nc)
     df     <- ( s2t/nt + s2c/nc)^2 / ( (s2t/nt)^2/(nt-1) +  (s2c/nc)^2/(nc-1) )
-    pttest <- 2*(1-pt(abs(t), df=df))
+    pttest <- 2*(1-stats::pt(abs(t), df=df))
 
     ## log ratio of std dev
     ## --------------------
@@ -328,36 +341,36 @@ ebalance   <- function(data, treatmentVar, alpha=0.05, ttest=F, showMahalanobisD
 
     ## proportion of tail of the other group
     ## -------------------------------------
-    ltt <- apply(treated,2,quantile,prob=c(alpha/2), na.rm=T)
-    utt <- apply(treated,2,quantile,prob=c(1-alpha/2), na.rm=T)
+    ltt <- apply(treated,2,stats::quantile,prob=c(alpha/2), na.rm=T)
+    utt <- apply(treated,2,stats::quantile,prob=c(1-alpha/2), na.rm=T)
 
-    ltc <- apply(control,2,quantile,prob=c(alpha/2), na.rm=T)
-    utc <- apply(control,2,quantile,prob=c(1-alpha/2), na.rm=T)
+    ltc <- apply(control,2,stats::quantile,prob=c(alpha/2), na.rm=T)
+    utc <- apply(control,2,stats::quantile,prob=c(1-alpha/2), na.rm=T)
 
     pit <- vector()
     pic <- vector()
     for (i in 1:ncol(treated)){
-        x <- treated[,i] %>% pull
+        x <- treated[,i] %>% dplyr::pull(.)
         pit[i] <- (sum(x<ltc[i],na.rm=T) + sum(x>utc[i],na.rm=T))/ length(x[!is.na(x)])
-        x <- control[,i] %>% pull
+        x <- control[,i] %>% dplyr::pull(.)
         pic[i] <- (sum(x<ltt[i],na.rm=T) + sum(x>utt[i],na.rm=T))/ length(x[!is.na(x)])
     }
 
     ## prop score
     ## ----------
     dat          <- data %>% cbind(., Tr) 
-    pscore       <- glm(Tr ~ ., data=dat, family=binomial(link="logit")) 
+    pscore       <- stats::glm(Tr ~ ., data=dat, family=stats::binomial(link="logit")) 
     phat         <- pscore$fitted.values
     phatlin      <- pscore$linear.predictors
     ## statistics for the raw pscore
-    pscore_meant <- mean(phat[Tr==1], na.rm=T)
-    pscore_vart  <- var(phat[Tr==1], na.rm=T)
-    pscore_meanc <- mean(phat[Tr==0], na.rm=T)
-    pscore_varc  <- var(phat[Tr==0], na.rm=T)
+    pscore_meant <- base::mean(phat[Tr==1], na.rm=T)
+    pscore_vart  <- stats::var(phat[Tr==1], na.rm=T)
+    pscore_meanc <- base::mean(phat[Tr==0], na.rm=T)
+    pscore_varc  <- stats::var(phat[Tr==0], na.rm=T)
     pscore_dif   <- (pscore_meant - pscore_meanc)/sqrt((pscore_vart+pscore_varc)/2)
     pscore_lnSTD <- log(sqrt(pscore_vart)/sqrt(pscore_varc))
-    pscore_pit <- quantile(phat[Tr==1],prob=c(alpha/2,1-alpha/2), na.rm=T)
-    pscore_pic <- quantile(phat[Tr==0],prob=c(alpha/2,1-alpha/2), na.rm=T)
+    pscore_pit <- stats::quantile(phat[Tr==1],prob=c(alpha/2,1-alpha/2), na.rm=T)
+    pscore_pic <- stats::quantile(phat[Tr==0],prob=c(alpha/2,1-alpha/2), na.rm=T)
     pscore_pialphat <- (sum(phat[Tr==1]<pscore_pic[1],na.rm=T) +
                      sum(phat[Tr==1]>pscore_pic[2],na.rm=T))/
                      length(phat[Tr==1][!is.na(phat[Tr==1])])
@@ -365,21 +378,21 @@ ebalance   <- function(data, treatmentVar, alpha=0.05, ttest=F, showMahalanobisD
                      sum(phat[Tr==0]>pscore_pit[2],na.rm=T))/
                      length(phat[Tr==1][!is.na(phat[Tr==1])])
     ## statistics for the linearized pscore
-    lpscore_meant <- mean(phatlin[Tr==1], na.rm=T)
-    lpscore_vart  <- var(phatlin[Tr==1], na.rm=T)
-    lpscore_meanc <- mean(phatlin[Tr==0], na.rm=T)
-    lpscore_varc  <- var(phatlin[Tr==0], na.rm=T)
+    lpscore_meant <- base::mean(phatlin[Tr==1], na.rm=T)
+    lpscore_vart  <- stats::var(phatlin[Tr==1], na.rm=T)
+    lpscore_meanc <- base::mean(phatlin[Tr==0], na.rm=T)
+    lpscore_varc  <- stats::var(phatlin[Tr==0], na.rm=T)
     lpscore_dif   <- (lpscore_meant - lpscore_meanc)/
       sqrt((lpscore_vart+lpscore_varc)/2)
     lpscore_lnSTD <- log(sqrt(lpscore_vart)/sqrt(lpscore_varc))
-    lpscore_pit <- quantile(phatlin[Tr==1],prob=c(alpha/2,1-alpha/2), na.rm=T)
-    lpscore_pic <- quantile(phatlin[Tr==0],prob=c(alpha/2,1-alpha/2), na.rm=T)
+    lpscore_pit <- stats::quantile(phatlin[Tr==1],prob=c(alpha/2,1-alpha/2), na.rm=T)
+    lpscore_pic <- stats::quantile(phatlin[Tr==0],prob=c(alpha/2,1-alpha/2), na.rm=T)
     lpscore_pialphat <- (sum(phatlin[Tr==1]<lpscore_pic[1],na.rm=T) +
-                     sum(phatlin[Tr==1]>lpscore_pic[2],na.rm=T))/
-                     length(phatlin[Tr==1][!is.na(phatlin[Tr==1])])
+                         sum(phatlin[Tr==1]>lpscore_pic[2],na.rm=T))/
+        length(phatlin[Tr==1][!is.na(phatlin[Tr==1])])
     lpscore_pialphac    <- (sum(phatlin[Tr==0]<lpscore_pit[1],na.rm=T) +
-                     sum(phatlin[Tr==0]>lpscore_pit[2],na.rm=T))/
-                     length(phatlin[Tr==1][!is.na(phatlin[Tr==1])])
+                            sum(phatlin[Tr==0]>lpscore_pit[2],na.rm=T))/
+        length(phatlin[Tr==1][!is.na(phatlin[Tr==1])])
     
     pscore <- round(c(pscore_meant,sqrt(pscore_vart),pscore_meanc,
                       sqrt(pscore_varc), pscore_dif,pscore_lnSTD,pscore_pialphat,
@@ -390,8 +403,8 @@ ebalance   <- function(data, treatmentVar, alpha=0.05, ttest=F, showMahalanobisD
                       lpscore_pialphac),3)
     ## Mahalanobis distance
     ## --------------------
-    sigmat <- var(treated, na.rm=T)
-    sigmac <- var(control, na.rm=T)
+    sigmat <- stats::var(treated, na.rm=T)
+    sigmac <- stats::var(control, na.rm=T)
     avCovInv <- solve( (sigmat + sigmac)/2 )
     mahalanobis <- sqrt( t(mut - muc) %*% avCovInv %*% (mut - muc) )
 
@@ -465,12 +478,16 @@ ebalance   <- function(data, treatmentVar, alpha=0.05, ttest=F, showMahalanobisD
 #'
 #' @examples
 #' data(edar_survey)
-#' edar_survey %>% edar_describe()
+#' edescribe(edar_survey)
 #' 
-#' tb = edar_survey %>% edar_describe()
+#' tb = edescribe(edar_survey)
 #' tb$Cat
 #' tb$Num
+#'
+#' # or with pipe
+#' # edar_survey %>% edescribe()
 #' @export
+
 ## }}}
 edescribe  <- function(data, weight=NULL, minMax=T, digits=2, maxVars=NULL, col.size=120)
 {
@@ -508,7 +525,7 @@ edescribe  <- function(data, weight=NULL, minMax=T, digits=2, maxVars=NULL, col.
             median = apply(data[,!idxChar],2,median,na.rm=T)
             sd     = apply(data[,!idxChar],2,sd,na.rm=T)
             se     = sd / sqrt(N)
-            q      = apply(data[,!idxChar],2,quantile,probs=c(.05,.95),na.rm=T) 
+            q      = apply(data[,!idxChar],2,stats::quantile,probs=c(.05,.95),na.rm=T) 
         }else{
             mean   = apply(data[,!idxChar],2,function(x) questionr::wtd.mean(x,na.rm=TRUE, weight=weight))
             median = apply(data[,!idxChar],2,function(x) isotone::weighted.median(x,w=weight))
@@ -530,7 +547,7 @@ edescribe  <- function(data, weight=NULL, minMax=T, digits=2, maxVars=NULL, col.
         }
         row.names(numericSummary) = NULL
         numericSummary = tibble::as_data_frame(numericSummary) %>%
-            arrange(name)
+            dplyr::arrange(name)
     }else
     {
         numericSummary = NULL
@@ -579,7 +596,7 @@ edescribe  <- function(data, weight=NULL, minMax=T, digits=2, maxVars=NULL, col.
                                             freq_tables = tables,
                                             distribution = c(do.call(rbind, tables_summary))
                                             ) %>%
-            arrange(name)
+            dplyr::arrange(name)
     }else
     {
         tables_summary = NULL
@@ -619,6 +636,8 @@ edescribe  <- function(data, weight=NULL, minMax=T, digits=2, maxVars=NULL, col.
 #'              and counts).
 #' @param weight vector with the weights
 #' @param digits integer, the number of digits to print
+#' @param print.summary boolean, if \code{TRUE} the function will print a summary
+#' @param width.size numeric, size of the columns in the screen to print the results
 #'
 #' @return It retuns a tibble in which the columns are lists. The columns
 #'         of the tibble are \code{var.idx}, which is a list with the idx
@@ -630,13 +649,16 @@ edescribe  <- function(data, weight=NULL, minMax=T, digits=2, maxVars=NULL, col.
 #'
 #' @examples
 #' data(edar_survey)
-#' edar_survey %>% edar_bundle_cat()
-#' tb = edar_survey %>% edar_bundle_cat()
+#' edar_bundle_cat(edar_survey)
+#' tb = edar_bundle_cat(edar_survey )
 #' tb
 #' tb$var.idx
 #' tb$table.n
 #' tb$table.p
 #' tb$table.pn
+#'
+#' # with pipe:
+#' # edar_survey %>% edar_bundle_cat()
 #' 
 #'@export
 ## }}}
@@ -695,6 +717,7 @@ edar_bundle_cat <- function(data, vars=NULL, print.summary=NULL, weight=NULL, di
 ## {{{ Describe data (plots) }}}
 
 ## {{{ docs }}}
+
 #' Descriptive Plots
 #'
 #' This function generate plots with all the variables in the data frame individually
@@ -704,17 +727,16 @@ edar_bundle_cat <- function(data, vars=NULL, print.summary=NULL, weight=NULL, di
 #' @param weight a string with the name of the varible containing the weights. They are used to compute the summary stattistics
 #' @param mean boolean, if \code{TRUE}, displays a line with the averave value
 #' @param median boolean, if \code{TRUE}, displays a line with the median value
-#' @param conf.int boolean, if \code{TRUE}, displays lines with the 95% confidence interval (it is meaningful for variables that normally distributed)
-#' @param quantile boolean, if \code{TRUE}, displays lines with the 25% and 75% quantiles
+#' @param conf.int boolean, if \code{TRUE}, displays lines with the 95\% confidence interval (it is meaningful for variables that normally distributed)
+#' @param quantile boolean, if \code{TRUE}, displays lines with the 25\% and 75\% quantiles
 #' @param n.plots integer, the number of plots to display in the grid
 #' @param common.legend boolean, if \code{TRUE} the plots uses a single legend
 #' @param hist boolean, if \code{TRUE}, histograms are displayed instead of densities for the numerical variables
 #'
-#' @details All the variables in the data frame will be plotted
-#'
 #' @export
+
 ## }}}
-gge_describe <- function(df, group=NULL, weight=NULL, mean=TRUE, median=FALSE, conf.int=TRUE, quantile=FALSE, n.plots=16, common.legend=TRUE, hist=FALSE, ...)
+gge_describe <- function(df, group=NULL, weight=NULL, mean=TRUE, median=FALSE, conf.int=TRUE, quantile=FALSE, n.plots=16, common.legend=TRUE, hist=FALSE)
 {
     if (length(group)>1) {
         stop("\n\nCurrently, this function supports only 1 group")
@@ -734,7 +756,7 @@ gge_describe <- function(df, group=NULL, weight=NULL, mean=TRUE, median=FALSE, c
     {
         var = vars[i]
         if (!var %in% c(group, weight)) {
-            if (is.numeric(df[,var] %>% pull)) {
+            if (is.numeric(df[,var] %>% dplyr::pull(.))) {
                 if (hist) {
                     g[[j]] = gge_histogram(df[,c(var, group, weight)], group, weight)
                     idx.num = c(idx.num, j)
@@ -776,18 +798,20 @@ gge_describe <- function(df, group=NULL, weight=NULL, mean=TRUE, median=FALSE, c
     invisible()
 }
 ## {{{ docs }}}
+
 #' Plot densities by group and facet, with Kolmogorov-Smirnov statistics
 #'
 #' @param df a data frame
 #' @param value a string with the name of the numerical value to plot the density
 #' @param group a string with the name of the variable to group the densities
 #' @param facet a string with the name of the variable to create the grid of plots
-#' @param scale see \link{ggplot2::facet_wrap}
+#' @param scale see \code{\link[ggplot2]{facet_wrap}}
 #'
 #' @details All the variables in the data frame will be plotted
 #' @export
+
 ## }}}
-gge_fdensity <- function(df, value, group, facet, scale='fixed',...)
+gge_fdensity <- function(df, value, group, facet, scale='fixed')
 {
     if (length(group)>1) {
         stop("\n\nCurrently, this function supports only 1 group")
@@ -803,37 +827,38 @@ gge_fdensity <- function(df, value, group, facet, scale='fixed',...)
         dplyr::mutate(group=factor(group), facet=factor(facet))
     tab = tab %>% 
         dplyr::group_by(facet) %>%
-        dplyr::summarise(d1 = list(split(value, group)[[1]]),
-                         d2 = list(split(value, group)[[2]])) %>%
-        dplyr::mutate(KS.test = map2_dbl(d1,d2, ~ ifelse( all(is.na(.x)) | all(is.na(.y)), 1,  ks.test(.x,.y)$p.value)),
+        dplyr::summarise(d1 = list(base::split(value, group)[[1]]),
+                         d2 = list(base::split(value, group)[[2]])) %>%
+        dplyr::mutate(KS.test = purrr::map2_dbl(d1,d2, ~ ifelse( all(is.na(.x)) | all(is.na(.y)), 1,  ks.test(.x,.y)$p.value)),
                       KS.text = paste0("K-S test : ", round(KS.test,4)) ) %>%
         dplyr::select(facet, dplyr::contains("KS")) %>%
         dplyr::full_join(., tab  , by=c("facet"))
     g = tab  %>% 
-        ggplot(.) +
+        ggplot2::ggplot(.) +
         ggplot2::geom_density(ggplot2::aes(x=value, fill=group), alpha=.6) +
-        ggplot2::facet_wrap( ~ facet,  scales=scale,labeller=label_parsed) +
-        scale_x_continuous(expand = c(0, 0)) +
-        scale_y_continuous(expand = c(0, 0)) +
+        ggplot2::facet_wrap( ~ facet,  scales=scale,labeller=ggplot2::label_parsed) +
+        ggplot2::scale_x_continuous(expand = c(0, 0)) +
+        ggplot2::scale_y_continuous(expand = c(0, 0)) +
         viridis::scale_fill_viridis(option="A", discrete=TRUE, alpha=1, name="", begin=.066, end=.77) +
         viridis::scale_colour_viridis(option="A", discrete=TRUE, alpha=1, name="", begin=.066, end=.77) +
-        geom_text(data=tab %>% dplyr::select(facet, KS.text)  %>% dplyr::filter(!duplicated(.)), aes(x=-Inf, y=Inf, label=KS.text), vjust=2, hjust=-.5)
-    g = g + theme(strip.background = element_rect(colour="white", fill="white"),
-                  strip.text.x = element_text(size=12, face='bold'),
-                  strip.text.y = element_text(size=12, face="bold")) 
-    g = g + theme(legend.position = "top") 
+        ggplot2::geom_text(data=tab %>% dplyr::select(facet, KS.text)  %>% dplyr::filter(!duplicated(.)), ggplot2::aes(x=-Inf, y=Inf, label=KS.text), vjust=2, hjust=-.5)
+    g = g + ggplot2::theme(strip.background = ggplot2::element_rect(colour="white", fill="white"),
+                           strip.text.x = ggplot2::element_text(size=12, face='bold'),
+                           strip.text.y = ggplot2::element_text(size=12, face="bold")) 
+    g = g + ggplot2::theme(legend.position = "top") 
 
     return(g)
 }
 ## {{{ docs }}}
 #' Plot densities
 #'
-#' @inheritParams gge_describe
+#' Plot densities of all numerical variables in the data frame
 #'
-#' @details All the variables in the data frame will be plotted
+#' @inheritParams gge_describe
+#' 
 #' @export
 ## }}}
-gge_density <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.int=T, quantile=F, ...)
+gge_density <- function(df, group=NULL, weight=NULL, mean=TRUE, median=FALSE, conf.int=TRUE, quantile=FALSE)
 {
     if (length(group)>1) {
         stop("\n\nCurrently, this function supports only 1 group")
@@ -845,7 +870,7 @@ gge_density <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.int=
     on.exit(options(warn=0))
     
     flag=FALSE
-    ifelse(is.null(weight), df$weight<-1, df$weight <- df %>% dplyr::select_(weight) %>% pull) 
+    ifelse(is.null(weight), df$weight<-1, df$weight <- df %>% dplyr::select_(weight) %>% dplyr::pull(.)) 
     if (is.null(group)) {
         flag=TRUE
         df$grouping_null__ = 1
@@ -853,8 +878,10 @@ gge_density <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.int=
     }
 
     ## preparing the data to plot
-    df[,group] = df[,group] %>% dplyr::mutate_all(as.factor)
-    tab = df %>% summarise_alln(., group=group, weight="weight", spread=F)
+    df[,group] = df[,group] %>% 
+        dplyr::mutate_all(as.factor)
+    tab = df %>% 
+        summarise_alln(., group=group, weight="weight", spread=F)
     aes.statistics = c("Mean","Median",  "Quantile (.25%, 97.5%)",  "Quantile (25%, 75%)")
     aes.var.names = c("Average", "Med", "CI.l", "CI.u", "q25", "q75")
     df$Average = aes.statistics [1]
@@ -865,7 +892,7 @@ gge_density <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.int=
     df$q75     = aes.statistics [4]
 
     tab = df %>%
-        dplyr::select(-one_of(group))  %>% 
+        dplyr::select(-dplyr::one_of(group))  %>% 
         dplyr::select_if(is.numeric) %>%
         dplyr::bind_cols(., df[,c(group, aes.var.names)])  %>%
         tidyr::gather(var, value,  -group, -weight,  -aes.var.names)  %>%
@@ -875,22 +902,22 @@ gge_density <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.int=
     
     if(!is.null(group)){
         g = tab %>% 
-            ggplot(.) + 
+            ggplot2::ggplot(.) + 
             ggplot2::geom_density(ggplot2::aes_string(x="value",  fill=group), adjust=1, alpha=.5) +
-            ggplot2::facet_wrap( ~ var , scales='free',labeller=label_parsed)  +
+            ggplot2::facet_wrap( ~ var , scales='free',labeller=ggplot2::label_parsed)  +
             ggplot2::scale_x_continuous(expand = c(0, 0)) +
             ggplot2::scale_y_continuous(expand = c(0, 0)) +
             viridis::scale_fill_viridis(option="A", discrete=TRUE, alpha=1, name="", begin=.066, end=.77) +
             viridis::scale_colour_viridis(option="A", discrete=TRUE, alpha=1, name="", begin=.066, end=.77) +
-            guides(linetype=guide_legend("")) 
+            ggplot2::guides(linetype=ggplot2::guide_legend("")) 
     }else{
         g = tab %>% 
-            ggplot(.) + 
+            ggplot2::ggplot(.) + 
             ggplot2::geom_density(ggplot2::aes(value), adjust=1, alpha=.5) +
-            ggplot2::facet_wrap( ~ var , scales='free',labeller=label_parsed)  +
+            ggplot2::facet_wrap( ~ var , scales='free',labeller=ggplot2::label_parsed)  +
             ggplot2::scale_x_continuous(expand = c(0, 0)) +
             ggplot2::scale_y_continuous(expand = c(0, 0)) +
-            guides(linetype=guide_legend("")) 
+            ggplot2::guides(linetype=ggplot2::guide_legend("")) 
     }
 
     if(mean)
@@ -907,28 +934,28 @@ gge_density <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.int=
         g = g + ggplot2::geom_vline(ggplot2::aes_string(xintercept="q.25", col=group, linetype="q25")) +
             ggplot2::geom_vline(ggplot2::aes_string(xintercept="q.75", col=group, linetype="q75")) 
 
-    g = g + theme_bw() + theme(legend.position = "top") 
+    g = g + ggplot2::theme_bw() + ggplot2::theme(legend.position = "top") 
 
     ## KS test if two groups
-    if (length(unique(df[,group] %>% pull))==2) {
+    if (length(unique(df[,group] %>% dplyr::pull(.)))==2) {
         gr = df[,group]
         ks = tab %>%
             dplyr::group_by(var) %>%
-            dplyr::summarise(d1 = list(split(value, gr)[[1]]),
-                             d2 = list(split(value, gr)[[2]])) %>%
-            dplyr::mutate(KS.test = map2_dbl(d1,d2, ~ks.test(.x,.y)$p.value),
+            dplyr::summarise(d1 = list(base::split(value, gr)[[1]]),
+                             d2 = list(base::split(value, gr)[[2]])) %>%
+            dplyr::mutate(KS.test = purrr::map2_dbl(d1,d2, ~ks.test(.x,.y)$p.value),
                           KS.text = paste0("K-S test : ", round(KS.test,4)) ) %>%
             dplyr::select(var, dplyr::contains("KS")) 
         tab = tab %>%
             dplyr::full_join(., ks , by=c("var")) 
-        g = g + geom_text(data=tab %>% dplyr::select(var, KS.text)  %>% dplyr::filter(!duplicated(.)),
-                          aes(x=-Inf, y=Inf, label=KS.text), vjust=2, hjust=-.5)
+        g = g + ggplot2::geom_text(data=tab %>% dplyr::select(var, KS.text)  %>% dplyr::filter(!duplicated(.)),
+                          ggplot2::aes(x=-Inf, y=Inf, label=KS.text), vjust=2, hjust=-.5)
     }
-    g= g+theme(strip.background = element_rect(colour="white", fill="white"),
-               strip.text.x = element_text(size=12, face='bold'),
-               strip.text.y = element_text(size=12, face="bold")) 
+    g= g+ggplot2::theme(strip.background = ggplot2::element_rect(colour="white", fill="white"),
+               strip.text.x = ggplot2::element_text(size=12, face='bold'),
+               strip.text.y = ggplot2::element_text(size=12, face="bold")) 
     if (group[1] == "grouping_null__") {
-        g = g + guides(fill=FALSE, colour=F)
+        g = g + ggplot2::guides(fill=FALSE, colour=F)
     }
 
     return(g)
@@ -943,7 +970,7 @@ gge_density <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.int=
 #' @export
 
 ## }}}
-gge_histogram <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.int=T, quantile=F, ...)
+gge_histogram <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.int=T, quantile=F)
 {
     if (length(group)>1) {
         stop("\n\nCurrently, this function supports only 1 group")
@@ -955,7 +982,7 @@ gge_histogram <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.in
     on.exit(options(warn=0))
     
     flag=FALSE
-    ifelse(is.null(weight), df$weight<-1, df$weight <- df %>% dplyr::select_(weight) %>% pull) 
+    ifelse(is.null(weight), df$weight<-1, df$weight <- df %>% dplyr::select_(weight) %>% dplyr::pull) 
     if (is.null(group)) {
         flag=TRUE
         df$grouping_null__ = 1
@@ -975,7 +1002,7 @@ gge_histogram <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.in
     df$q75     = aes.statistics [4]
 
     tab = df %>%
-        dplyr::select(-one_of(group))  %>% 
+        dplyr::select(-dplyr::one_of(group))  %>% 
         dplyr::select_if(is.numeric) %>%
         dplyr::bind_cols(., df[,c(group, aes.var.names)])  %>%
         tidyr::gather(var, value,  -group, -weight,  -aes.var.names)  %>%
@@ -985,22 +1012,22 @@ gge_histogram <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.in
     
     if(!is.null(group)){
         g = tab %>% 
-            ggplot(.) + 
+            ggplot2::ggplot(.) + 
             ggplot2::geom_histogram(ggplot2::aes_string(x="value",  fill=group), adjust=1, alpha=.5) +
-            ggplot2::facet_wrap( ~ var , scales='free',labeller=label_parsed)  +
+            ggplot2::facet_wrap( ~ var , scales='free',labeller=ggplot2::label_parsed)  +
             ggplot2::scale_x_continuous(expand = c(0, 0)) +
             ggplot2::scale_y_continuous(expand = c(0, 0)) +
             viridis::scale_fill_viridis(option="A", discrete=TRUE, alpha=1, name="", begin=.066, end=.77) +
             viridis::scale_colour_viridis(option="A", discrete=TRUE, alpha=1, name="", begin=.066, end=.77) +
-            guides(linetype=guide_legend("")) 
+            ggplot2::guides(linetype=ggplot2::guide_legend("")) 
     }else{
         g = tab %>% 
-            ggplot(.) + 
+            ggplot2::ggplot(.) + 
             ggplot2::geom_histogram(ggplot2::aes(value), adjust=1, alpha=.5) +
-            ggplot2::facet_wrap( ~ var , scales='free',labeller=label_parsed)  +
+            ggplot2::facet_wrap( ~ var , scales='free',labeller=ggplot2::label_parsed)  +
             ggplot2::scale_x_continuous(expand = c(0, 0)) +
             ggplot2::scale_y_continuous(expand = c(0, 0)) +
-            guides(linetype=guide_legend("")) 
+            ggplot2::guides(linetype=ggplot2::guide_legend("")) 
     }
 
     if(mean)
@@ -1017,12 +1044,12 @@ gge_histogram <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.in
         g = g + ggplot2::geom_vline(ggplot2::aes_string(xintercept="q.25", col=group, linetype="q25")) +
             ggplot2::geom_vline(ggplot2::aes_string(xintercept="q.75", col=group, linetype="q75")) 
 
-    g = g + theme(legend.position = "top") +
-        theme(strip.background = element_rect(colour="white", fill="white"),
-              strip.text.x = element_text(size=12, face='bold'),
-              strip.text.y = element_text(size=12, face="bold")) 
+    g = g + ggplot2::theme(legend.position = "top") +
+        ggplot2::theme(strip.background = ggplot2::element_rect(colour="white", fill="white"),
+              strip.text.x = ggplot2::element_text(size=12, face='bold'),
+              strip.text.y = ggplot2::element_text(size=12, face="bold")) 
     if (group[1] == "grouping_null__") {
-        g = g + guides(fill=FALSE, colour=F)
+        g = g + ggplot2::guides(fill=FALSE, colour=F)
     }
     return(g)
 }
@@ -1034,7 +1061,7 @@ gge_histogram <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.in
 #'
 #' @export
 ## }}}
-gge_barplot <- function(df, group=NULL,...)
+gge_barplot <- function(df, group=NULL)
 {
     if (length(group)>1) {
         stop("\n\nCurrently, this function supports only 1 group")
@@ -1048,7 +1075,7 @@ gge_barplot <- function(df, group=NULL,...)
     for (i in 1:length(vars))
     {
         var = vars[i]
-        if (!is.numeric(df[,var] %>% pull)) {
+        if (!is.numeric(df[,var] %>% dplyr::pull)) {
             if (!is.null(group)) {
                 if (var != group) {
                     g[[j]] = gge_barplot_one(df, var, group) 
@@ -1064,6 +1091,7 @@ gge_barplot <- function(df, group=NULL,...)
     invisible()
 }
 ## {{{ docs }}}
+
 #' Descriptive Plots
 #'
 #' This function generate plots with all the variables in the data frame individually. It is a faster version of gge_describe
@@ -1074,10 +1102,11 @@ gge_barplot <- function(df, group=NULL,...)
 #' 
 #' @details All the variables in the data frame will be plotted
 #' @export
+
 ## }}}
-plot_edescribe <- function(data, qline=T, quantiles=c(.025,.975), ...)
+plot_edescribe <- function(data, qline=T, quantiles=c(.025,.975))
 {
-    op=par(no.readonly=TRUE)
+    op=graphics::par(no.readonly=TRUE)
 
     ## Debug/Monitoring message --------------------------
     msg <- paste0('\n','Generating the plots ...',  '\n'); cat(msg)
@@ -1094,29 +1123,29 @@ plot_edescribe <- function(data, qline=T, quantiles=c(.025,.975), ...)
 
     m <- ceiling(sqrt(ncol(data)))
     if(m*(m-1)>=ncol(data))
-        par(mfrow=c(m-1,m))
+        graphics::par(mfrow=c(m-1,m))
     else
-        par(mfrow=c(m,m))
+        graphics::par(mfrow=c(m,m))
 
     if (nrow(dfn)>0){
         X <- dfn
         for (i in 1:ncol(X)){
-            x <- X[,i] %>% pull
+            x <- X[,i] %>% dplyr::pull
             x = x[!is.na(x)]
             edar_plotdensity(x,main=names(dfn)[i], qline)
-            q <- quantile(x,probs=quantiles)
-            abline(v=q, col='red', lty=2)
-            abline(v=mean(x, na.rm=T), col='red', lty=1)
-            legend('topleft', lty=c(1,2), legend=c("Mean", paste0("Quantiles (", paste0(paste0(100*quantiles, "%"), collapse=','),  ")") ), col=c('red', 'red'), bty='n')
+            q <- stats::quantile(x,probs=quantiles)
+            graphics::abline(v=q, col='red', lty=2)
+            graphics::abline(v=mean(x, na.rm=T), col='red', lty=1)
+            graphics::legend('topleft', lty=c(1,2), legend=c("Mean", paste0("Quantiles (", paste0(paste0(100*quantiles, "%"), collapse=','),  ")") ), col=c('red', 'red'), bty='n')
         }
     }
     if (ncol(dfc)>0 ){
         for (i in 1:ncol(dfc)){
-            x <- dfc[,i] %>% pull
+            x <- dfc[,i] %>% dplyr::pull
             edar_barPlot(as.factor(x), title=names(dfc)[i])
         }
     }
-    par(op)
+    graphics::par(op)
 }
 
 
@@ -1124,7 +1153,7 @@ plot_edescribe <- function(data, qline=T, quantiles=c(.025,.975), ...)
 ## ---------
 ## anxillary
 ## ---------
-gge_barplot_one <- function(df, variable, group=NULL,...)
+gge_barplot_one <- function(df, variable, group=NULL)
 {
     cat = variable
     if (!is.null(group)) {
@@ -1133,62 +1162,62 @@ gge_barplot_one <- function(df, variable, group=NULL,...)
             dplyr::rename(cat = !!cat, group=!!group) %>% 
             dplyr::mutate(group=factor(group))  %>% 
             dplyr::group_by(cat, group) %>%
-            dplyr::mutate(ylabel = paste0(unique(cat), "\n(",group,"; N=",n(),")") )  %>% 
+            dplyr::mutate(ylabel = paste0(unique(cat), "\n(",group,"; N=",dplyr::n(),")") )  %>% 
             dplyr::group_by(ylabel, group) %>% 
-            summarise(n=n())  %>% 
-            ungroup %>%
+            dplyr::summarise(n=dplyr::n())  %>% 
+            dplyr::ungroup(.) %>%
             dplyr::group_by(group) %>% 
             dplyr::mutate("Percentage"=round(100*n/sum(n),2))  %>%
             dplyr::mutate(label = paste0(Percentage, "%") ) %>%
-            ggplot(.) +
-            geom_bar(aes(y= Percentage, x = ylabel, fill=group), stat='identity',position = 'dodge', alpha=.5) + 
-            geom_text(aes(y= Percentage, x = ylabel, label=label), hjust=-.1, size=4)+
-            coord_flip() +
-            ylim(0,100) +
-            xlab("")+
-            ggtitle(cat)+
+            ggplot2::ggplot(.) +
+            ggplot2::geom_bar(ggplot2::aes(y= Percentage, x = ylabel, fill=group), stat='identity',position = 'dodge', alpha=.5) + 
+            ggplot2::geom_text(ggplot2::aes(y= Percentage, x = ylabel, label=label), hjust=-.1, size=4)+
+            ggplot2::coord_flip() +
+            ggplot2::ylim(0,100) +
+            ggplot2::xlab("")+
+            ggplot2::ggtitle(cat)+
             viridis::scale_fill_viridis(option="A", discrete=TRUE, alpha=1, name="", begin=.066, end=.77) +
-            theme(legend.position = "bottom") 
+            ggplot2::theme(legend.position = "bottom") 
     }else{
         g = df %>% 
-            select(cat) %>%
-            rename(cat = !!cat) %>% 
+            dplyr::select(cat) %>%
+            dplyr::rename(cat = !!cat) %>% 
             dplyr::group_by(cat) %>%
             dplyr::mutate(ylabel = paste0(unique(cat), "\n(N=",n(),")") )  %>% 
             dplyr::group_by(ylabel) %>% 
-            summarise(n=n())  %>% dplyr::mutate("Percentage"=round(100*n/sum(n),2)) %>% 
+            dplyr::summarise(n=n())  %>% dplyr::mutate("Percentage"=round(100*n/sum(n),2)) %>% 
             dplyr::mutate(label = paste0(Percentage, "%") )  %>% 
-            ggplot(.) +
-            geom_bar(aes(y= Percentage, x = ylabel), stat='identity',position = 'dodge', alpha=.5) + 
-            geom_text(aes(y= Percentage, x = ylabel, label=label), hjust=-.1, size=4)+
-            coord_flip() +
-            ylim(0,100) +
-            xlab("")+
-            ggtitle(cat)
+            ggplot2::ggplot(.) +
+            ggplot2::geom_bar(ggplot2::aes(y= Percentage, x = ylabel), stat='identity',position = 'dodge', alpha=.5) + 
+            ggplot2::geom_text(ggplot2::aes(y= Percentage, x = ylabel, label=label), hjust=-.1, size=4)+
+            ggplot2::coord_flip() +
+            ggplot2::ylim(0,100) +
+            ggplot2::xlab("")+
+            ggplot2::ggtitle(cat)
     }
     return(g)
 }
-edar_plotdensity  <- function(x, ub=quantile(x,.975), lb=quantile(x,.025), shaded.area=F, shaded.area.col='grey90', lty=1, bty='n', add=F, grid=T, ...)
+edar_plotdensity  <- function(x, ub=stats::quantile(x,.975), lb=stats::quantile(x,.025), shaded.area=F, shaded.area.col='grey90', lty=1, bty='n', add=F, grid=T, main="")
 {
     data.rug = sample(x, size=min(1000, length(x)))
     if (add) {
-        lines(density(x, adjust=1), lty=lty,  cex.axis=.9, ...)
+        graphics::lines(stats::density(x, adjust=1), lty=lty,  cex.axis=.9)
     }else{
-        plot(density(x, adjust=1), lty=lty,  cex.axis=.9, ...)
+        graphics::plot(stats::density(x, adjust=1), lty=lty,  cex.axis=.9, main=main)
     }
-    rug(x=data.rug)
+    graphics::rug(x=data.rug)
     if(shaded.area){
     ## shadded area
         ## x.new <- density(x, adjust=1)$x
-        x.new<- density(x, adjust=1)$x
-        y <- density(x, adjust=1)$y
+        x.new<- stats::density(x, adjust=1)$x
+        y <- stats::density(x, adjust=1)$y
         x.coord <- c(lb, x.new[lb <= x.new & x.new <= ub], ub)
         y.coord <- c(0,  y[lb <= x.new & x.new <= ub], 0)
-        polygon(x.coord,y.coord,col=shaded.area.col, lty=lty, border= NA)
+        graphics::polygon(x.coord,y.coord,col=shaded.area.col, lty=lty, border= NA)
         length(x.coord)
         length(y.coord)
     }
-    if(grid) grid()
+    if(grid) graphics::grid()
 }
 edar_barPlot       <- function(y, title='', show.group.name=T, show.group.count=T, col='lightgrey')
 {
@@ -1209,13 +1238,13 @@ edar_barPlot       <- function(y, title='', show.group.name=T, show.group.count=
         N <- paste('\n(N=',table,')', sep='')
         names(tableProp) <-  paste(names(table),N)
     }        
-    ypos <- barplot(tableProp, horiz=T, xlim=c(0,1.1), main=title,plot=F)
-    par(las=1,cex.axis=.7,bty='l', pch=20, cex.main=.9, mar=c(4,5,3,0))
+    ypos <- graphics::barplot(tableProp, horiz=T, xlim=c(0,1.1), main=title,plot=F)
+    graphics::par(las=1,cex.axis=.7,bty='l', pch=20, cex.main=.9, mar=c(4,5,3,0))
     graphics::barplot(tableProp, horiz=T, xlim=c(0,1.3), col=col, border=NA, xaxt='n', cex.axis=1.2, cex.names=1.2)
     title(main=title, cex.main=1.1)
-    axis(1, at=seq(0,1,by=.2), labels=seq(0,1,by=.2))
-    mtext(text=paste('N=',n-NAs,', NA=',NAs,sep=''), cex=.7)
-    if(show.group.name) text(x=tableProp,y=ypos, labels=tableProp,cex=.9,pos=4)
+    graphics::axis(1, at=seq(0,1,by=.2), labels=seq(0,1,by=.2))
+    graphics::mtext(text=paste('N=',n-NAs,', NA=',NAs,sep=''), cex=.7)
+    if(show.group.name) graphics::text(x=tableProp,y=ypos, labels=tableProp,cex=.9,pos=4)
 }
 
 ## }}}
@@ -1224,60 +1253,71 @@ edar_barPlot       <- function(y, title='', show.group.name=T, show.group.count=
 ## continuous variables
 ## --------------------
 ## {{{ docs }}}
+
 #' Heat plot
 #'
 #'
 #' @param x,y numeric vector with values to plot
-#' @inheritParams graphics::plot
-#' @param axis boolean, if \code{TRUE} (default) axis are included in the plot
-#' 
+#' @param xlab string to be displayed in the x-axis
+#' @param ylab string to be displayed in the y-axis
+#' @param title string with the title of the plot
+#' @param axis boolean, if \code{TRUE} the axis are displayed
+#' @param text text annotation 
 #'
 #'
 #' @export
+
 ## }}}
-plot_heat <- function(x='', y='', xlab='x', ylab='y', title='', text='', axis=TRUE, ...){
+plot_heat <- function(x='', y='', xlab='x', ylab='y', title='', text='', axis=TRUE){
     colors_palette <- grDevices::colorRampPalette(rev(RColorBrewer::brewer.pal(11,'Spectral')))
     r <- colors_palette(32)
-    h1 <- hist(x, breaks=30, plot=F)
-    h2 <- hist(y, breaks=30, plot=F)
+    h1 <- graphics::hist(x, breaks=30, plot=F)
+    h2 <- graphics::hist(y, breaks=30, plot=F)
     top <- max(h1$counts, h2$counts)
     k <- MASS::kde2d(x, y, n=200)
     ## margins
     if(axis){
-        graphics::image(k, col=r, xlab=xlab, ylab=ylab, bg='black', ...)     
+        raster::image(k, col=r, xlab=xlab, ylab=ylab, bg='black')     
     }else{
-        graphics::image(k, col=r, xlab='', ylab='', bg='black', xaxt='n', yaxt='n', ...)
+        raster::image(k, col=r, xlab='', ylab='', bg='black', xaxt='n', yaxt='n')
     }
-    title(title)
+    graphics::title(title)
 }
 ## {{{ docs }}}
+
 #' Heat plot with histogram
 #'
 #' @inheritParams plot_heat
+#' @param ylim two dimensional numeric vector with limits of the y-axis 
+#' @param xlim two dimensional numeric vector with limits of the x-axis
+#' @param breaks integer, for the marginal histograms
+#' @param subtitle a string with subtitles of the plot 
 #'
 #' @export
+
 ## }}}
 plot_heathist <- function( x='', y='', title='', subtitle='', xlab='x', ylab='y',  breaks=50, 
-                         xlim=c(min(x), max(x)), ylim=c(min(y), max(y)), ...){
+                         xlim=c(min(x), max(x)), ylim=c(min(y), max(y)))
+{
     color_palette<- grDevices::colorRampPalette(rev(RColorBrewer::brewer.pal(11,'Spectral')))
     r <- color_palette(32)
-    h1 <- hist(x, breaks=seq(xlim[1],xlim[2],length=breaks), plot=F)
-    h2 <- hist(y, breaks=seq(ylim[1],ylim[2],length=breaks), plot=F)
+    h1 <- graphics::hist(x, breaks=seq(xlim[1],xlim[2],length=breaks), plot=F)
+    h2 <- graphics::hist(y, breaks=seq(ylim[1],ylim[2],length=breaks), plot=F)
     top <- max(h1$counts, h2$counts)
     k <- MASS::kde2d(x, y, n=200)
                                         # margins
-    oldpar <- par(no.readonly = T)
+    oldpar <- graphics::par(no.readonly = T)
     graphics::layout(matrix(c(2,0,1,3),2,2,byrow=T),c(3,1), c(1,3))
-    par(las=1,cex.axis=.7,bty='l', pch=20, cex.main=.9, mar=c(5,5,.1,.1))
-    image(k, col=r, xlab=xlab, ylab=ylab,  useRaster=T, xlim=xlim, ylim=ylim) #plot the image
+    graphics::par(las=1,cex.axis=.7,bty='l', pch=20, cex.main=.9, mar=c(5,5,.1,.1))
+    graphics::image(k, col=r, xlab=xlab, ylab=ylab,  useRaster=T, xlim=xlim, ylim=ylim) #plot the image
     ##points(df$x,df$y, cex=.3)
-    par(mar=c(0,4.5,3,0))
-    barplot(h1$counts, axes=F, ylim=c(0, top), space=0, col='lightgrey', border='white')
+    graphics::par(mar=c(0,4.5,3,0))
+    graphics::barplot(h1$counts, axes=F, ylim=c(0, top), space=0, col='lightgrey', border='white')
     title(title)
-    mtext(text=subtitle, cex=.8)
-    par(mar=c(5,0,0.1,4))
-    barplot(h2$counts, axes=F, xlim=c(0, top), space=0, col='lightgrey', horiz=T, border='white')
-    par(oldpar)
+    graphics::mtext(text=subtitle, cex=.8)
+    graphics::par(mar=c(5,0,0.1,4))
+    graphics::barplot(h2$counts, axes=F, xlim=c(0, top), space=0, col='lightgrey', horiz=T, border='white')
+    graphics::par(oldpar)
 }
 ## {{{ docs }}}
 #' Contour plot
@@ -1289,14 +1329,17 @@ plot_heathist <- function( x='', y='', title='', subtitle='', xlab='x', ylab='y'
 #' @param palette a string with the name of a color brewer continuous palette
 #' @param hist.fill a string with the colour to fill the histogram bars
 #' @param hist.col a string with the color of the border of the histogram bars
-#' @inheritParams graphics::plot 
+#' @param group a string with the categories to group the points
+#' @param xlim two dimensional numeric vectors with the limits of the x-axis 
+#' @param xlab a string to be displayed in the x-axis
+#' @param ylab a string to be displayed in the y-axis
 #'
 #' @export
 ## }}}
-gge_contour <- function(df, x, y, points=FALSE, group=NULL, palette='Blues', hist.fill="lightsteelblue2", hist.col='white', xlim=NULL, xlab=NULL, ylab=NULL, ...)
+gge_contour <- function(df, x, y, points=FALSE, group=NULL, palette='Blues', hist.fill="lightsteelblue2", hist.col='white', xlim=NULL, xlab=NULL, ylab=NULL)
 {
-    if (is.null(group))  g= gge_contour_g0(df, x, y, points, group, palette, hist.fill, hist.col, xlim, xlab, ylab, ...) 
-    if (!is.null(group)) g= gge_contour_g1(df, x, y, points, group, palette, hist.fill, hist.col, xlim, xlab, ylab, ...) 
+    if (is.null(group))  g= gge_contour_g0(df, x, y, points, group, palette, hist.fill, hist.col, xlim, xlab, ylab) 
+    if (!is.null(group)) g= gge_contour_g1(df, x, y, points, group, palette, hist.fill, hist.col, xlim, xlab, ylab) 
  
     if (!is.null(xlim)) {
         g = g + xlim(xlim)
@@ -1310,7 +1353,7 @@ gge_contour <- function(df, x, y, points=FALSE, group=NULL, palette='Blues', his
     g = ggExtra::ggMarginal(g, type = "histogram",  colour=hist.col, fill = hist.fill)
     return(g)
 }
-gge_contour_g0 <- function(df, x, y, points, group=NULL, palette='Blues', hist.fill="lightsteelblue2", hist.col='white', xlim=NULL, xlab=NULL, ylab=NULL, ...)
+gge_contour_g0 <- function(df, x, y, points, group=NULL, palette='Blues', hist.fill="lightsteelblue2", hist.col='white', xlim=NULL, xlab=NULL, ylab=NULL)
 {
     g = df %>%
         dplyr::rename(x=!!x, y=!!y)  %>%
@@ -1319,11 +1362,11 @@ gge_contour_g0 <- function(df, x, y, points, group=NULL, palette='Blues', hist.f
         ggplot2::scale_fill_distiller(palette=palette)+
         ggplot2::theme_bw() +
         ggplot2::theme(legend.position = "bottom")+
-        guides(fill=FALSE)
+        ggplot2::guides(fill=FALSE)
     if (points) g = g +  ggplot2::geom_point(size=1.2) 
     return(g)
 }
-gge_contour_g1 <- function(df, x, y, points, group=NULL, palette='Blues', hist.fill="lightsteelblue2", hist.col='white', xlim=NULL, xlab=NULL, ylab=NULL, ...)
+gge_contour_g1 <- function(df, x, y, points, group=NULL, palette='Blues', hist.fill="lightsteelblue2", hist.col='white', xlim=NULL, xlab=NULL, ylab=NULL)
 {
     g = df %>%
         dplyr::rename(group=!!group, x=!!x, y=!!y)  %>%
@@ -1333,13 +1376,10 @@ gge_contour_g1 <- function(df, x, y, points, group=NULL, palette='Blues', hist.f
         ggplot2::scale_fill_distiller(palette=palette)+
         ggplot2::theme_bw() +
         ggplot2::theme(legend.position = "bottom")+
-        guides(fill=FALSE)
-    if (points) g = g +  ggplot2::geom_point(size=1.2) +  scale_colour_brewer(palette='Dark2', name="")
+        ggplot2::guides(fill=FALSE)
+    if (points) g = g +  ggplot2::geom_point(size=1.2) +  ggplot2::scale_colour_brewer(palette='Dark2', name="")
     return(g)
 
 }
+
 ## }}}
-
-
-
-

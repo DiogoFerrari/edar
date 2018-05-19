@@ -4,11 +4,13 @@
 \alias{tidye}
 \title{Tidy linear model summary}
 \usage{
-tidye(model, digits = 4, ...)
+tidye(model, digits = 4)
 }
 \arguments{
 \item{model}{a \code{lm} of \code{glm} model}
+
+\item{digits}{integer, the number of significant digitis to use}
 }
 \description{
-This function uses \link{broom::tidy} to create a data.frame with model results from \code{lm} or \code{glm} functions
+This function uses \code{\link[broom]{tidy}} to create a data.frame with model results from \code{lm} or \code{\link[stats]{glm}} functions
 }

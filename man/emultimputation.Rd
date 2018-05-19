@@ -32,6 +32,8 @@ information.}
 \item{seed}{An integer that is used as argument by the \code{set.seed()} for
 offsetting the random number generator. Default is to leave the random number
 generator alone.}
+
+\item{digits}{integer, number of significant digits to return in the table}
 }
 \value{
 The function returns a list with the summary output of the models estimated after the multiple imputation is performed
@@ -43,11 +45,12 @@ This is a wrap function for the Multiple Imputation package mice.
 See help(mice)
 }
 \examples{
+library(magrittr)
 
 data = tibble::data_frame(x1 = rnorm(200,3,1),
                           x2 = rexp(200),
-                          cat.var  = sample(c(0,1), 200, replace=T),
-                          cat.var2 = sample(letters[1:4], 200, replace=T),
+                          cat.var  = sample(c(0,1), 200, replace=TRUE),
+                          cat.var2 = sample(letters[1:4], 200, replace=TRUE),
                           y1 = 10*x1*cat.var+rnorm(200,0,10) +
                               3*x2*(6*(cat.var2=='a') -3*(cat.var2=='b') +
                                     1*(cat.var2=='c') +1*(cat.var2=='d')),
@@ -60,6 +63,7 @@ data$x1[sample(1:nrow(data), 10)] = NA
 
 
 formula = "x1*cat.var+x2*cat.var2"
-imp = multimputation(data, formula,  dep.vars = c("y1", "y2"), ind.vars=c("x1", "x2", "cat.var", "cat.var2"))
+imp = emultimputation(data, formula,  dep.vars = c("y1", "y2"),
+                      ind.vars=c("x1", "x2", "cat.var", "cat.var2"))
 imp
 }

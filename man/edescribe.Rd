@@ -33,9 +33,12 @@ variables, the other the numerical ones.
 }
 \examples{
 data(edar_survey)
-edar_survey \%>\% edar_describe()
+edescribe(edar_survey)
 
-tb = edar_survey \%>\% edar_describe()
+tb = edescribe(edar_survey)
 tb$Cat
 tb$Num
+
+# or with pipe
+# edar_survey \%>\% edescribe()
 }

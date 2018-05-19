@@ -1,5 +1,6 @@
 # required (by devtools) to link the cpp code 
 #' @importFrom magrittr "%>%"
+#' @importFrom mice mice
 NULL
 
 .onLoad <- function(libname, pkgname)
@@ -28,3 +29,47 @@ NULL
 ## =====================================================
 ')
 }
+
+## global varibles for dplyr (used only so that the check ignores it, it does not actually creates global variables)
+## -------------------------
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(".",
+                                                        "name",
+                                                        ".rownames",
+                                                        "est",
+                                                        "ylabel",
+                                                        "n",
+                                                        "Percentage",
+                                                        "label",
+                                                        "..level..",
+                                                        "var",
+                                                        "value",
+                                                        "KS.test",
+                                                        "KS.text",
+                                                        "d1",
+                                                        "na",
+                                                        "Variable",
+                                                        "Category.Labels",
+                                                        "Categories.Labels",
+                                                        "Variable",
+                                                        "Variables",
+                                                        "Table",
+                                                        "N.Variables",
+                                                        "sd",
+                                                        "N",
+                                                        "Statistic",
+                                                        "Stat",
+                                                        "confint",
+                                                        "y",
+                                                        "term",
+                                                        "estimate",
+                                                        "std.error",
+                                                        "term",
+                                                        "deviance",
+                                                        "p.value",
+                                                        "sig",
+                                                        "coef",
+                                                        "conf.low.hc",
+                                                        "conf.high.hc",
+                                                        "d1",
+                                                        "d2"
+                                                        ))

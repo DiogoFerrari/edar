@@ -1,4 +1,3 @@
-
 ## {{{ multiple inputation }}}
 
 ## {{{ docs }}}
@@ -10,6 +9,7 @@
 #' @param RHS.formula a string with the RHS of the regression model
 #' @param dep.vars a string vector with the names of the dependent variables.
 #' @param ind.vars a string vector with the names of the independent variables.
+#' @param digits integer, number of significant digits to return in the table
 #' @inheritParams mice::mice
 #'
 #' @return The function returns a list with the summary output of the models estimated after the multiple imputation is performed
@@ -17,11 +17,12 @@
 #' @details See help(mice)
 #'
 #' @examples
+#' library(magrittr)
 #'
 #' data = tibble::data_frame(x1 = rnorm(200,3,1),
 #'                           x2 = rexp(200),
-#'                           cat.var  = sample(c(0,1), 200, replace=T),
-#'                           cat.var2 = sample(letters[1:4], 200, replace=T),
+#'                           cat.var  = sample(c(0,1), 200, replace=TRUE),
+#'                           cat.var2 = sample(letters[1:4], 200, replace=TRUE),
 #'                           y1 = 10*x1*cat.var+rnorm(200,0,10) +
 #'                               3*x2*(6*(cat.var2=='a') -3*(cat.var2=='b') +
 #'                                     1*(cat.var2=='c') +1*(cat.var2=='d')),
@@ -34,7 +35,8 @@
 #' 
 #' 
 #' formula = "x1*cat.var+x2*cat.var2"
-#' imp = multimputation(data, formula,  dep.vars = c("y1", "y2"), ind.vars=c("x1", "x2", "cat.var", "cat.var2"))
+#' imp = emultimputation(data, formula,  dep.vars = c("y1", "y2"),
+#'                       ind.vars=c("x1", "x2", "cat.var", "cat.var2"))
 #' imp
 #' @export
 ## }}}
@@ -48,23 +50,21 @@ emultimputation <- function(data, RHS.formula, dep.vars, ind.vars, m=5, maxit=50
         dat = data[,c(dep.vars[i], ind.vars)]
         names(dat)[1]='y'
 
-        capture.output(imputed_dat <- mice::mice(dat, m=m, maxit = maxit, method = method, seed = seed))
+        utils::capture.output(imputed_dat <- mice::mice(dat, m=m, maxit = maxit, method = method, seed = seed))
         if (length(unique(dat$y))==2 & all(unique(dat$y) %in% c(0,1))) {
-            models.imp = with(imputed_dat, exp=glm(formula, family='binomial'))
+            models.imp = with(imputed_dat, expr=stats::glm(formula=stats::formula(formula), family='binomial'))
         }else{
-            models.imp = with(imputed_dat, exp=lm(formula=formula(formula)))
+            models.imp = with(imputed_dat, expr=stats::lm(formula=stats::formula(formula)))
         }
-        models.imp.pooled = pool(models.imp)
-        models.imp.pooled.final[[i]] = summary(models.imp.pooled) %>%
-            tidy(.) %>%
-            rename(term=.rownames, estimate=est, p.value="Pr...t..", low.95='lo.95', high.95='hi.95') %>%
+        models.imp.pooled = mice::pool(models.imp)
+        models.imp.pooled.final[[i]] = base::summary(models.imp.pooled) %>%
+            broom::tidy(.) %>%
+            dplyr::rename(term=.rownames, estimate=est, p.value="Pr...t..", low.95='lo.95', high.95='hi.95') %>%
             dplyr::mutate_if(is.numeric, round, digits=digits)
     }
     names(models.imp.pooled.final) = dep.vars
     return(models.imp.pooled.final)
 }
-
-
 
 ## }}}
 
@@ -78,11 +78,10 @@ emultimputation <- function(data, RHS.formula, dep.vars, ind.vars, m=5, maxit=50
 #'
 #' @param data a data frame with the data. The name of the (post) stratification variables and their categories must match the data provided in \code{pop.prop}.
 #' @param pop.prop a data frame with the population frequencies. Each column must be a (post) stratification variable. It must include a column \code{Freq} with the percentage of the population in each strata. The name of the stratification variables and their categories must match those provided in the data
-#' @param strata a formula with the name of the variables for stratification. See \link{survey::postStratify} for details
+#' @param strata a formula with the name of the variables for stratification. See \code{\link[survey]{postStratify}} for details
 #'
-#' @return It returns a list with two elements. The first element is the weight, the second is the trimmed weights. See \link{survey::trimWeights} for details
+#' @return It returns a list with two elements. The first element is the weight, the second is the trimmed weights. See \code{\link[survey]{trimWeights}} for details
 #'
-#' @examples
 #'
 #' @export
 ## }}}
@@ -97,8 +96,8 @@ epoststrat <- function(data, pop.prop, strata)
                                          population = pop.prop, partial = T)
     data.svy.rake.trim <- survey::trimWeights(data.svy.rake, lower=0, upper=5, strict=TRUE) 
     return(
-        list(weights = weights(data.svy.rake), 
-             weights.trimmed = weights(data.svy.rake.trim))
+        list(weights = stats::weights(data.svy.rake), 
+             weights.trimmed = stats::weights(data.svy.rake.trim))
         )
 }
 
@@ -108,6 +107,7 @@ epoststrat <- function(data, pop.prop, strata)
 ## {{{ power and sample size }}}
 
 ## {{{ docs }}}
+
 #' Compute power of a test
 #'
 #' This function compute power of a test or ideal sample size given desired power of a test
@@ -147,17 +147,17 @@ epower <- function(mu1=NULL,mu2=NULL, power_ideal=.8, n.current=NULL, n1.current
     ES = tibble::data_frame(mu1 = mu1, mu2=mu2, ES = ESs, power_ideal=power_ideal, n_ideal=n_ideal, power_current=power_current, n_current=n.current, n_and_power=power)
 
     layout = .edar_get_layout(length(ES$ES))
-    par(mfrow=c(layout))
+    graphics::par(mfrow=c(layout))
     if (!is.null(title)){
-        par(mar=c(4, 4, 6, 1))
+        graphics::par(mar=c(4, 4, 6, 1))
     }else{
-        par(mar=c(4, 4, 3, 1) )
+        graphics::par(mar=c(4, 4, 3, 1) )
     }
-    par(las=1,cex.axis=.7,bty='l', pch=20, cex.main=.9, mgp = c(2,.6,0))
+    graphics::par(las=1,cex.axis=.7,bty='l', pch=20, cex.main=.9, mgp = c(2,.6,0))
     for (i in 1:length(ESs)){
-        plot(x=ES$n_and_power[[i]][,'n'], ES$n_and_power[[i]][,'power'], type='l', col="#00000044", pch=20, cex=2, xlab='Sample Size', ylab='Power', ylim=c(0,1))
-        points(x=n.current, y=power_current[i], col='red', pch=20, cex=3)
-        points(x=ES$n_ideal[i], y=ES$power_ideal[i], col='blue', pch=20, cex=3)
+        graphics::plot(x=ES$n_and_power[[i]][,'n'], ES$n_and_power[[i]][,'power'], type='l', col="#00000044", pch=20, cex=2, xlab='Sample Size', ylab='Power', ylim=c(0,1))
+        graphics::points(x=n.current, y=power_current[i], col='red', pch=20, cex=3)
+        graphics::points(x=ES$n_ideal[i], y=ES$power_ideal[i], col='blue', pch=20, cex=3)
         text_current = paste0('Current Design\nN=',n.current,'\nPower=',round(power_current[i],2))
         text_ideal   = paste0('Ideal Design\nN=',ceiling(ES$n_ideal[i]),'\nPower=',round(ES$power_ideal[i],2))
         ## text(x=ES$n_ideal[i], y=ES$power_ideal[i],col='blue', pch=1, cex=.8, labels=text_ideal, pos=4,offset=2)
@@ -166,18 +166,17 @@ epower <- function(mu1=NULL,mu2=NULL, power_ideal=.8, n.current=NULL, n1.current
         if (lines){
             ## abline(v=ES$n_ideal[i], lty=2, col='blue')
             ## abline(v=n.current, lty=2, col='red')
-            segments(x0=ES$n_ideal[i], y0=0,y1=ES$power_ideal[i], lty=2, col="blue")
-            segments(x0=0,x1=ES$n_ideal[i], y0=ES$power_ideal[i], lty=2, col="blue")
-            segments(x0=n.current, y0=0,y1=power_current[i], lty=2, col="red")
-            segments(x0=0,x1=n.current, y0=power_current[i], lty=2, col="red")
+            graphics::segments(x0=ES$n_ideal[i], y0=0,y1=ES$power_ideal[i], lty=2, col="blue")
+            graphics::segments(x0=0,x1=ES$n_ideal[i], y0=ES$power_ideal[i], lty=2, col="blue")
+            graphics::segments(x0=n.current, y0=0,y1=power_current[i], lty=2, col="red")
+            graphics::segments(x0=0,x1=n.current, y0=power_current[i], lty=2, col="red")
         }
         text_current = paste0('Current Design: N=',n.current,'  Power=',round(power_current[i],2))
         text_ideal   = paste0('Ideal Design    : N=',ceiling(ES$n_ideal[i]),'  Power=',round(ES$power_ideal[i],2))
-        legend('bottomright', legend=c(text_ideal, text_current), pch=c(20,20), col=c('blue','red'), bty='n', cex=1.2)
+        graphics::legend('bottomright', legend=c(text_ideal, text_current), pch=c(20,20), col=c('blue','red'), bty='n', cex=1.2)
     }
-     if (!is.null(title)) mtext(title, line=-2, outer=T)
+     if (!is.null(title)) graphics::mtext(title, line=-2, outer=T)
     return(ES)
 }
-
 
 ## }}}

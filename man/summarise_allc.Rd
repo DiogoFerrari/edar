@@ -4,7 +4,7 @@
 \alias{summarise_allc}
 \title{Summarise the categorical variables of the data set}
 \usage{
-summarise_allc(df, group = NULL, ...)
+summarise_allc(df, group = NULL)
 }
 \arguments{
 \item{df}{data frame}
@@ -18,10 +18,13 @@ It returns a tibble data frame with summaries for all categorical variables.
 This function summarises all the categorical variables in the data set.
 }
 \examples{
-data(starwars)
+data(starwars, package='dplyr')
 
-starwars  \%>\% summarise_allc(., group=NULL)
-starwars  \%>\% summarise_allc(., group="gender")
-starwars  \%>\% summarise_allc(., group=c("gender", "eye_color"))
+summarise_allc(starwars, group=NULL)
+summarise_allc(starwars, group="gender")
+summarise_allc(starwars, group=c("gender", "eye_color"))
+
+# or with pipe
+# starwars \%>\% summarise_allc(., group=c("gender", "eye_color"))
 
 }

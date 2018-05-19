@@ -6,7 +6,7 @@
 \usage{
 gge_describe(df, group = NULL, weight = NULL, mean = TRUE,
   median = FALSE, conf.int = TRUE, quantile = FALSE, n.plots = 16,
-  common.legend = TRUE, hist = FALSE, ...)
+  common.legend = TRUE, hist = FALSE)
 }
 \arguments{
 \item{df}{a data frame}
@@ -19,9 +19,9 @@ gge_describe(df, group = NULL, weight = NULL, mean = TRUE,
 
 \item{median}{boolean, if \code{TRUE}, displays a line with the median value}
 
-\item{conf.int}{boolean, if \code{TRUE}, displays lines with the 95% confidence interval (it is meaningful for variables that normally distributed)}
+\item{conf.int}{boolean, if \code{TRUE}, displays lines with the 95\% confidence interval (it is meaningful for variables that normally distributed)}
 
-\item{quantile}{boolean, if \code{TRUE}, displays lines with the 25% and 75% quantiles}
+\item{quantile}{boolean, if \code{TRUE}, displays lines with the 25\% and 75\% quantiles}
 
 \item{n.plots}{integer, the number of plots to display in the grid}
 
@@ -31,7 +31,4 @@ gge_describe(df, group = NULL, weight = NULL, mean = TRUE,
 }
 \description{
 This function generate plots with all the variables in the data frame individually
-}
-\details{
-All the variables in the data frame will be plotted
 }

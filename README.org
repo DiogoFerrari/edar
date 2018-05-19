@@ -1,7 +1,7 @@
 
 * Overview
 
-Exploratory Data Analysis in R (~edar~)  is a R package designed to reduce the amount of code needed to do EDA in R. It provides a set of wrap functions that incapsulate some [[https://www.tidyverse.org/][tideverse]] functionalities. 
+Exploratory Data Analysis in R (~edar~)  is a R package designed to reduce the amount of code needed to do EDA in R. It provides a set of wrap functions that incapsulate some [[https://www.tidyverse.org/][tidyverse]] functionalities. 
 
 
 * Instalation
@@ -14,7 +14,6 @@ devtools::install_github("DiogoFerrari/edar")
 devtools::install_github("DiogoFerrari/edar", dependencies=F)
 
 #+END_SRC
-
 
 
 * Usage
@@ -46,6 +45,8 @@ devtools::install_github("DiogoFerrari/edar", dependencies=F)
   data %>% ebalance(., treatmentVar='treat')
 
 #+END_SRC
+
+#+RESULTS:
 
 See other functions in the package vignette.
 

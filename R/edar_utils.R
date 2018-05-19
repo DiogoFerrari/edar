@@ -14,8 +14,6 @@
     return(data.frame(data[,idxChar]))
 }
 .edar_multi_ggplot       <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
-    if (!require("grid")) install.packages('grid', repos='http://cran.us.r-project.org'); library(grid)
-
 
     ## Make a list from the ... arguments and plotlist
     plots <- c(list(...), plotlist)
@@ -36,15 +34,15 @@
         
     } else {
         ## Set up the page
-        grid.newpage()
-        pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+        grid::grid.newpage()
+        grid::pushViewport(grid::viewport(layout = grid::grid.layout(nrow(layout), ncol(layout))))
         
         ## Make each plot, in the correct location
         for (i in 1:numPlots) {
             ## Get the i,j matrix positions of the regions that contain this subplot
             matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
             
-            print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+            print(plots[[i]], vp = grid::viewport(layout.pos.row = matchidx$row,
                                             layout.pos.col = matchidx$col))
         }
     }
@@ -97,10 +95,10 @@ edar_get_new_data_num_vars     <- function(model, n, variable){
         dplyr::select( num.vars ) %>%
         dplyr::select_( paste("-", variable) ) %>%
         dplyr::mutate_all(dplyr::funs(mean)) %>%
-        dplyr::filter(row_number()==1) %>%
+        dplyr::filter(dplyr::row_number()==1) %>%
         .[rep(1, n), ] %>%
         tibble::as_data_frame() %>%
-        setNames(num.vars[num.vars != variable])
+        stats::setNames(num.vars[num.vars != variable])
     return(num.vars.tbl)
 }
 edar_get_predicted_lm          <- function(model, variable=NULL, new_data=NULL){
@@ -122,7 +120,7 @@ edar_get_predicted_lm          <- function(model, variable=NULL, new_data=NULL){
     x.min = min(data[,x])
     x.max = max(data[,x])
      new_data = data %>%
-        dplyr::summarize_if(is.numeric, mean) %>%
+        dplyr::summarize_if(is.numeric, base::mean) %>%
         dplyr::bind_cols(data %>% dplyr::summarize_if(is.factor, function(x) levels(x)[1] ) ) %>%
         dplyr::bind_rows(rep(list(.),n-1))
      new_data[,x] = seq(x.min, x.max,length=n)
@@ -133,22 +131,22 @@ edar_get_predicted_lm          <- function(model, variable=NULL, new_data=NULL){
 ## Colors for Plot
 ## ---------------
 addalpha <- function(colors, alpha=1.0) {
-    r <- col2rgb(colors, alpha=T)
+    r <- grDevices::col2rgb(colors, alpha=T)
                                         # Apply alpha
     r[4,] <- alpha*255
     r <- r/255.0
-    return(rgb(r[1,], r[2,], r[3,], r[4,]))
+    return(grDevices::rgb(r[1,], r[2,], r[3,], r[4,]))
 }
 colorRampPaletteAlpha <- function(colors, n=32, interpolate='linear') {
                                         # Create the color ramp normally
-    cr <- colorRampPalette(colors, interpolate=interpolate)(n)
+    cr <- grDevices::colorRampPalette(colors, interpolate=interpolate)(n)
                                         # Find the alpha channel
-    a <- col2rgb(colors, alpha=T)[4,]
+    a <- grDevices::col2rgb(colors, alpha=T)[4,]
                                         # Interpolate
     if (interpolate=='linear') {
-        l <- approx(a, n=n)
+        l <- stats::approx(a, n=n)
     } else {
-        l <- spline(a, n=n)
+        l <- stats::spline(a, n=n)
     }
     l$y[l$y > 255] <- 255 # Clamp if spline is > 255
     cr <- addalpha(cr, l$y/255.0)

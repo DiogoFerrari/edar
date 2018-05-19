@@ -5,7 +5,7 @@
 \title{Plot histograms}
 \usage{
 gge_histogram(df, group = NULL, weight = NULL, mean = T, median = F,
-  conf.int = T, quantile = F, ...)
+  conf.int = T, quantile = F)
 }
 \arguments{
 \item{df}{a data frame}
@@ -18,9 +18,9 @@ gge_histogram(df, group = NULL, weight = NULL, mean = T, median = F,
 
 \item{median}{boolean, if \code{TRUE}, displays a line with the median value}
 
-\item{conf.int}{boolean, if \code{TRUE}, displays lines with the 95% confidence interval (it is meaningful for variables that normally distributed)}
+\item{conf.int}{boolean, if \code{TRUE}, displays lines with the 95\% confidence interval (it is meaningful for variables that normally distributed)}
 
-\item{quantile}{boolean, if \code{TRUE}, displays lines with the 25% and 75% quantiles}
+\item{quantile}{boolean, if \code{TRUE}, displays lines with the 25\% and 75\% quantiles}
 }
 \description{
 Plot histograms

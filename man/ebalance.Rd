@@ -52,6 +52,10 @@ The statistics computed here are recomended in
 }
 \examples{
 data(edar_survey)
-edar_survey  \%>\% edar_balance(., treatmentVar='treat')
+
+ebalance(edar_survey , treatmentVar='treat')
+
+# or with paper
+# edar_survey  \%>\% ebalance(., treatmentVar='treat')
 
 }

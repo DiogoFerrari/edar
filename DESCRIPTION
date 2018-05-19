@@ -1,10 +1,12 @@
 Package: edar
-Title: What the Package Does (one line, title case)
+Title: Exploratory Data Analysis in R
 Version: 0.0.0.9000
 Authors@R: person("Diogo", "Ferrari", email="diogoferrari@gmail.com", role=c("aut", "cre"))
-Description: What the package does (one paragraph).
+Description: Package provides a set of wrap functions to conduct fast exploratory data analysis with minimum code.
 Depends: R (>= 3.4.2), mice
-License: MIT
+License: MIT + file LICENSE
+URL: https://github.com/DiogoFerrari/edar
+BugReports: https://github.com/DiogoFerrari/edar/issues
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
@@ -27,7 +29,6 @@ Imports: viridis,
     magrittr,
     mvtnorm,
     MASS,
-    mice,
     plm,
     plot3D,
     plotly,
@@ -42,5 +43,10 @@ Imports: viridis,
     tidyr,
     tm,
     wordcloud,
-    Rcpp
-LinkingTo: Rcpp
+    Rcpp,
+    stringr,
+    raster,
+    dotwhisker
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr

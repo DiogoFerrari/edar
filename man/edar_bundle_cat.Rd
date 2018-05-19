@@ -14,9 +14,13 @@ edar_bundle_cat(data, vars = NULL, print.summary = NULL, weight = NULL,
 If none is provided (vars=NULL), it summarizes all
 the categorical variables}
 
+\item{print.summary}{boolean, if \code{TRUE} the function will print a summary}
+
 \item{weight}{vector with the weights}
 
 \item{digits}{integer, the number of digits to print}
+
+\item{width.size}{numeric, size of the columns in the screen to print the results}
 
 \item{print}{a string with the type of summary to print in the
 screen (see \code{value} below for the complete
@@ -41,12 +45,15 @@ categories and displays their summary in a single table.
 }
 \examples{
 data(edar_survey)
-edar_survey \%>\% edar_bundle_cat()
-tb = edar_survey \%>\% edar_bundle_cat()
+edar_bundle_cat(edar_survey)
+tb = edar_bundle_cat(edar_survey )
 tb
 tb$var.idx
 tb$table.n
 tb$table.p
 tb$table.pn
+
+# with pipe:
+# edar_survey \%>\% edar_bundle_cat()
 
 }

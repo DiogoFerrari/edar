@@ -4,7 +4,7 @@
 \alias{gge_fdensity}
 \title{Plot densities by group and facet, with Kolmogorov-Smirnov statistics}
 \usage{
-gge_fdensity(df, value, group, facet, scale = "fixed", ...)
+gge_fdensity(df, value, group, facet, scale = "fixed")
 }
 \arguments{
 \item{df}{a data frame}
@@ -15,7 +15,7 @@ gge_fdensity(df, value, group, facet, scale = "fixed", ...)
 
 \item{facet}{a string with the name of the variable to create the grid of plots}
 
-\item{scale}{see \link{ggplot2::facet_wrap}}
+\item{scale}{see \code{\link[ggplot2]{facet_wrap}}}
 }
 \description{
 Plot densities by group and facet, with Kolmogorov-Smirnov statistics

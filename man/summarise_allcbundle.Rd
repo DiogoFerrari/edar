@@ -4,7 +4,7 @@
 \alias{summarise_allcbundle}
 \title{Summarise categorical variables in bundles}
 \usage{
-summarise_allcbundle(df, group = NULL, ...)
+summarise_allcbundle(df, group = NULL)
 }
 \arguments{
 \item{df}{data frame}
@@ -20,16 +20,19 @@ This function summarises all the categorical variables in the data set and creat
 \examples{
 
 data(edar_survey)
-help(edar_survey)
-tab = edar_survey  \%>\% summarise_allcbundle(.)
+## help(edar_survey)
+tab =  summarise_allcbundle(edar_survey)
 tab
 tab$Table[[4]]
 tab$Tablep[[4]]
 tab$Tablel[[4]]
-tab = edar_survey  \%>\% summarise_allcbundle(., group="gender")
+tab = summarise_allcbundle( edar_survey, group="gender")
 tab
 tab$Table[[5]]
 tab$Tablep[[5]]
 tab$Tablel[[5]]
- 
+
+# or with pipe
+# edar_survey  \%>\% summarise_allcbundle(., group="gender")
+
 }

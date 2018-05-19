@@ -2,23 +2,31 @@
 % Please edit documentation in R/edar_regression.R
 \name{edar_get_new_data}
 \alias{edar_get_new_data}
-\title{short title}
+\title{Get new data set}
 \usage{
 edar_get_new_data(data, n, x, group1.label = NULL, group1.value = NULL,
   group2.label = NULL, group2.value = NULL, group3.label = NULL,
   group3.value = NULL)
 }
 \arguments{
-\item{parameter}{}
-}
-\value{
-what is returnts...
+\item{data}{a data frame with the data. Observations must be the rows, variables in the columns.}
+
+\item{n}{integer, size of the new data set}
+
+\item{x}{string with the name of the numeric variable that will vary within the range of its values in the original data set. All other numeric covariates will be set to their average value}
+
+\item{group1.label}{either \code{NULL} or a string with the name of the categorical variable to set to a specific lavel. If \code{NULL}, the label used will the the first one in alphabetical order for strings, and the first category for factors}
+
+\item{group1.value}{string with the category of the variable whose name is provided in group.label.}
+
+\item{group2.label}{same as group1.label, but for a second categorical variable}
+
+\item{group2.value}{same as group1.value, but for a second categorical variable}
+
+\item{group3.label}{same as group1.label, but for a third categorical variable}
+
+\item{group3.value}{same as group1.value, but for a third categorical variable}
 }
 \description{
-description
-}
-\examples{
-
-\dontrun{
-}
+Create a new data set based on the provided data frame in which all covariates are kept fixed, except one.
 }

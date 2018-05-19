@@ -4,7 +4,7 @@
 \alias{plot_edescribe}
 \title{Descriptive Plots}
 \usage{
-plot_edescribe(data, qline = T, quantiles = c(0.025, 0.975), ...)
+plot_edescribe(data, qline = T, quantiles = c(0.025, 0.975))
 }
 \arguments{
 \item{data}{a data frame}

@@ -14,6 +14,3 @@ plot_mvgaussian(mu = c(0, 0), Sigma = diag(2))
 \description{
 This functions generates a contour plot of a bivariate gaussian distribution
 }
-\examples{
-
-}

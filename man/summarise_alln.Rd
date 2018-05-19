@@ -4,7 +4,7 @@
 \alias{summarise_alln}
 \title{Summarise numerical variables of the data set}
 \usage{
-summarise_alln(df, group = NULL, weight = NULL, spread = F, ...)
+summarise_alln(df, group = NULL, weight = NULL, spread = F)
 }
 \arguments{
 \item{df}{data frame}
@@ -22,9 +22,12 @@ It returns a tibble data frame with summaries for all numerical variables
 This function summarises all the numerical variables in the data set.
 }
 \examples{
-data(starwars)
+data(starwars, package='dplyr')
 
-starwars  \%>\% summarise_alln(., group=NULL, weight=NULL, spread=F)
-starwars  \%>\% summarise_alln(., group="gender", weight=NULL, spread=F)
-starwars  \%>\% summarise_alln(., group="gender", weight=NULL, spread=T)
+summarise_alln(starwars, group=NULL, weight=NULL, spread=FALSE)
+summarise_alln(starwars, group="gender", weight=NULL, spread=FALSE)
+summarise_alln(starwars, group="gender", weight=NULL, spread=TRUE)
+
+# or use with pipe
+# starwars  \%>\% summarise_alln(., group="gender", weight=NULL, spread=T)
 }
