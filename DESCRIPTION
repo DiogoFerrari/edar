@@ -46,7 +46,8 @@ Imports: viridis,
     Rcpp,
     stringr,
     raster,
-    dotwhisker
+    dotwhisker,
+    nnet
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr

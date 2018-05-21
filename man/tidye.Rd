@@ -5,17 +5,67 @@
 \title{Tidy linear model summary}
 \usage{
 tidye(model, digits = 4, hc = FALSE, hc.type = c("hc3", "hc0", "hc1",
-  "hc2", "hc4"))
+  "hc2", "hc4"), tibble = TRUE, keep.nohc = FALSE)
 }
 \arguments{
 \item{model}{a \code{lm} of \code{glm} model}
 
 \item{digits}{integer, the number of significant digitis to use}
 
-\item{hc}{boolean, if \code{TRUE}  robust standard errors (homoskedasticity corrected) are returned}
+\item{hc}{boolean, if \code{TRUE}  robust standard errors (heteroskedasticity corrected) are returned}
 
 \item{hc.type}{a string with the method to compute the standard errors (see \code{\link[car]{hccm}})}
+
+\item{tibble}{boolean, if \code{TRUE}, it returns a tibble data.frame. Default \code{TRUE}}
+
+\item{keep.nohc}{boolean, if \code{TRUE} and \code{hc=TRUE} the std.errors originally estimated will be kept and returned alongside the robust estimates. The original estimates will have the suffix .nohc (no heteroskedasticity corrected)}
 }
 \description{
 This function uses \code{\link[broom]{tidy}} to create a data.frame with model results from \code{lm} or \code{\link[stats]{glm}} functions
+}
+\examples{
+
+set.seed(77)
+
+data = tibble::data_frame(n = 300,
+                          x1   = rnorm(n,3,1),
+                          x2   = rexp(n),
+                          cat1 = sample(c(0,1), n, replace=TRUE),
+                          cat2 = sample(letters[1:4], n, replace=TRUE),
+                          y    = -10*x1*cat1 + 10*x2*(3*(cat2=='a')
+                                 -3*(cat2=='b') +1*(cat2=='c') -1*(cat2=='d')) + 
+                              rnorm(n,0,10), 
+                          y.bin = ifelse(y < mean(y), 0, 1),
+                          y.mul = 1+ifelse( - x1 - x2 + rnorm(n,sd=10) < 0, 0,
+                                    ifelse( - 2*x2 + rnorm(n,sd=10) < 0, 1, 2)),
+                          )
+
+model.g1 = lm(y ~ x1, data)
+model.g2 = lm(y ~ x1 + x2, data)
+model.g  = lm(y ~ x1*cat1 + x2*cat2, data)
+model.bin = glm(y.bin ~ x1+x2*cat2, data=data, family='binomial')
+model.mul <- nnet::multinom(y.mul ~ x1 + x2, data)
+
+## digits and output format
+tidye(model.g)
+tidye(model.g, digits=12)
+tidye(model.g, tibble=FALSE)
+tidye(model.g, digits=12, tibble=FALSE)
+
+## other model types
+tidye(model.bin)
+tidye(model.mul)
+
+## with robust std.errors
+tidye(model.g, hc=TRUE)
+tidye(model.g, hc=TRUE, keep.nohc=TRUE) # keep no heterocedastic corrected std.errors
+tidye(model.bin, hc=TRUE)
+
+## list of models
+tidye(list(model.g), hc=TRUE)
+tidye(list(model.g, model.bin, model.mul))
+tidye(list(Gaussian=model.g, Binomial=model.bin, Multinomial=model.mul))
+tidye(list(model.g, model.g1, model.g2), hc=TRUE)
+tidye(list('Only model'=model.g))
+
 }

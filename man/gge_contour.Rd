@@ -6,7 +6,7 @@
 \usage{
 gge_contour(df, x, y, points = FALSE, group = NULL, palette = "Blues",
   hist.fill = "lightsteelblue2", hist.col = "white", xlim = NULL,
-  xlab = NULL, ylab = NULL)
+  xlab = NULL, ylab = NULL, contour.breaks = 200, direction = 1)
 }
 \arguments{
 \item{df}{a data frame}
@@ -30,6 +30,10 @@ gge_contour(df, x, y, points = FALSE, group = NULL, palette = "Blues",
 \item{xlab}{a string to be displayed in the x-axis}
 
 \item{ylab}{a string to be displayed in the y-axis}
+
+\item{contour.breaks}{integer, number of breaks to use in the contour plot}
+
+\item{direction}{either 1 or -1 indicating the direction of the color sequence.}
 }
 \description{
 Contour plot

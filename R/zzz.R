@@ -1,5 +1,6 @@
 # required (by devtools) to link the cpp code 
 #' @importFrom magrittr "%>%"
+#' @importFrom dplyr n
 #' @importFrom mice mice
 NULL
 

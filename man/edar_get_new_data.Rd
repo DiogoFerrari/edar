@@ -4,9 +4,7 @@
 \alias{edar_get_new_data}
 \title{Get new data set}
 \usage{
-edar_get_new_data(data, n, x, group1.label = NULL, group1.value = NULL,
-  group2.label = NULL, group2.value = NULL, group3.label = NULL,
-  group3.value = NULL)
+edar_get_new_data(data, n, x, cat.values = NULL)
 }
 \arguments{
 \item{data}{a data frame with the data. Observations must be the rows, variables in the columns.}
@@ -15,18 +13,8 @@ edar_get_new_data(data, n, x, group1.label = NULL, group1.value = NULL,
 
 \item{x}{string with the name of the numeric variable that will vary within the range of its values in the original data set. All other numeric covariates will be set to their average value}
 
-\item{group1.label}{either \code{NULL} or a string with the name of the categorical variable to set to a specific lavel. If \code{NULL}, the label used will the the first one in alphabetical order for strings, and the first category for factors}
-
-\item{group1.value}{string with the category of the variable whose name is provided in group.label.}
-
-\item{group2.label}{same as group1.label, but for a second categorical variable}
-
-\item{group2.value}{same as group1.value, but for a second categorical variable}
-
-\item{group3.label}{same as group1.label, but for a third categorical variable}
-
-\item{group3.value}{same as group1.value, but for a third categorical variable}
+\item{cat.values}{named list of string vectors. The name of each element of the list (the string vectors) must match variable names in the data. The element of the string vectors must be strings with the name of the categories to use in the new data set. To generate the new data set, the numeric columns will be set to their mean value, except the column specified in the parameter \code{x}. The categorical values are set to their first category or the first category in alphabetic order. One can set the categorical variables to different values or use more than one category by setting this parameter \code{cat.values} as desired. For instance, suppose there is a categorical variable in the data set named education, taking the values of \code{High} or \code{Low}. If \code{cat.values=NULL}, the new data set returned will be fixed at \code{education=High}. One can use \code{education="Low"} by setting \code{cat.value=list(eductation="low")}. One can have both levels of education returned by setting \code{cat.value=list(eductation=c("low", "high"))}. See more examples in the documentation below.}
 }
 \description{
-Create a new data set based on the provided data frame in which all covariates are kept fixed, except one.
+Create a new data set based on the provided data frame in which all covariates are kept fixed, except those specified by the user.
 }

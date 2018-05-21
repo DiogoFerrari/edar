@@ -1,52 +1,81 @@
 
 ## {{{ anxilary }}}
 
-edar_get_fitted <- function(newdata, model){
-    stop("\n\nImplementation not completed vor model as tidy summary")
+edar_get_fitted <- function(newdata, model)
+{
+
 }
 ## {{{ docs }}}
 
 #' Get new data set
 #'
-#' Create a new data set based on the provided data frame in which all covariates are kept fixed, except one.
+#' Create a new data set based on the provided data frame in which all covariates are kept fixed, except those specified by the user.
 #'
 #' @param data a data frame with the data. Observations must be the rows, variables in the columns.
 #' @param n integer, size of the new data set
 #' @param x string with the name of the numeric variable that will vary within the range of its values in the original data set. All other numeric covariates will be set to their average value
-#' @param group1.label either \code{NULL} or a string with the name of the categorical variable to set to a specific lavel. If \code{NULL}, the label used will the the first one in alphabetical order for strings, and the first category for factors
-#' @param group1.value string with the category of the variable whose name is provided in group.label. 
-#' @param group2.label same as group1.label, but for a second categorical variable
-#' @param group2.value same as group1.value, but for a second categorical variable
-#' @param group3.label same as group1.label, but for a third categorical variable
-#' @param group3.value same as group1.value, but for a third categorical variable
+#' @param cat.values named list of string vectors. The name of each element of the list (the string vectors) must match variable names in the data. The element of the string vectors must be strings with the name of the categories to use in the new data set. To generate the new data set, the numeric columns will be set to their mean value, except the column specified in the parameter \code{x}. The categorical values are set to their first category or the first category in alphabetic order. One can set the categorical variables to different values or use more than one category by setting this parameter \code{cat.values} as desired. For instance, suppose there is a categorical variable in the data set named education, taking the values of \code{High} or \code{Low}. If \code{cat.values=NULL}, the new data set returned will be fixed at \code{education=High}. One can use \code{education="Low"} by setting \code{cat.value=list(eductation="low")}. One can have both levels of education returned by setting \code{cat.value=list(eductation=c("low", "high"))}. See more examples in the documentation below.
 #'
 #' @export
 
 ## }}}
-edar_get_new_data              <- function(data, n, x, group1.label=NULL, group1.value=NULL, group2.label=NULL, group2.value=NULL, group3.label=NULL, group3.value=NULL)
+edar_get_new_data          <- function(data, n, x, cat.values=NULL)
 {
-    data =tibble::as_data_frame(data)
-    cat_vars = data %>%
-        dplyr::select_if(function(col) {is.character(col) | is.factor(col) | is.ordered(col)})  %>%
-        dplyr::summarize_all(function(x) sort(unique(x))[1])  %>%
-        .[rep(1,n),] %>%
-        tibble::as_data_frame()
-    if(!is.null(group1.label)) cat_vars[,group1.label] = group1.value
-    if(!is.null(group2.label)) cat_vars[,group2.label] = group2.value
-    if(!is.null(group3.label)) cat_vars[,group3.label] = group3.value
+    if(!is.null(cat.values)){
+        cat_vars1 = cat.values %>%
+            do.call(expand.grid,.) %>%
+            base::replicate(n, ., simplify = FALSE) %>%
+            dplyr::bind_rows(.) %>%
+            dplyr::arrange_(.dots=names(cat.values)) 
+        cat_vars2 = data %>%
+            tibble::as_data_frame(.) %>%
+            dplyr::select_if(function(col) !is.numeric(col)) %>%
+            dplyr::select(-dplyr::one_of(names(cat.values)))  %>%
+            dplyr::summarize_all(function(x) sort(unique(x))[1])  %>%
+            dplyr::mutate_if(is.factor, as.character) %>%
+            base::replicate(nrow(cat_vars1), ., simplify=FALSE)  %>%
+            dplyr::bind_rows(.)
+        cat_vars = dplyr::bind_cols(cat_vars1, cat_vars2)  %>%
+            tibble::as_data_frame(.) 
 
-    num_vars = data %>%
-        dplyr::select_if(is.numeric)  %>%
-        dplyr::mutate_all(mean, na.rm=T) %>%
-        .[1:n,]
-    num_vars[,x] = seq(min(data[,x], na.rm=T),max(data[,x], na.rm=T),length=n)
+        num_vars = data %>%
+            dplyr::select_if(is.numeric)  %>%
+            dplyr::mutate_all(mean, na.rm=T) %>%
+            dplyr::slice(., 1) %>% 
+            .[rep(1,nrow(cat_vars)),] %>%
+            dplyr::bind_rows(.)
 
-    newdata = cat_vars %>%
-        dplyr::bind_cols(num_vars)
+        newdata = dplyr::bind_cols(num_vars, cat_vars)
+
+        newx = newdata %>%
+            dplyr::group_by_(.dots=names(cat.values)) %>%
+            dplyr::mutate( x = seq(min(data[,x], na.rm=T), max(data[,x], na.rm=T),length=n()))  %>%
+            dplyr::ungroup(.)  %>% 
+            dplyr::select(x) 
+
+        newdata[,x] = newx
+    }else{
+        cat_vars = data %>%
+            tibble::as_data_frame(.) %>%
+            dplyr::select_if(function(col) !is.numeric(col)) %>%
+            dplyr::summarize_all(function(x) sort(unique(x))[1])  %>%
+            dplyr::mutate_if(is.factor, as.character) %>%
+            .[rep(1,n),]
+        num_vars = data %>%
+            dplyr::select_if(is.numeric)  %>%
+            dplyr::mutate_all(mean, na.rm=T) %>%
+            dplyr::slice(., 1) %>% 
+            .[rep(1,n),]
+        num_vars[,x] = seq(min(data[,x], na.rm=T),max(data[,x], na.rm=T),length=n)
+        newdata = cat_vars %>% dplyr::bind_cols(., num_vars)
+    }
+
+    newdata = newdata %>% dplyr::mutate_if(is.factor, as.character)
     return(newdata)
 }
 
 ## }}}
+
 ## {{{ Plot with fitted values }}}
 
 ## {{{ docs }}}
@@ -65,107 +94,86 @@ edar_get_new_data              <- function(data, n, x, group1.label=NULL, group1
 #' @param title.position a string (or an number) with \code{center} (or .5), \code{left} (or 0), or \code{right} (or 1)
 #' @param subtitle a string, the subtitle of the plot
 #' @param footnote a string, the footnote of the plot
-#' @param cat.var a string with the name of the categorical variable whose value will be set in the parameter \code{cat.value}. It allows one to set the category to use to get the fitted/predicted values
-#' @param cat.value string with the category of the variable described in the parameter \code{car.var}
-#' @param col.group a string with the name of the categorical variable to produce the color code of the plot
-#' @param facet1 a string with the name of the categorical variable to generate the facets
-#' @param facet1.ncol an integer, the number of columns of the facet. Used only when a single facet is used (\code{facet2=NULL})
-#' @param facet2 (same as facet1)
-#' @param facet2.ncol an integer, the number of columns of the facet. Used only when a single facet is used (\code{facet2=NULL})
-#' @param col.pch a string or rgb code. It will be used as color for the points when col.group is NULL
-#' @param legend.position a string (\code{top}, \code{bottom}, \code{left}, \code{right} (Default))
-#' @param legend.omit boolean, if the legend should be omitted or not
+#' @param cat.values named list of string vectors. The name of each element of the list (the string vectors) must match variable names in the data. The element of the string vectors must be strings with the name of the categories to use in the plot with the fitted values. To generate the fitted values, the numeric columns will be set to their mean value, except the column specified in the parameter \code{x}. The categorical values are set to their first category or the first category in alphabetic order. One can set the categorical variables to different values or use more than one category by setting this parameter \code{cat.value} as desired. For instance, suppose there is a categorical variable in the data set named education, taking the values of \code{High} or \code{Low}, which was used in the model. If \code{cat.value=NULL}, the plot with the predicted values will be fixed at \code{education=High}. One can use \code{education="Low"} by setting \code{cat.value=list(eductation="low")}. One can generate predicted values for both levels of education by setting \code{cat.value=list(eductation=c("low", "high"))}. See more examples in the documentation below.
+#' @param colour.groups a string with the name of the categorical variable to produce the color code for the points of the plot
+#' @param facets a string vector with the name of the categorical variable to generate the facets. The fitted values will be produced for each facet.
+#' @param facets.ncol an integer, the number of columns of grid when using facets. 
+#' @param col.pch a string or rgb code. 
+#' @param legend.position a string (\code{top}, \code{bottom}, \code{left} (Default)), \code{right} 
+#' @param legend.title a string with the title of the legend 
+#' @param legend.omit boolean, if \code{TRUE} the legend is omitted
 #' @param scales used when facets are used. See \code{\link[ggplot2]{facet_wrap}}
-#' @param grid boolean, if \code{TRUE} add grid in the plot
-#' @param xlab string to display in the x-axis 
-#' @param ylab string to display in the y-axis 
+#' @param xlab string with text to display in the x-axis 
+#' @param ylab string with text to display in the y-axis 
 #' @param xlim two-dimensional numeric vector with the limits of the x-axis 
-#' @param ylim two-dimensional numeric vector with the limits of the y-axis 
+#' @param ylim two-dimensional numeric vector with the limits of the y-axis
+#' @param facet.title.position a string with either \code{left} (Default), \code{right}, or \code{center}. It indicates the position of the facet tiltle
 #'
 #' @examples
 #' library(magrittr)
-#' set.seed(777)
-#' data = tibble::data_frame(x1 = rnorm(200,3,1),
-#'                           x2 = rexp(200),
-#'                           cat.var  = sample(c(0,1), 200, replace=TRUE),
-#'                           cat.var2 = sample(letters[1:4], 200, replace=TRUE),
-#'                           y = -10*x1*cat.var+rnorm(200,0,10) +
-#'                               10*x2*(3*(cat.var2=='a') -3*(cat.var2=='b') +
-#'                                      1*(cat.var2=='c') -1*(cat.var2=='d')))  %>%
-#'     dplyr::mutate(cat.var=as.factor(cat.var)) 
-#' model = lm(y ~ x1*cat.var+x2*cat.var2, data)
+#' set.seed(77)
 #' 
-#' model %>% gge_fit(., data, 'y', 'x1')
-#' model %>% gge_fit(., data, 'y', 'x2')
-#' model %>% gge_fit(., data, 'y', 'x1', cat.var='cat.var', cat.value="0")
-#' model %>% gge_fit(., data, 'y', 'x1', cat.var='cat.var2', cat.value="b")
-#' model %>% gge_fit(., data, 'y', 'x1', cat.var='cat.var',
-#'                  cat.value="1", col.group='cat.var2')
-#' model %>% gge_fit(., data, 'y', 'x2', cat.var='cat.var',
-#'                  cat.value="1", col.group="cat.var")
-#' model %>% gge_fit(., data, 'y', 'x2', cat.var='cat.var',
-#'                  cat.value=c("0","1"), col.group="cat.var")
-#' model %>% gge_fit(., data, 'y', 'x2', cat.var='cat.var2',
-#'                  cat.value=c("a","b"), col.group="cat.var2")
-#' model %>% gge_fit(., data, 'y', 'x2', cat.var='cat.var2',
-#'                  cat.value=c("a","b", 'c','d'), col.group="cat.var2")
-#' model %>% gge_fit(., data, 'y', 'x2', facet1="cat.var")
-#' model %>% gge_fit(., data, 'y', 'x2', facet1="cat.var2")
-#' model %>% gge_fit(., data, 'y', 'x2', facet1="cat.var2", facet1.ncol=1)
-#' model %>% gge_fit(., data, 'y', 'x2', facet1="cat.var2",
-#'                  facet1.ncol=1, , cat.var='cat.var2',
-#'                  cat.value=c("a","b", 'c','d'), col.group="cat.var2")
-#' model %>% gge_fit(., data, 'y', 'x2', facet1="cat.var2", facet2='cat.var')
-#' model %>% gge_fit(., data, 'y', 'x2', facet1="cat.var2", facet2='cat.var')
-#' ## variable var.cat2 fixed at level 'a'
-#' model %>% gge_fit(., data, 'y', 'x2', cat.var='cat.var',
-#'                  cat.value=c("0","1"), facet1="cat.var2", facet2='cat.var')
-#' ## variable var.cat fixed at level '0'
-#' model %>% gge_fit(., data, 'y', 'x2', cat.var='cat.var2',
-#'                  cat.value=c("a","b", 'c','d'), col.group="cat.var2",
-#'                  facet1="cat.var2", facet2='cat.var')
-#'
-#' ## logistic regression
-#' ## -------------------
-#' data = tibble::data_frame(x1 = rnorm(200,0,1),
-#'                           x2 = rexp(200),
-#'                           cat.var  = sample(c(0,1), 200, replace=TRUE),
-#'                           cat.var2 = sample(letters[1:4], 200, replace=TRUE),
-#'                           mu = 7*x1 + 2*x2*(3*(cat.var2=='a') -3*(cat.var2=='b') +
-#'                                           1*(cat.var2=='c') -1*(cat.var2=='d'))+rnorm(200,0,1) ,
-#'                           p  = 1/(1+exp(- mu)),
-#'                           y  = sapply(p, function(eta) sample(c(0, 1), size=1, prob=c(eta, 1-eta))),
-#'                           )  %>%
-#'     dplyr::mutate(cat.var=as.factor(cat.var),
-#'                   cat.var2=as.factor(cat.var2),
-#'                   ) 
+#' data = tibble::data_frame(n = 300,
+#'                           x1   = rnorm(n,3,1),
+#'                           x2   = rexp(n),
+#'                           cat1 = sample(c(0,1), n, replace=TRUE),
+#'                           cat2 = sample(letters[1:4], n, replace=TRUE),
+#'                           y    = -10*x1*cat1 + 10*x2*(3*(cat2=='a')
+#'                                  -3*(cat2=='b') +1*(cat2=='c') -1*(cat2=='d')) + 
+#'                               rnorm(n,0,10), 
+#'                           y.bin = ifelse(y < mean(y), 0, 1),
+#'                           y.mul = 1+ifelse( - x1 - x2 + rnorm(n,sd=10) < 0, 0,
+#'                                     ifelse( - 2 * x2 + rnorm(n,sd=10) < 0, 1, 2)),
+#'                           ) %>%
+#'     dplyr::mutate(cat1 = as.factor(cat1), cat2=as.factor(cat2)) 
 #' 
-#' model = glm(y ~ x1+x2*cat.var2, data=data, family='binomial')
+#' model.g1 = lm(y ~ x1, data)
+#' model.g2 = lm(y ~ x1 + x2, data)
+#' model.g  = lm(y ~ x1*cat1 + x2*cat2, data)
+#' model.bin = glm(y.bin ~ x1+x2*cat2, data=data, family='binomial')
+#' model.mul <- nnet::multinom(y.mul ~ x1 + x2, data)
+#' 
+#' model.g %>% edar::gge_fit(., data, 'y', 'x1')
+#' model.g %>% edar::gge_fit(., data, 'y', 'x2')
+#' 
+#' model.g %>% edar::gge_fit(., data, 'y', 'x1', cat.values=list('cat1'="0"))
+#' model.g %>% edar::gge_fit(., data, 'y', 'x1', cat.values=list('cat1'="1"))
+#' model.g %>% edar::gge_fit(., data, 'y', 'x1', cat.values=list('cat1'=c("0","1")))
 #' 
 #' 
-#' model %>% edar::gge_fit(., data, 'y', 'x1')
-#' model %>% edar::gge_fit(., data, 'y', 'x1', facet1="cat.var2")
-#' model %>% edar::gge_fit(., data, 'y', 'x1', cat.var='cat.var', cat.val='d')
+#' model.g %>% edar::gge_fit(., data, 'y', 'x1', cat.values=list('cat2'="a"))
+#' model.g %>% edar::gge_fit(., data, 'y', 'x1', cat.values=list('cat2'="b"))
 #' 
-#' model %>% edar::gge_fit(., data, 'y', 'x2')
-#' model %>% edar::gge_fit(., data, 'y', 'x2', col.group='cat.var2')
-#' model %>% edar::gge_fit(., data, 'y', 'x2', facet1="cat.var2")
+#' model.g %>% edar::gge_fit(., data, 'y', 'x1', cat.values=list('cat1'="0"), colour.group='cat1')
+#' model.g %>% edar::gge_fit(., data, 'y', 'x1', cat.values=list('cat1'="1"), colour.group='cat1')
+#' model.g %>% edar::gge_fit(., data, 'y', 'x1',
+#'                           cat.values=list('cat1'=c("0","1")), colour.group='cat1')
+#' 
+#' model.bin %>% edar::gge_fit(., data, 'y.bin', 'x2', facets="cat2")
+#' model.bin %>% edar::gge_fit(., data, 'y.bin', 'x2', facets="cat2", facets.ncol=1)
+#' 
+#' model.bin %>% edar::gge_fit(., data, 'y.bin', 'x2', facets="cat2", colour.groups='cat1')
+#' model.bin %>% edar::gge_fit(., data, 'y.bin', 'x2', facets="cat2", colour.groups='cat2')
+#' 
+#' model.bin %>% edar::gge_fit(., data, 'y.bin', 'x2', facets=c("cat1", "cat2"))
+#' 
+#' 
 #' 
 #' ## note: gge_fit produces the same result as geom_smooth under the same model
 #' ## -----
-#' model = glm(y ~ x1, data=data, family='binomial')
+#' model = glm(y.bin ~ x1, data=data, family='binomial')
 #' 
-#' model %>% edar::gge_fit(., data, 'y', 'x1')
+#' model %>% edar::gge_fit(., data, 'y.bin', 'x1')
+#' 
 #' data %>%
-#'     ggplot2::ggplot(.,ggplot2::aes(x=x1, y=y) ) +
+#'     ggplot2::ggplot(.,ggplot2::aes(x=x1, y=y.bin) ) +
 #'     ggplot2::geom_point(size=2) +
-#'     ggplot2::geom_smooth(size=.5,  method="glm", method.args = list(family = "binomial"))
-#' 
-#' 
+#'     ggplot2::geom_smooth(size=.5,  method="glm", method.args = list(family = "binomial"))+
+#'     ggplot2::theme_bw()
+#'  
 #' @export
-
 ## }}}
-gge_fit <- function(model, data, y, x, n=200, show.points=T, title=NULL, cat.var=NULL, cat.value=NULL, col.group=NULL, facet1=NULL, facet1.ncol=NULL, facet2=NULL, facet2.ncol=NULL,  col.pch=NULL, subtitle=NULL, footnote=NULL, legend.position=NULL, legend.omit=F, title.position="left", grid=T, ylim=NULL, xlim=NULL, xlab=NULL, ylab=NULL, scales='fixed')
+gge_fit <- function(model, data, y, x, n=200, show.points=T,  cat.values=NULL, colour.groups=NULL, facets=NULL, facets.ncol=NULL, col.pch=NULL, subtitle=NULL, footnote=NULL, legend.position='top', legend.title=NULL, legend.omit=F, title=NULL, title.position="left", ylim=NULL, xlim=NULL, xlab=NULL, ylab=NULL, scales='fixed', facet.title.position = "left")
 {
     warnings("FALSE")
     on.exit(warnings("TRUE"))
@@ -183,21 +191,37 @@ gge_fit <- function(model, data, y, x, n=200, show.points=T, title=NULL, cat.var
     if(title.position=="center") title.position = .5
     if(title.position=="right")  title.position = 1
 
+    if (facet.title.position == 'right' ) facet.title.position =  1
+    if (facet.title.position == 'center') facet.title.position = .5
+    if (facet.title.position == 'left'  ) facet.title.position =  0
+
     ## get the new data
     ## ----------------
-    newdata = edar_get_new_data(data=data, n=n, x=x, group1.label=cat.var, group1.value=cat.value) 
-
-    if(!is.null(facet1))
-    {
-        labels=names(table(data[,facet1]))
-        for (label in labels)
-        {
-            newdata_tmp = edar_get_new_data(data=data, n=n, x=x, group1.label=facet1, group1.value=label)
-            newdata=newdata %>% dplyr::bind_rows(newdata_tmp) 
+    newdata = edar_get_new_data(data=data, n=n, x=x, cat.values = cat.values)
+    if(!is.null(facets)){
+        if (length(facets)>1) {
+            list.cat.values = data %>%
+                dplyr::select(facets)  %>%
+                dplyr::summarise_all( function(x) list(unique(as.character(x))) )  %>%
+                base::apply(., 2, function(x) x  %>% unlist)
+        }else{
+            list.cat.values = data %>%
+                dplyr::select(facets)  %>%
+                dplyr::summarise_all( function(x) list(unique(as.character(x))) )  %>%
+                dplyr::pull(.) %>%
+                list %>%
+                .[[1]] %>%
+                stats::setNames(., facets)
         }
+        newdata = newdata %>%
+            dplyr::mutate_if(is.factor, as.character) %>%
+            dplyr::bind_rows(., edar_get_new_data(data=data, n=n, x=x, cat.values = list.cat.values ) )
     }
 
-    if (any(class(model) %in% 'data.frame')) {
+
+    ## get predicted values
+    ## --------------------
+    if (any(class(model)[1] %in% c('data.frame',"tbl_df","tbl" ))) {
         pred = edar_get_fitted(newdata, model)
     }else{
         pred  = broom::augment(model, newdata = newdata, type.predict='response')#, type.predict='response' for glm
@@ -205,49 +229,54 @@ gge_fit <- function(model, data, y, x, n=200, show.points=T, title=NULL, cat.var
         pred$yub = pred$.fitted+1.96*pred$.se.fit
     }
     
+    ## create colour groups in the data frame
+    ## --------------------------------------
+    if (!is.null(colour.groups)) {
+        col.group=paste0(colour.groups, collapse=' - ') 
+        data %>%
+            tidyr::unite(col.group, colour.groups, sep=' - ', remove=FALSE)
+    }else{
+        col.group=NULL
+    }
+
+    ## create variable to groups the data given categorical variables set by the user
+    ## ------------------------------------------------------------------------------
+    if (!is.null(cat.values)) {
+        cat.group = names(cat.values)
+        data %>%
+            tidyr::unite(col.group, cat.group, sep=' - ', remove=FALSE)
+    }else{
+        cat.group=NULL
+    }
     
     ## main plot
     ## ---------
     g = ggplot2::ggplot(data)+
-        ggplot2::theme_classic() 
+        ggplot2::geom_line(data=pred, ggplot2::aes_string(x= x, ".fitted", group=cat.group, colour=col.group)) +
+        ggplot2::geom_ribbon(data=pred, ggplot2::aes_string(x = x, ymin="ylb", ymax="yub", group=cat.group, fill=cat.group), alpha=0.4) +
+        ggplot2::theme_bw() 
 
-    ## ylim and xlim
+    ## show points
+    ## -----------
+    if(show.points) 
+        g = g + ggplot2::geom_point(data=data,ggplot2::aes_string(x= x, y= y), colour=col.pch, size=2) 
+    ## colour groups
     ## -------------
-    if(!is.null(xlim)) g = g + ggplot2::xlim(xlim)
-    if(!is.null(ylim)) g = g + ggplot2::ylim(ylim)
+    if(!is.null(col.group) & show.points)
+        g = g + ggplot2::geom_point(data=data,ggplot2::aes_string(x= x, y= y, colour=col.group)) +
+            viridis::scale_color_viridis(option="viridis", discrete=TRUE, alpha=1) 
 
-    ## add grid
-    ## --------
-    if(grid) g = g + ggplot2::theme(panel.grid.major=ggplot2::element_line(linetype='dotted', color='grey80'))
-                                    #panel.grid.minor=ggplot2::element_line(linetype='dotted', color='grey80'))
-    
-    if(show.points) g = g + ggplot2::geom_point(data=data,ggplot2::aes_string(x= x, y= y), colour=col.pch, size=2) 
-    
-    if(!is.null(col.group) & show.points) g = g + ggplot2::geom_point(data=data,ggplot2::aes_string(x= x, y= y, colour=col.group)) +
-                                              viridis::scale_color_viridis(option="viridis", discrete=TRUE, alpha=1) 
-    if(!is.null(facet1) & is.null(facet2)) g = g + ggplot2::facet_wrap(stats::as.formula(paste("~", facet1)), scales=scales) 
-    if(!is.null(facet1.ncol))              g = g + ggplot2::facet_wrap(stats::as.formula(paste("~", facet1)), scales=scales, ncol=facet1.ncol) 
-    if(is.null(facet1) & !is.null(facet2)) g = g + ggplot2::facet_wrap( ~ facet2,  scales=scales) 
-    if(!is.null(facet1) & !is.null(facet2)) g = g + ggplot2::facet_grid(stats::as.formula(paste(facet1, "~", facet2)),  scales=scales) + ggplot2::theme_bw()
-    if(!is.null(facet1) | !is.null(facet2)) g = g + ggplot2::theme(strip.background = ggplot2::element_rect(colour="white", fill="white"),
-                                                                   strip.text.x = ggplot2::element_text(size=12, face='bold'),
-                                                                   strip.text.y = ggplot2::element_text(size=12, face="bold")) 
+    ## facets
+    ## ------
+    if(!is.null(facets)) g = g + ggplot2::facet_wrap(stats::as.formula(paste("~", paste0(facets, collapse="+") )), scales=scales, ncol=facets.ncol) 
 
-    if (!is.null(cat.value) & length(cat.value)>1) {
-        g = g +  ggplot2::geom_line(data=pred, ggplot2::aes_string(x= x, ".fitted", group=cat.var, colour=cat.var)) +
-            ggplot2::geom_ribbon(data=pred, ggplot2::aes_string(x = x, ymin="ylb", ymax="yub", group=cat.var, fill=cat.var), alpha=0.4) +
-            viridis::scale_fill_viridis(option="viridis", discrete=TRUE, alpha=1) 
-            
-    }else{
-        g = g +  ggplot2::geom_line(data=pred, ggplot2::aes_string(x= x, ".fitted"), colour='grey60') +
-            ggplot2::geom_ribbon(data=pred, ggplot2::aes_string(x = x, ymin="ylb", ymax="yub"), alpha=0.2) 
-    }
+
     
     if(!is.null(title)) g = g +  ggplot2::labs(title = title) + ggplot2::theme(plot.title = ggplot2::element_text(hjust = title.position))
     if(!is.null(subtitle)) g  =g +  ggplot2::labs(subtitle = subtitle)
     if(!is.null(footnote)) g  =g +  ggplot2::labs(caption = footnote)
     if(!is.null(legend.position)) g = g + ggplot2::theme(legend.position = legend.position) 
-    if(legend.omit) g = g + ggplot2::theme(legend.position = 'none') 
+
 
     ## xlab and ylab
     ## -------------
@@ -257,35 +286,105 @@ gge_fit <- function(model, data, y, x, n=200, show.points=T, title=NULL, cat.var
     if(!is.null(xlim)) g = g + ggplot2::xlim(xlim)
     if(!is.null(ylim)) g = g + ggplot2::ylim(ylim)
 
+    if (!is.null(legend.title)) g = g + ggplot2::guides(colour=ggplot2::guide_legend(legend.title)) 
+
+    ## legend
+    ## ------
+    if (any(sapply(cat.values, length)>1)) {
+            g = g + viridis::scale_fill_viridis(option="viridis", discrete=TRUE, alpha=1) 
+    }else{
+        g = g + ggplot2::scale_fill_manual(values = rep(col.pch, length(cat.values)), guide=FALSE)
+    }
+    
+    if(legend.omit) g = g + ggplot2::theme(legend.position = 'none') 
+    g = g + ggplot2::theme(strip.background = ggplot2::element_rect(colour="white", fill="white"),
+                           strip.text.x = ggplot2::element_text(size=12, face='bold', hjust=facet.title.position),
+                           strip.text.y = ggplot2::element_text(size=12, face="bold")) 
+        
+    
     return(g)
 
     
 }
 
+
 ## }}}
 ## {{{ Plot Coefficients }}}
 
 ## {{{ docs }}}
+
 #' Dotwhisker plot
 #'
 #' This is a wrap function for the function \code{dwplot} from the package \code{dotwhisker}
 #'
-#' @param model a tidy data.frame with the model summary. It must contain the columns term (the name of the covariates), estimate (the point estimate), and either std.error or conf.low or conf.high. If there are more than one model in the data.frame, it must contain a column with labels identifying each model.
-#' @param var.order A vector of variable names that specifies the order in which the variables are to appear along the y-axis of the plot. 
+#' @param model either an object from \code{lm}, \code{glm}, or a \code{nnet::multinom} or a tidy data.frame with the model summary. If the data frame is provided, it must contain a column named term (the name of the covariates), estimate (the point estimate), and either std.error (standard errors of the estimates) or conf.low or conf.high (low and high intervals of the point estimate). If there are more than one model in the data.frame, it must contain a column with labels identifying each model.
+#' @param var.order A vector of variable names that specifies the order in which the variables are to appear along the y-axis of the plot. If a data.frame is provided, the order of the y-axis will follow the order of the rows in the data.frame
 #' @param model.id a string with the name of the column that contain the id of each model
-#' @inheritParams gge_fit 
+#' @inheritParams gge_fit
+#' @inheritParams tidye
+#'
+#' @details Robust standard errors are computed when \code{hc=T} only when the parameter \code{model} is an object from \code{lm}, \code{glm}. 
+#'
+#' @examples
+#' library(magrittr)
+#' set.seed(77)
+#' 
+#' data = tibble::data_frame(n = 300,
+#'                           x1   = rnorm(n,3,1),
+#'                           x2   = rexp(n),
+#'                           cat1 = sample(c(0,1), n, replace=TRUE),
+#'                           cat2 = sample(letters[1:4], n, replace=TRUE),
+#'                           y    = -10*x1*cat1 + 10*x2*(3*(cat2=='a')
+#'                                  -3*(cat2=='b') +1*(cat2=='c') -1*(cat2=='d')) + 
+#'                               rnorm(n,0,10), 
+#'                           y.bin = ifelse(y < mean(y), 0, 1),
+#'                           y.mul = 1+ifelse( - x1 - x2 + rnorm(n,sd=10) < 0, 0,
+#'                                     ifelse( - 2*x2 + rnorm(n,sd=10) < 0, 1, 2)),
+#'                           )
+#' 
+#' model.g1 = lm(y ~ x1, data)
+#' model.g2 = lm(y ~ x1 + x2, data)
+#' model.g  = lm(y ~ x1*cat1 + x2*cat2, data)
+#' model.bin = glm(y.bin ~ x1+x2*cat2, data=data, family='binomial')
+#' model.mul <- nnet::multinom(y.mul ~ x1 + x2, data)
+#' 
+#' 
+#' gge_coef(model.g)
+#' gge_coef(model.g, hc=TRUE)
+#' gge_coef(tidye(model.g) %>% dplyr::arrange(estimate), hc=TRUE)
+#' 
+#' gge_coef(model.bin)
+#' gge_coef(model.bin, hc=TRUE)
+#' gge_coef(tidye(model.g))
+#' 
+#' ## many models at once
+#' models=tidye(list('Standard Model'=model.bin)) %>%
+#'     dplyr::bind_rows(tidye(list('Robust std. error'=model.bin), hc=TRUE) )
+#' gge_coef(models)
+#' gge_coef(models, model.id='model')
+#' 
+#' ## list of models
+#' gge_coef(list(model.g, model.g1, model.g2), model.id='model')
+#' gge_coef(list('Complete model'=model.g, "One Covar"=model.g1,
+#'               "Two covars"=model.g2), model.id='model' )
+#' 
+#' ## pipe can be used
+#' ## modelg %>% gge_coef
 #' 
 #' @export
+
 ## }}}
-gge_coef <- function(model, xlab="Coefficient Estimate", ylab="", var.order=NULL, model.id=NULL, title=NULL, subtitle=NULL, footnote=NULL, legend.position=NULL,title.position="left")
+gge_coef <- function(model, xlab="Coefficient Estimate", ylab="", var.order=NULL, model.id=NULL, title=NULL, subtitle=NULL, footnote=NULL, legend.position='top', legend.title='', title.position="left", hc=FALSE, hc.type=c("hc3", "hc0", "hc1", "hc2", "hc4"))
 {
+
+    if(! class(model)[1] %in% c('data.frame', "tbl_df", "tbl")) model = tidye(model, hc=hc, hc.type=hc.type)
     if (is.null(model.id)) {
         g = model  %>% 
             dotwhisker::dwplot(., order_vars = var.order)+
             ggplot2::geom_vline(xintercept = 0, colour = "grey60", linetype = 2) +
             ggplot2::xlab(xlab) + 
             ggplot2::ylab(ylab) +
-            ggplot2::theme_bw()+
+            ggplot2::theme_bw() +
             ggplot2::theme(legend.position = "none") 
     }else{
         g = model  %>% 
@@ -298,7 +397,8 @@ gge_coef <- function(model, xlab="Coefficient Estimate", ylab="", var.order=NULL
     }
     if (!is.null(title))    g = g + ggplot2::ggtitle(title)
     if (!is.null(subtitle)) g = g + ggplot2::ggtitle(label=title, subtitle=subtitle)
-    if(!is.null(footnote))  g = g + ggplot2::labs(caption = footnote)
+    if (!is.null(footnote))  g = g + ggplot2::labs(caption = footnote)
+    if (!is.null(legend.title)) g = g + ggplot2::guides(colour=ggplot2::guide_legend(legend.title)) 
     return(g)
 
 }
@@ -316,13 +416,60 @@ gge_coef <- function(model, xlab="Coefficient Estimate", ylab="", var.order=NULL
 #'
 #' @param model a \code{lm} of \code{glm} model
 #' @param digits integer, the number of significant digitis to use
-#' @param hc boolean, if \code{TRUE}  robust standard errors (homoskedasticity corrected) are returned
-#' @param hc.type a string with the method to compute the standard errors (see \code{\link[car]{hccm}}) 
+#' @param hc boolean, if \code{TRUE}  robust standard errors (heteroskedasticity corrected) are returned
+#' @param hc.type a string with the method to compute the standard errors (see \code{\link[car]{hccm}})
+#' @param tibble boolean, if \code{TRUE}, it returns a tibble data.frame. Default \code{TRUE}
+#' @param keep.nohc boolean, if \code{TRUE} and \code{hc=TRUE} the std.errors originally estimated will be kept and returned alongside the robust estimates. The original estimates will have the suffix .nohc (no heteroskedasticity corrected)
 #'
+#' @examples
+#'
+#' set.seed(77)
+#' 
+#' data = tibble::data_frame(n = 300,
+#'                           x1   = rnorm(n,3,1),
+#'                           x2   = rexp(n),
+#'                           cat1 = sample(c(0,1), n, replace=TRUE),
+#'                           cat2 = sample(letters[1:4], n, replace=TRUE),
+#'                           y    = -10*x1*cat1 + 10*x2*(3*(cat2=='a')
+#'                                  -3*(cat2=='b') +1*(cat2=='c') -1*(cat2=='d')) + 
+#'                               rnorm(n,0,10), 
+#'                           y.bin = ifelse(y < mean(y), 0, 1),
+#'                           y.mul = 1+ifelse( - x1 - x2 + rnorm(n,sd=10) < 0, 0,
+#'                                     ifelse( - 2*x2 + rnorm(n,sd=10) < 0, 1, 2)),
+#'                           )
+#' 
+#' model.g1 = lm(y ~ x1, data)
+#' model.g2 = lm(y ~ x1 + x2, data)
+#' model.g  = lm(y ~ x1*cat1 + x2*cat2, data)
+#' model.bin = glm(y.bin ~ x1+x2*cat2, data=data, family='binomial')
+#' model.mul <- nnet::multinom(y.mul ~ x1 + x2, data)
+#' 
+#' ## digits and output format
+#' tidye(model.g)
+#' tidye(model.g, digits=12)
+#' tidye(model.g, tibble=FALSE)
+#' tidye(model.g, digits=12, tibble=FALSE)
+#' 
+#' ## other model types
+#' tidye(model.bin)
+#' tidye(model.mul)
+#' 
+#' ## with robust std.errors
+#' tidye(model.g, hc=TRUE)
+#' tidye(model.g, hc=TRUE, keep.nohc=TRUE) # keep no heterocedastic corrected std.errors
+#' tidye(model.bin, hc=TRUE)
+#' 
+#' ## list of models
+#' tidye(list(model.g), hc=TRUE)
+#' tidye(list(model.g, model.bin, model.mul))
+#' tidye(list(Gaussian=model.g, Binomial=model.bin, Multinomial=model.mul))
+#' tidye(list(model.g, model.g1, model.g2), hc=TRUE)
+#' tidye(list('Only model'=model.g))
+#' 
 #' @export
 
 ## }}}
-tidye  <- function(model, digits=4, hc=FALSE, hc.type=c("hc3", "hc0", "hc1", "hc2", "hc4"))
+tidye  <- function(model, digits=4, hc=FALSE, hc.type=c("hc3", "hc0", "hc1", "hc2", "hc4"), tibble=TRUE, keep.nohc=FALSE)
 {
     options(warn=-1)
     on.exit(options(warn=0))
@@ -332,10 +479,10 @@ tidye  <- function(model, digits=4, hc=FALSE, hc.type=c("hc3", "hc0", "hc1", "hc
     tab = tibble::data_frame(estimation = model, 
                              model      = names(model),
                              family     = purrr::map_chr(estimation, ~ paste0(class(.x), collapse='-') ),
-                             tidye_func = dplyr::case_when(family == "glm-lm"        & !hc ~ list(tidye_glm),
-                                                           family == "glm-lm"        &  hc ~ list(tidyehc_glm),
-                                                           family == "multinom-nnet" & !hc ~ list(tidye_multin),
-                                                           family == "multinom-nnet" &  hc ~ list(tidyehc_multin),
+                             tidye_func = dplyr::case_when(family %in% c("glm-lm", "lm")  & !hc ~ list(tidye_glm),
+                                                           family %in% c("glm-lm", "lm")  &  hc ~ list(tidyehc_glm),
+                                                           family == "multinom-nnet"      & !hc ~ list(tidye_multin),
+                                                           family == "multinom-nnet"      &  hc ~ list(tidyehc_multin),
                                                            )) %>%
         dplyr::mutate(summary = purrr::pmap(list(est=estimation, f=tidye_func, model.label=model), function(est, f, model.label) f(model=est, digits=digits, hc=hc, hc.type=hc.type) %>% dplyr::mutate(model=model.label)  ))  %>%
         dplyr::select(summary)  %>% 
@@ -344,7 +491,14 @@ tidye  <- function(model, digits=4, hc=FALSE, hc.type=c("hc3", "hc0", "hc1", "hc
         dplyr::select(dplyr::contains("multin"), model, dplyr::everything())
 
     if(!list.provided) tab = tab %>% dplyr::select(-model) 
-    tab = tab %>% tibble::as_data_frame(.) 
+    if (tibble) {
+        tab = tab %>% tibble::as_data_frame(.)  %>% dplyr::mutate_if(is.numeric, round, digits=digits)
+    }else{
+        tab = tab %>% as.data.frame(.) %>% dplyr::mutate_if(is.numeric, round, digits=digits)
+    }
+    if (!keep.nohc) {
+        tab = tab  %>% dplyr::select(-dplyr::contains(".nohc")) 
+    }
     return(tab)
 }
 
@@ -378,7 +532,7 @@ tidyehc_glm <- function(model, digits=4, hc=FALSE, hc.type=c("hc3", "hc0", "hc1"
     sumry = sumry %>% 
         dplyr::mutate(conf.low  = estimate - 1.96*std.error,
                       conf.high = estimate + 1.96*std.error,)  %>%
-        dplyr::full_join(., broom::tidy(model, conf.int=T) , by=c("estimate", "term"), suffix=c("", ".nonhc"))  %>%
+        dplyr::full_join(., broom::tidy(model, conf.int=T) , by=c("estimate", "term"), suffix=c("", ".nohc"))  %>%
         dplyr::mutate_if(is.numeric, round, digits=digits)  %>%
         dplyr::select(term, estimate, std.error, conf.low, conf.high, statistic, p.value, dplyr::everything()) 
 
@@ -420,7 +574,7 @@ tidye_multin <- function(model, digits=4, hc=FALSE, hc.type=c("hc3", "hc0", "hc1
 }
 tidyehc_multin <- function(model, digits=4, hc=FALSE, hc.type=c("hc3", "hc0", "hc1", "hc2", "hc4") )
 {
-    stop("\n\nFunction is not implemented to handle models from class multinom from package nnet\n\n")
+    stop("\n\nOption is not implemented to handle models from class \'multinom\' from package \'nnet\'\n\n")
 }
 ## }}}
 ## {{{ Diagnostics (lm) }}}
@@ -470,6 +624,16 @@ find_outlier <- function(model, alpha=0.05)
         return(results)
     }
 }
+find_collinearity <- function(model)
+{
+    ## VIF > 2?
+    VIF <- cbind(VIF=faraway::vif(model), sqrt_VIF_BiggerThan2 = sqrt(faraway::vif(model)) > 2)
+    X <- as.matrix(stats::model.matrix(model))
+    XtX <- t(X) %*% X
+    lambda <- eigen(XtX)$values
+    Eigen <- cbind(kappa=sqrt(lambda/min(lambda)),Eigen=eigen(XtX)$values)
+    return(list(VIF=VIF, Eigen=Eigen))
+}
 plot_residualsDiagnostic <- function(model)
 {
     par.default <- graphics::par(no.readonly = TRUE)
@@ -506,16 +670,6 @@ plot_partialResidual <- function(model)
     stats::termplot(model, partial.resid=T, terms=NULL, ylab=paste('e + ',coef,'*b'), main='Partial Residual Plot',
              se=T, ask=F)
 }
-find_collinearity <- function(model)
-{
-    ## VIF > 2?
-    VIF <- cbind(VIF=faraway::vif(model), car::vif(model)[,2:3], sqrt_VIF_BiggerThan2 = sqrt(faraway::vif(model)) > 2)
-    X <- as.matrix(stats::model.matrix(model))
-    XtX <- t(X) %*% X
-    lambda <- eigen(XtX)$values
-    Eigen <- cbind(kappa=sqrt(lambda/min(lambda)),Eigen=eigen(XtX)$values)
-    return(list(VIF=VIF, Eigen=Eigen))
-}
 ## {{{ docs }}}
 
 #' Generate diagnostics for lm models
@@ -541,6 +695,3 @@ plot_diagnostic <- function(model)
 }
 
 ## }}}
-
-
-

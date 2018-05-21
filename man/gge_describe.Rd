@@ -6,7 +6,7 @@
 \usage{
 gge_describe(df, group = NULL, weight = NULL, mean = TRUE,
   median = FALSE, conf.int = TRUE, quantile = FALSE, n.plots = 16,
-  common.legend = TRUE, hist = FALSE)
+  common.legend = TRUE, hist = FALSE, legend.position = "top")
 }
 \arguments{
 \item{df}{a data frame}
@@ -28,6 +28,8 @@ gge_describe(df, group = NULL, weight = NULL, mean = TRUE,
 \item{common.legend}{boolean, if \code{TRUE} the plots uses a single legend}
 
 \item{hist}{boolean, if \code{TRUE}, histograms are displayed instead of densities for the numerical variables}
+
+\item{legend.position}{a string (\code{top}, \code{bottom}, \code{left} (Default)), \code{right}}
 }
 \description{
 This function generate plots with all the variables in the data frame individually

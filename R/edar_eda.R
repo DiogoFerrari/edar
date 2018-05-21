@@ -32,7 +32,7 @@ summarise_alln <- function(df, group=NULL, weight=NULL, spread=F)
     on.exit(options(warn=0))
     
     flag=FALSE
-    ifelse(is.null(weight), df$weight<-1, df$weight <- df %>% dplyr::select_(weight) %>% dplyr::pull) 
+    ifelse(is.null(weight), df$weight<-1, df$weight <- df %>% dplyr::select_(weight) %>% dplyr::pull(.)) 
     if (is.null(group)) {
         flag=TRUE
         df$grouping_null__ = 1
@@ -732,11 +732,12 @@ edar_bundle_cat <- function(data, vars=NULL, print.summary=NULL, weight=NULL, di
 #' @param n.plots integer, the number of plots to display in the grid
 #' @param common.legend boolean, if \code{TRUE} the plots uses a single legend
 #' @param hist boolean, if \code{TRUE}, histograms are displayed instead of densities for the numerical variables
+#' @param legend.position a string (\code{top}, \code{bottom}, \code{left} (Default)), \code{right} 
 #'
 #' @export
 
 ## }}}
-gge_describe <- function(df, group=NULL, weight=NULL, mean=TRUE, median=FALSE, conf.int=TRUE, quantile=FALSE, n.plots=16, common.legend=TRUE, hist=FALSE)
+gge_describe <- function(df, group=NULL, weight=NULL, mean=TRUE, median=FALSE, conf.int=TRUE, quantile=FALSE, n.plots=16, common.legend=TRUE, hist=FALSE, legend.position='top')
 {
     if (length(group)>1) {
         stop("\n\nCurrently, this function supports only 1 group")
@@ -756,7 +757,8 @@ gge_describe <- function(df, group=NULL, weight=NULL, mean=TRUE, median=FALSE, c
     {
         var = vars[i]
         if (!var %in% c(group, weight)) {
-            if (is.numeric(df[,var] %>% dplyr::pull(.))) {
+            numeric = df[,var] %>% dplyr::pull(.)  %>% is.numeric
+            if (numeric) {
                 if (hist) {
                     g[[j]] = gge_histogram(df[,c(var, group, weight)], group, weight)
                     idx.num = c(idx.num, j)
@@ -765,7 +767,7 @@ gge_describe <- function(df, group=NULL, weight=NULL, mean=TRUE, median=FALSE, c
                     idx.num = c(idx.num, j)
                 }
             }else{
-                g[[j]] = gge_barplot_one(df[,c(var, group)], var, group)
+                g[[j]] = gge_barplot_one(df[,c(var, group)], variable=var, group=group)
                 idx.cat = c(idx.cat, j)
             }
         }
@@ -817,7 +819,7 @@ gge_fdensity <- function(df, value, group, facet, scale='fixed')
         stop("\n\nCurrently, this function supports only 1 group")
     }
     ## Debug/Monitoring message --------------------------
-    msg <- paste0('\n','Generating the plots ...',  '\n'); cat(msg)
+    ## msg <- paste0('\n','Generating the plots ...',  '\n'); cat(msg)
     ## ---------------------------------------------------
     options(warn=-1)
     on.exit(options(warn=0))
@@ -842,7 +844,9 @@ gge_fdensity <- function(df, value, group, facet, scale='fixed')
         viridis::scale_fill_viridis(option="A", discrete=TRUE, alpha=1, name="", begin=.066, end=.77) +
         viridis::scale_colour_viridis(option="A", discrete=TRUE, alpha=1, name="", begin=.066, end=.77) +
         ggplot2::geom_text(data=tab %>% dplyr::select(facet, KS.text)  %>% dplyr::filter(!duplicated(.)), ggplot2::aes(x=-Inf, y=Inf, label=KS.text), vjust=2, hjust=-.5)
-    g = g + ggplot2::theme(strip.background = ggplot2::element_rect(colour="white", fill="white"),
+    g = g +
+        ggplot2::theme_bw() +
+        ggplot2::theme(strip.background = ggplot2::element_rect(colour="white", fill="white"),
                            strip.text.x = ggplot2::element_text(size=12, face='bold'),
                            strip.text.y = ggplot2::element_text(size=12, face="bold")) 
     g = g + ggplot2::theme(legend.position = "top") 
@@ -864,7 +868,7 @@ gge_density <- function(df, group=NULL, weight=NULL, mean=TRUE, median=FALSE, co
         stop("\n\nCurrently, this function supports only 1 group")
     }
     ## Debug/Monitoring message --------------------------
-    msg <- paste0('\n','Generating the plots ...',  '\n'); cat(msg)
+    ## msg <- paste0('\n','Generating the plots ...',  '\n'); cat(msg)
     ## ---------------------------------------------------
     options(warn=-1)
     on.exit(options(warn=0))
@@ -970,19 +974,19 @@ gge_density <- function(df, group=NULL, weight=NULL, mean=TRUE, median=FALSE, co
 #' @export
 
 ## }}}
-gge_histogram <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.int=T, quantile=F)
+gge_histogram <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.int=T, quantile=F, legend.position='top')
 {
     if (length(group)>1) {
         stop("\n\nCurrently, this function supports only 1 group")
     }
     ## Debug/Monitoring message --------------------------
-    msg <- paste0('\n','Generating the plots ...',  '\n'); cat(msg)
+    ## msg <- paste0('\n','Generating the plots ...',  '\n'); cat(msg)
     ## ---------------------------------------------------
     options(warn=-1)
     on.exit(options(warn=0))
     
     flag=FALSE
-    ifelse(is.null(weight), df$weight<-1, df$weight <- df %>% dplyr::select_(weight) %>% dplyr::pull) 
+    ifelse(is.null(weight), df$weight<-1, df$weight <- df %>% dplyr::select_(weight) %>% dplyr::pull(.)) 
     if (is.null(group)) {
         flag=TRUE
         df$grouping_null__ = 1
@@ -1013,17 +1017,18 @@ gge_histogram <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.in
     if(!is.null(group)){
         g = tab %>% 
             ggplot2::ggplot(.) + 
-            ggplot2::geom_histogram(ggplot2::aes_string(x="value",  fill=group), adjust=1, alpha=.5) +
+            ggplot2::geom_histogram(ggplot2::aes_string(x="value",  fill=group), alpha=.5) +
             ggplot2::facet_wrap( ~ var , scales='free',labeller=ggplot2::label_parsed)  +
             ggplot2::scale_x_continuous(expand = c(0, 0)) +
             ggplot2::scale_y_continuous(expand = c(0, 0)) +
             viridis::scale_fill_viridis(option="A", discrete=TRUE, alpha=1, name="", begin=.066, end=.77) +
             viridis::scale_colour_viridis(option="A", discrete=TRUE, alpha=1, name="", begin=.066, end=.77) +
-            ggplot2::guides(linetype=ggplot2::guide_legend("")) 
+            ggplot2::guides(linetype=ggplot2::guide_legend("")) +
+            ggplot2::theme(legend.position = legend.position) 
     }else{
         g = tab %>% 
             ggplot2::ggplot(.) + 
-            ggplot2::geom_histogram(ggplot2::aes(value), adjust=1, alpha=.5) +
+            ggplot2::geom_histogram(ggplot2::aes(value), alpha=.5) +
             ggplot2::facet_wrap( ~ var , scales='free',labeller=ggplot2::label_parsed)  +
             ggplot2::scale_x_continuous(expand = c(0, 0)) +
             ggplot2::scale_y_continuous(expand = c(0, 0)) +
@@ -1045,6 +1050,7 @@ gge_histogram <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.in
             ggplot2::geom_vline(ggplot2::aes_string(xintercept="q.75", col=group, linetype="q75")) 
 
     g = g + ggplot2::theme(legend.position = "top") +
+        ggplot2::theme_bw() +
         ggplot2::theme(strip.background = ggplot2::element_rect(colour="white", fill="white"),
               strip.text.x = ggplot2::element_text(size=12, face='bold'),
               strip.text.y = ggplot2::element_text(size=12, face="bold")) 
@@ -1054,12 +1060,14 @@ gge_histogram <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.in
     return(g)
 }
 ## {{{ docs }}}
+
 #' Plot categorical Variables using barplot
 #'
 #'
 #' @inheritParams gge_describe
 #'
 #' @export
+
 ## }}}
 gge_barplot <- function(df, group=NULL)
 {
@@ -1067,7 +1075,7 @@ gge_barplot <- function(df, group=NULL)
         stop("\n\nCurrently, this function supports only 1 group")
     }
     ## Debug/Monitoring message --------------------------
-    msg <- paste0('\n','Generating the plots ...',  '\n'); cat(msg)
+    ## msg <- paste0('\n','Generating the plots ...',  '\n'); cat(msg)
     ## ---------------------------------------------------
     vars = names(df) 
     g = list()
@@ -1075,7 +1083,7 @@ gge_barplot <- function(df, group=NULL)
     for (i in 1:length(vars))
     {
         var = vars[i]
-        if (!is.numeric(df[,var] %>% dplyr::pull)) {
+        if (!is.numeric(df[,var] %>% dplyr::pull(.))) {
             if (!is.null(group)) {
                 if (var != group) {
                     g[[j]] = gge_barplot_one(df, var, group) 
@@ -1130,7 +1138,7 @@ plot_edescribe <- function(data, qline=T, quantiles=c(.025,.975))
     if (nrow(dfn)>0){
         X <- dfn
         for (i in 1:ncol(X)){
-            x <- X[,i] %>% dplyr::pull
+            x <- X[,i] %>% dplyr::pull(.)
             x = x[!is.na(x)]
             edar_plotdensity(x,main=names(dfn)[i], qline)
             q <- stats::quantile(x,probs=quantiles)
@@ -1141,7 +1149,7 @@ plot_edescribe <- function(data, qline=T, quantiles=c(.025,.975))
     }
     if (ncol(dfc)>0 ){
         for (i in 1:ncol(dfc)){
-            x <- dfc[,i] %>% dplyr::pull
+            x <- dfc[,i] %>% dplyr::pull(.)
             edar_barPlot(as.factor(x), title=names(dfc)[i])
         }
     }
@@ -1160,11 +1168,11 @@ gge_barplot_one <- function(df, variable, group=NULL)
         g =  df %>% 
             dplyr::select(cat, group) %>%
             dplyr::rename(cat = !!cat, group=!!group) %>% 
-            dplyr::mutate(group=factor(group))  %>% 
+            dplyr::mutate(group=factor(group))  %>%
             dplyr::group_by(cat, group) %>%
-            dplyr::mutate(ylabel = paste0(unique(cat), "\n(",group,"; N=",dplyr::n(),")") )  %>% 
+            dplyr::mutate(ylabel = paste0(unique(cat), "\n(",group,"; N=",n(),")") )  %>%
             dplyr::group_by(ylabel, group) %>% 
-            dplyr::summarise(n=dplyr::n())  %>% 
+            dplyr::summarise(n=n())  %>% 
             dplyr::ungroup(.) %>%
             dplyr::group_by(group) %>% 
             dplyr::mutate("Percentage"=round(100*n/sum(n),2))  %>%
@@ -1195,6 +1203,7 @@ gge_barplot_one <- function(df, variable, group=NULL)
             ggplot2::xlab("")+
             ggplot2::ggtitle(cat)
     }
+    g = g + ggplot2::theme_bw()
     return(g)
 }
 edar_plotdensity  <- function(x, ub=stats::quantile(x,.975), lb=stats::quantile(x,.025), shaded.area=F, shaded.area.col='grey90', lty=1, bty='n', add=F, grid=T, main="")
@@ -1248,6 +1257,7 @@ edar_barPlot       <- function(y, title='', show.group.name=T, show.group.count=
 }
 
 ## }}}
+
 ## {{{ Bivariate    Analysis (plots) }}}
 
 ## continuous variables
@@ -1320,12 +1330,14 @@ plot_heathist <- function( x='', y='', title='', subtitle='', xlab='x', ylab='y'
     graphics::par(oldpar)
 }
 ## {{{ docs }}}
+
 #' Contour plot
 #'
 #' @param df a data frame
 #' @param x string with the name of the variable to plot in the x-axis
 #' @param y string with the name of the variable to plot in the y-axis
-#' @param points boolean, if \code{TRUE} displays the points 
+#' @param points boolean, if \code{TRUE} displays the points
+#' @param contour.breaks integer, number of breaks to use in the contour plot
 #' @param palette a string with the name of a color brewer continuous palette
 #' @param hist.fill a string with the colour to fill the histogram bars
 #' @param hist.col a string with the color of the border of the histogram bars
@@ -1333,14 +1345,17 @@ plot_heathist <- function( x='', y='', title='', subtitle='', xlab='x', ylab='y'
 #' @param xlim two dimensional numeric vectors with the limits of the x-axis 
 #' @param xlab a string to be displayed in the x-axis
 #' @param ylab a string to be displayed in the y-axis
+#' @param direction either 1 or -1 indicating the direction of the color sequence.
 #'
 #' @export
+
 ## }}}
-gge_contour <- function(df, x, y, points=FALSE, group=NULL, palette='Blues', hist.fill="lightsteelblue2", hist.col='white', xlim=NULL, xlab=NULL, ylab=NULL)
+gge_contour <- function(df, x, y, points=FALSE, group=NULL, palette='Blues', hist.fill="lightsteelblue2", hist.col='white', xlim=NULL, xlab=NULL, ylab=NULL, contour.breaks=200, direction=1)
 {
-    if (is.null(group))  g= gge_contour_g0(df, x, y, points, group, palette, hist.fill, hist.col, xlim, xlab, ylab) 
-    if (!is.null(group)) g= gge_contour_g1(df, x, y, points, group, palette, hist.fill, hist.col, xlim, xlab, ylab) 
- 
+    if (is.null(group))  g= gge_contour_g0(df, x, y, points, group, palette, hist.fill, hist.col, xlim, xlab, ylab,
+                                           contour.breaks=contour.breaks, direction=direction) 
+    if (!is.null(group)) g= gge_contour_g1(df, x, y, points, group, palette, hist.fill, hist.col, xlim, xlab, ylab,
+                                           contour.breaks=contour.breaks, direction=direction) 
     if (!is.null(xlim)) {
         g = g + xlim(xlim)
     }
@@ -1353,27 +1368,27 @@ gge_contour <- function(df, x, y, points=FALSE, group=NULL, palette='Blues', his
     g = ggExtra::ggMarginal(g, type = "histogram",  colour=hist.col, fill = hist.fill)
     return(g)
 }
-gge_contour_g0 <- function(df, x, y, points, group=NULL, palette='Blues', hist.fill="lightsteelblue2", hist.col='white', xlim=NULL, xlab=NULL, ylab=NULL)
+gge_contour_g0 <- function(df, x, y, points, group=NULL, palette='Blues', hist.fill="lightsteelblue2", hist.col='white', xlim=NULL, xlab=NULL, ylab=NULL, contour.breaks = 200, direction=1)
 {
     g = df %>%
         dplyr::rename(x=!!x, y=!!y)  %>%
         ggplot2::ggplot(., ggplot2::aes(x = x , y = y)) +
-        ggplot2::stat_density_2d(ggplot2::aes(fill = ..level..),  size=0,contour=T, geom='polygon',alpha=.2) +
-        ggplot2::scale_fill_distiller(palette=palette)+
+        ggplot2::stat_density_2d(ggplot2::aes(fill = ..level..), n=contour.breaks, size=0, contour=T, geom='polygon', alpha=.4) +
+        ggplot2::scale_fill_distiller(palette=palette, direction=direction) +
         ggplot2::theme_bw() +
         ggplot2::theme(legend.position = "bottom")+
         ggplot2::guides(fill=FALSE)
-    if (points) g = g +  ggplot2::geom_point(size=1.2) 
+    if (points) g = g + ggplot2::geom_point( colour="#00000024", size=2) 
     return(g)
 }
-gge_contour_g1 <- function(df, x, y, points, group=NULL, palette='Blues', hist.fill="lightsteelblue2", hist.col='white', xlim=NULL, xlab=NULL, ylab=NULL)
+gge_contour_g1 <- function(df, x, y, points, group=NULL, palette='A', hist.fill="lightsteelblue2", hist.col='white', xlim=NULL, xlab=NULL, ylab=NULL, contour.breaks = 200, direction=1)
 {
     g = df %>%
         dplyr::rename(group=!!group, x=!!x, y=!!y)  %>%
         dplyr::mutate(group=factor(group))  %>% 
         ggplot2::ggplot(., ggplot2::aes(x = x , y = y, colour=group)) +
-        ggplot2::stat_density_2d(ggplot2::aes(fill = ..level..), colour='white', size=0,contour=T, geom='polygon',alpha=.2) +
-        ggplot2::scale_fill_distiller(palette=palette)+
+        ggplot2::stat_density_2d(ggplot2::aes(fill = ..level..), n=contour.breaks, colour='white', size=0,contour=T, geom='polygon',alpha=.4) +
+        ggplot2::scale_fill_distiller(palette=palette, direction=direction) +
         ggplot2::theme_bw() +
         ggplot2::theme(legend.position = "bottom")+
         ggplot2::guides(fill=FALSE)
@@ -1383,3 +1398,5 @@ gge_contour_g1 <- function(df, x, y, points, group=NULL, palette='Blues', hist.f
 }
 
 ## }}}
+
+
