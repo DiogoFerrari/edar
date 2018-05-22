@@ -2,6 +2,7 @@
 
 export(ebalance)
 export(edar_bundle_cat)
+export(edar_get_fitted)
 export(edar_get_new_data)
 export(edescribe)
 export(emultimputation)

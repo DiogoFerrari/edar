@@ -4,22 +4,24 @@
 \alias{gge_fit}
 \title{Plot fitted values}
 \usage{
-gge_fit(model, data, y, x, n = 200, show.points = T, cat.values = NULL,
-  colour.groups = NULL, facets = NULL, facets.ncol = NULL,
-  col.pch = NULL, subtitle = NULL, footnote = NULL,
+gge_fit(model, data, y, x, formula = NULL, n = 200, show.points = T,
+  cat.values = NULL, colour.groups = NULL, facets = NULL,
+  facets.ncol = NULL, col.pch = NULL, subtitle = NULL, footnote = NULL,
   legend.position = "top", legend.title = NULL, legend.omit = F,
   title = NULL, title.position = "left", ylim = NULL, xlim = NULL,
   xlab = NULL, ylab = NULL, scales = "fixed",
   facet.title.position = "left")
 }
 \arguments{
-\item{model}{the output of either \code{\link[stats]{lm} } or the \code{\link[stats]{glm}} functions}
+\item{model}{either a model object or a data frame with summary of the estimation. A model object can be one produced as output of \code{\link[stats]{lm} } or \code{\link[stats]{glm}}.  If the summary is provided instead of the model object it must contain the columns \code{term} and \code{estimate} (the point estimate). The content of the column \code{term} must match the name of the covariate associated the estimates as produced by \code{attr(terms(formula), 'term.labels')}, and \code{formula} must also be provided as a parameter.}
 
 \item{data}{the original data set used to fit the model}
 
 \item{y}{a string with the name of the dependent variable}
 
 \item{x}{a string with the name of the independent variable that will be used to plotted in the x-axis.}
+
+\item{formula}{a expression as used in \code{lm} function. It is used when the parameter \code{model} receives a tidy summary.}
 
 \item{n}{an integer, the number of points of \code{x} generated to produce the predicted/fitted values}
 
