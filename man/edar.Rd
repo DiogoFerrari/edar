@@ -4,17 +4,17 @@
 \name{edar}
 \alias{edar}
 \alias{edar-package}
-\title{edar: A package for quick Exploratory Data Analysis in R}
+\title{edar: A package for code-efficient Exploratory Data Analysis in R}
 \description{
-The package provide functions that summarize the data set,
-generate tables and plots with subset of the variables,
-among other features.
+The package provides functions that allows efficient exploratory
+data analyses with few lines of code. It also contains some
+functions to check balance of covariates among control and treatment
+groups, analyse output of model estimation, create summary tables and
+plots, and conduct robustness checks of the model results (multiple
+imputation, post-stratification, etc). Quantitative researchers conduct
+those tasks repeatedly. The package provides functions to conduct them
+fast and with with minimum code.
 }
-\section{Univariate EDA}{
-NA
+\details{
+See vignette(edar) for examples of workflow
 }
-
-\section{Bivariate EDA}{
-NA
-}
-
