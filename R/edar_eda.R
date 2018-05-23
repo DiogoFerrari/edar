@@ -11,6 +11,7 @@
 #' @param group string vector with the names of the grouping variables (can be more than one). The summary will be computed by groups. Default \code{NULL}.
 #' @param weight string vector with the name of the column in the data set containing the weights. Default \code{NULL}.
 #' @param spread boolean, if \code{TRUE} the summaries for each group are spread along the columns. Default \code{FALSE}
+#' @param digits integer, number of digiits to return in the summaries (defualt 4)
 #'
 #' @return It returns a tibble data frame with summaries for all numerical variables
 #'
@@ -26,7 +27,7 @@
 #' @export
 
 ## }}}
-summarise_alln <- function(df, group=NULL, weight=NULL, spread=F)
+summarise_alln <- function(df, group=NULL, weight=NULL, spread=F, digits=4)
 {
     options(warn=-1)
     on.exit(options(warn=0))
@@ -71,6 +72,8 @@ summarise_alln <- function(df, group=NULL, weight=NULL, spread=F)
             dplyr::select(var, Stat, value)  %>%
             tidyr::spread(., key=Stat, value=value)
     }
+    tab = tab %>%
+        dplyr::mutate_if(is.numeric, round, digits=digits)
     return(tab)
 }
 ## {{{ docs }}}
