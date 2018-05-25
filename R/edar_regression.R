@@ -2,6 +2,7 @@
 ## {{{ anxilary }}}
 
 ## {{{ docs }}}
+
 #' Get fitted values 
 #'
 #' This function returns fitted values given model summary
@@ -15,6 +16,7 @@
 #' @inheritParams gge_fit
 #'
 #' @export
+
 ## }}}
 edar_get_fitted <- function(data, smry, formula, newdata=NULL, x=NULL, n=NULL, cat.values)
 {
@@ -979,6 +981,7 @@ etab <- function(model, digits=4, hc=FALSE, hc.type=c("hc3", "hc0", "hc1", "hc2"
             dplyr::select(term, estimate)   %>%
             dplyr::rename(Covariate=term) 
     }
+    tab[is.na(tab)] = ""
     return(tab)
 }
 
