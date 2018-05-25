@@ -1,0 +1,2682 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2018-05-25 Fri 16:09 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Exploratory Data Analysis in R (edar)</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="Diogo Ferrari" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Exploratory Data Analysis in R (edar)</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org64b025f">1. Introduction</a></li>
+<li><a href="#orgb9fc657">2. Workflow</a>
+<ul>
+<li><a href="#org87512c0">2.1. Data</a></li>
+<li><a href="#org456cda5">2.2. Summary tables</a></li>
+<li><a href="#orge14df92">2.3. Checking balance of covariates</a></li>
+<li><a href="#org0613330">2.4. Summary plots</a></li>
+<li><a href="#org32615ff">2.5. Analyzing output of model estimation</a>
+<ul>
+<li><a href="#orge8b9093">2.5.1. Fitting models</a></li>
+<li><a href="#org47725ce">2.5.2. Tables</a></li>
+<li><a href="#org6eca324">2.5.3. Plot fitted values</a></li>
+<li><a href="#orge5fa691">2.5.4. Plot with coefficients (dotwisker)</a></li>
+</ul>
+</li>
+<li><a href="#orgd31b2b3">2.6. Multiple-imputation and post-stratification</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org64b025f" class="outline-2">
+<h2 id="org64b025f"><span class="section-number-2">1</span> Introduction</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+The package Exploratory Data Analysis in R (edar) allows efficient exploratory data analyses with few lines of code. It contains some functions to:
+</p>
+<ul class="org-ul">
+<li>overview and summarise the data set</li>
+<li>check balance of covariates among control and treatment groups</li>
+<li>create organized and ready to export (to latex, html, etc) tables with results of model estimation</li>
+<li>easily create plots with fitted values comparing one or more models under different treatment conditions</li>
+<li>create plots with point estimates and their intervals (dotwisker plots)</li>
+<li><p>
+conduct robustness checks of the model results (multiple imputation, post-stratification, etc). 
+</p>
+
+<p>
+Quantitative researchers conduct those tasks repeatedly. The package provides functions to do them more efficiency and with minimum code.
+</p></li>
+</ul>
+
+
+<ol class="org-ol">
+<li>Check the numerical and categorical variables of the data set
+<ul class="org-ul">
+<li>Look for outliers and missing values</li>
+<li>Check distribution of the variables</li>
+</ul></li>
+<li><a id="orgbe915a8"></a> Fit a multivariate regression model</li>
+<li><a id="org3eb3770"></a> Display and check the results</li>
+<li>Do multiple imputation and post-stratification (in surveys)</li>
+<li>Repeat <a href="#orgbe915a8">2</a> and <a href="#org3eb3770">3</a></li>
+<li><a id="orgfb2e48d"></a> Recode some Variables or change model specifications</li>
+<li>Repeat</li>
+</ol>
+
+<p>
+Execpt for item <a href="#orgfb2e48d">6</a>, the package <code>edar</code> can spead up all those tasks. For instance, suppose <code>data</code> contains the data set. Those tasks can be performed with few lines of code:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R" id="orgb1fdf21"><span style="color: #8b7d6b;"># </span><span style="color: #8b7d6b;">summary tables</span>
+<span style="color: #a7aac0;">data</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #bb99b4;">summarise_alln</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span> <span style="color: #8b7d6b;"># </span><span style="color: #8b7d6b;">summarise all numerical variables of the data in a table</span>
+<span style="color: #a7aac0;">data</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #a0d6e0;">summarise_allc</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span> <span style="color: #8b7d6b;"># </span><span style="color: #8b7d6b;">summarise all categorical variables of the data in a table </span>
+<span style="color: #a7aac0;">data</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #b3c0a7;">summarise_allcbundle</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span> <span style="color: #8b7d6b;"># </span><span style="color: #8b7d6b;">summarise all categorical variables of the data in a table</span>
+<span style="color: #a7aac0;">data</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #bba699;">ebalance</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #e0a0bc;">treatmentVar</span>=<span style="color: #ffa07a; font-style: italic;">"treat"</span><span style="color: #ffffff;">)</span> <span style="color: #8b7d6b;">## </span><span style="color: #8b7d6b;">summary of numerical variables for different levels of "treat"</span>
+
+<span style="color: #8b7d6b;"># </span><span style="color: #8b7d6b;">summary plots</span>
+<span style="color: #a0d6e0;">s</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #c0afa7;">gge_describe</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span>  <span style="color: #8b7d6b;">## </span><span style="color: #8b7d6b;">marginal distribution of all variables</span>
+<span style="color: #a0d6e0;">s</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #e0d0a0;">gge_density</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span> <span style="color: #8b7d6b;">## </span><span style="color: #8b7d6b;">marginal distribution of numerical variables only</span>
+<span style="color: #a0d6e0;">s</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #a0d6e0;">gge_histogram</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span><span style="color: #8b7d6b;">## </span><span style="color: #8b7d6b;">marginal distribution of numerical variables only using histograms</span>
+<span style="color: #a0d6e0;">s</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #bba699;">gge_barplot</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span> <span style="color: #8b7d6b;">## </span><span style="color: #8b7d6b;">marginal distribution of non-numerical variables</span>
+
+<span style="color: #8b7d6b;"># </span><span style="color: #8b7d6b;">afeter fitting the models model1, model2, etc ...</span>
+<span style="color: #bba699;">tidye</span><span style="color: #ffffff;">(</span><span style="color: #c0afa7;">model1</span>, <span style="color: #a0d6e0;">hc</span>=<span style="color: #bb99b4;">T</span><span style="color: #ffffff;">)</span> <span style="color: #8b7d6b;">## </span><span style="color: #8b7d6b;">summarise put summary in a tidy data.frame (using robust std.errors)</span>
+<span style="color: #bba699;">tidye</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">list</span><span style="color: #696969;">(</span><span style="color: #c0afa7;">model1</span>,<span style="color: #bb99b4;">model2</span><span style="color: #696969;">)</span><span style="color: #ffffff;">)</span> <span style="color: #8b7d6b;">## </span><span style="color: #8b7d6b;">same, but summarise both models at once</span>
+
+<span style="color: #8b7d6b;"># </span><span style="color: #8b7d6b;">plots</span>
+<span style="color: #c0a7bd;">gge_coef</span><span style="color: #ffffff;">(</span><span style="color: #c0afa7;">model1</span><span style="color: #ffffff;">)</span> <span style="color: #8b7d6b;">## </span><span style="color: #8b7d6b;">dotwisker plot (plot with coefficients and std. errors)</span>
+<span style="color: #c0a7bd;">model</span> <span style="color: #7fffd4;">%&gt;%</span>  <span style="color: #e0a0bc;">gge_fit</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #a7aac0;">data</span>, <span style="color: #ffa07a; font-style: italic;">"y"</span>, <span style="color: #ffa07a; font-style: italic;">"x1"</span><span style="color: #ffffff;">)</span> <span style="color: #8b7d6b;">## </span><span style="color: #8b7d6b;">plot with fitted values as function of covariate x1</span>
+
+<span style="color: #8b7d6b;"># </span><span style="color: #8b7d6b;">multiple imputation and post-stratification</span>
+<span style="color: #a7aac0;">emultimputation</span><span style="color: #ffffff;">(</span><span style="color: #a7aac0;">data</span>, <span style="color: #bba699;">formula</span>,  <span style="color: #a7c0b9;">dep.vars</span> = <span style="color: #b6a0e0;">c</span><span style="color: #696969;">(</span><span style="color: #9999bb;">...</span><span style="color: #696969;">)</span>, <span style="color: #9999bb;">ind.vars</span>=<span style="color: #b6a0e0;">c</span><span style="color: #696969;">(</span><span style="color: #9999bb;">...</span><span style="color: #696969;">)</span><span style="color: #ffffff;">)</span> 
+<span style="color: #c0afa7;">epoststrat</span><span style="color: #ffffff;">(</span><span style="color: #a7aac0;">data</span>, <span style="color: #a7c0b9;">population.proportion</span>, <span style="color: #a6bb99;">strata</span> = ~ <span style="color: #c0a7bd;">stratification.variable1</span> + <span style="color: #a7c0b9;">stratification.variable2...</span><span style="color: #ffffff;">)</span> 
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgb9fc657" class="outline-2">
+<h2 id="orgb9fc657"><span class="section-number-2">2</span> Workflow</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org87512c0" class="outline-3">
+<h3 id="org87512c0"><span class="section-number-3">2.1</span> Data</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+Here is an example of workflow with <code>edar</code>. We will use the data set <code>edar_survey</code> that comes with the package:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R" id="orgc8a2974"><span style="color: #7fffd4;">library</span><span style="color: #ffffff;">(</span><span style="color: #9999bb;">magrittr</span><span style="color: #ffffff;">)</span>
+<span style="color: #7fffd4;">library</span><span style="color: #ffffff;">(</span><span style="color: #c0afa7;">edar</span><span style="color: #ffffff;">)</span>
+
+<span style="color: #a7aac0;">data</span><span style="color: #ffffff;">(</span><span style="color: #c0a7bd;">edar_survey</span><span style="color: #ffffff;">)</span>
+<span style="color: #99bbb4;">help</span><span style="color: #ffffff;">(</span><span style="color: #c0a7bd;">edar_survey</span><span style="color: #ffffff;">)</span>
+
+<span style="color: #a7aac0;">data</span> = <span style="color: #c0a7bd;">edar_survey</span>
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-ascii" id="org959de1b">A National Survey from Brazil
+Description:
+
+     The data set is a subset of a national suvery conducted in Brazil
+     in 2013. The survey measures preferences of individuals for
+     interpersonal and interregional redistribution of income as well
+     as preferences for centralization of political authority.
+
+Usage:
+
+     data(edar_survey)
+     
+Format:
+
+     A data frame with 700 rows and 16 columns:
+
+     gender factor with "men" and "woman"
+
+     educ factor with "high" if the individual completed high school or
+          more, and "low" otherwise
+
+     age integer with age in years
+
+     yi numeric variable with household income per capita
+
+     yi.iht inverse hyperbolic transformation of yi
+
+     state factor with the state in which the individual lives
+
+     region factor with macroregion
+
+     ys.mean average household percapita income in the state, computed
+          using the 2013 Brazilian National Household Survey (PNAD)
+
+     trust factor, "high" or "low" trust in the federal government
+
+     treat numeric, 0 for control group or 1 for treatment group. It is
+          a randomly generated variable for used for ilustration of the
+          examples and vignettes only
+
+     ys.gini numeric, Gini coefficient of the state computed using the
+          2013 Brazilian National Household Survey (PNAD)
+
+     racial.frag.ratio numeric, racial fractionalization at the state
+          over racial fractionalization at the national level
+
+     reduce.income.gap factor, "A"=Agree, "A+"=Strongly Agree,
+          "D"=Disagree, "D+"=Strongly Disagree, "N"=Neither Agree or
+          Disagree that "Government should reduce income gap between
+          rich and poor"
+
+     transfer.state.tax factor, "A"=Agree, "A+"=Strongly Agree,
+          "D"=Disagree, "D+"=Strongly Disagree, "N"=Neither Agree or
+          Disagree that the "Government should redistribute resources
+          from rich to poor states"
+
+     minimum.wage factor, captures the answer to "Who should decide
+          about the minimum wage policy?". The levels are "Each city
+          should decide", "Each state should decide", "Should be the
+          same accros the country"
+
+     unemployment.policy factor, captures the answer to "Who should
+          decide about the unemployment policy?". The levels are "Each
+          city should decide", "Each state should decide", "Should be
+          the same accros the country"
+
+     red.to.poor factor, captures the answer to "Who should decide
+          about policies to redistribute income to poor?". The levels
+          are "Each city should decide", "Each state should decide",
+          "Should be the same accros the country"
+
+Source:
+
+     &lt;URL: http://web.fflch.usp.br/centrodametropole/&gt;
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org456cda5" class="outline-3">
+<h3 id="org456cda5"><span class="section-number-3">2.2</span> Summary tables</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+First, we can have a quick overview of the data set using the functions <code>summarise_alln</code> and <code>summarise_allc</code> provided by <code>edar</code> package. They show the summary of numerical and categorical variables in the data set, respectively:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #a7aac0;">data</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #bb99b4;">summarise_alln</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #c0afa7;">digits</span>=<span style="color: #a6bb99;">2</span><span style="color: #ffffff;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+# A tibble: 10 x 7
+   var                     N   NAs Categories Frequency                  Table  Categories.Labels  
+   &lt;chr&gt;               &lt;dbl&gt; &lt;int&gt;      &lt;int&gt; &lt;chr&gt;                      &lt;list&gt; &lt;chr&gt;              
+ 1 educ                  700     0          2 high  (39.71 %), low   (6… &lt;data… high, low          
+ 2 gender                700     0          2 man   (41.29 %), woman (5… &lt;data… man, woman         
+ 3 minimum.wage          695     5          4 Each  (8.63 %), Each  (16… &lt;data… Each city should d…
+ 4 red.to.poor           679    21          4 Each  (11.78 %), Each  (1… &lt;data… Each city should d…
+ 5 reduce.income.gap     700     0          5 A     (72.43 %), A+    (1… &lt;data… A, A+, D, D+, N    
+ 6 region                700     0          5 CO    (6.14 %), NE    (47… &lt;data… CO, NE, NO, SE, SU 
+ 7 state                 700     0         27 AC    (0.29 %), AL    (0.… &lt;data… AC, AL, AM, AP, BA…
+ 8 transfer.state.tax    700     0          5 A     (70.14 %), A+    (1… &lt;data… A, A+, D, D+, N    
+ 9 trust                 694     6          3 high  (56.92 %), low   (4… &lt;data… high, low          
+10 unemployment.policy   699     1          4 Each  (9.59 %), Each  (17… &lt;data… Each city should d…
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-R" id="orgb444487"><span style="color: #a7aac0;">data</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #a0d6e0;">summarise_allc</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+# A tibble: 10 x 7
+   var                     N   NAs Categories Frequency                  Table  Categories.Labels  
+   &lt;chr&gt;               &lt;dbl&gt; &lt;int&gt;      &lt;int&gt; &lt;chr&gt;                      &lt;list&gt; &lt;chr&gt;              
+ 1 educ                  700     0          2 high  (39.71 %), low   (6… &lt;data… high, low          
+ 2 gender                700     0          2 man   (41.29 %), woman (5… &lt;data… man, woman         
+ 3 minimum.wage          695     5          4 Each  (8.63 %), Each  (16… &lt;data… Each city should d…
+ 4 red.to.poor           679    21          4 Each  (11.78 %), Each  (1… &lt;data… Each city should d…
+ 5 reduce.income.gap     700     0          5 A     (72.43 %), A+    (1… &lt;data… A, A+, D, D+, N    
+ 6 region                700     0          5 CO    (6.14 %), NE    (47… &lt;data… CO, NE, NO, SE, SU 
+ 7 state                 700     0         27 AC    (0.29 %), AL    (0.… &lt;data… AC, AL, AM, AP, BA…
+ 8 transfer.state.tax    700     0          5 A     (70.14 %), A+    (1… &lt;data… A, A+, D, D+, N    
+ 9 trust                 694     6          3 high  (56.92 %), low   (4… &lt;data… high, low          
+10 unemployment.policy   699     1          4 Each  (9.59 %), Each  (17… &lt;data… Each city should d…
+</pre>
+
+<p>
+The summary of categorical variables produced by <code>summarise_allc</code> contains a column named <code>Table</code>, which contains a table with the counts for each category value of the variable.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R" id="orga3f8b34"><span style="color: #bba699;">tab</span> = <span style="color: #a7aac0;">data</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #a0d6e0;">summarise_allc</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span>
+<span style="color: #bba699;">tab</span>$<span style="color: #bb99b4;">Table</span>[[<span style="color: #a3e0a0;">6</span>]]
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Variable</th>
+<th scope="col" class="org-right">CO</th>
+<th scope="col" class="org-right">NE</th>
+<th scope="col" class="org-right">NO</th>
+<th scope="col" class="org-right">SE</th>
+<th scope="col" class="org-right">SU</th>
+<th scope="col" class="org-right">NA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">region</td>
+<td class="org-right">43</td>
+<td class="org-right">333</td>
+<td class="org-right">46</td>
+<td class="org-right">174</td>
+<td class="org-right">104</td>
+<td class="org-right">0</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+It is common to have data sets in which many categorical variables have the same categories. The function <code>summarise_allcbundle</code> provides a summary of all categorical variables of the data set and aggregate those with same categories. The output contain columns named <code>Table</code>, <code>Tablep</code>, and <code>Tablel</code>. <code>Table</code> contains a table with counts of the categories of the variables. <code>Tablep</code> presents the same information, but in percentage. <code>Tablel</code> presents both the counts and percentage, which can be exported directly for reports and articles. The column <code>Variables</code> in the output contains the name of all the variables that have the same <code>Category.Labels</code>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R" id="orgc91df14"><span style="color: #a7aac0;">data</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #b3c0a7;">summarise_allcbundle</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span> 
+</pre>
+</div>
+
+<pre class="example">
+# A tibble: 6 x 6
+  N.Variables Variables Categories.Labels                          Table      Tablep     Tablel    
+        &lt;int&gt; &lt;list&gt;    &lt;chr&gt;                                      &lt;list&gt;     &lt;list&gt;     &lt;list&gt;    
+1           2 &lt;chr [2]&gt; A, A+, D, D+, N                            &lt;data.fra… &lt;data.fra… &lt;data.fra…
+2           1 &lt;chr [1]&gt; AC, AL, AM, AP, BA, CE, DF, ES, GO, MA, M… &lt;data.fra… &lt;data.fra… &lt;data.fra…
+3           1 &lt;chr [1]&gt; CO, NE, NO, SE, SU                         &lt;data.fra… &lt;data.fra… &lt;data.fra…
+4           3 &lt;chr [3]&gt; Each city should decide, Each state shoul… &lt;data.fra… &lt;data.fra… &lt;data.fra…
+5           2 &lt;chr [2]&gt; high, low                                  &lt;data.fra… &lt;data.fra… &lt;data.fra…
+6           1 &lt;chr [1]&gt; man, woman                                 &lt;data.fra… &lt;data.fra… &lt;data.fra…
+
+</pre>
+
+
+
+
+
+
+
+<div class="org-src-container">
+<pre class="src src-R" id="orgce06c70"><span style="color: #bba699;">tab</span> = <span style="color: #a7aac0;">data</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #b3c0a7;">summarise_allcbundle</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span>
+<span style="color: #bba699;">tab</span>$<span style="color: #bb99b4;">Table</span>[[<span style="color: #a3e0a0;">5</span>]]
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Variable</th>
+<th scope="col" class="org-right">high</th>
+<th scope="col" class="org-right">low</th>
+<th scope="col" class="org-right">NA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">educ</td>
+<td class="org-right">278</td>
+<td class="org-right">422</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">trust</td>
+<td class="org-right">395</td>
+<td class="org-right">299</td>
+<td class="org-right">6</td>
+</tr>
+</tbody>
+</table>
+
+
+
+<div class="org-src-container">
+<pre class="src src-R" id="org8fef70e"><span style="color: #bba699;">tab</span>$<span style="color: #a0d6e0;">Tablep</span>[[<span style="color: #a3e0a0;">5</span>]]
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Variable</th>
+<th scope="col" class="org-right">high</th>
+<th scope="col" class="org-right">low</th>
+<th scope="col" class="org-right">NA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">educ</td>
+<td class="org-right">39.71</td>
+<td class="org-right">60.29</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">trust</td>
+<td class="org-right">56.43</td>
+<td class="org-right">42.71</td>
+<td class="org-right">0.86</td>
+</tr>
+</tbody>
+</table>
+
+
+
+<div class="org-src-container">
+<pre class="src src-R" id="orgc16464a"><span style="color: #bba699;">tab</span>$<span style="color: #b6a0e0;">Tablel</span>[[<span style="color: #a3e0a0;">5</span>]]
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Variable</th>
+<th scope="col" class="org-left">high</th>
+<th scope="col" class="org-left">low</th>
+<th scope="col" class="org-left">NA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">educ</td>
+<td class="org-left">39.71 % (N=278)</td>
+<td class="org-left">60.29 % (N=422)</td>
+<td class="org-left">0 % (N=0)</td>
+</tr>
+
+<tr>
+<td class="org-left">trust</td>
+<td class="org-left">56.43 % (N=395)</td>
+<td class="org-left">42.71 % (N=299)</td>
+<td class="org-left">0.86 % (N=6)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-orge14df92" class="outline-3">
+<h3 id="orge14df92"><span class="section-number-3">2.3</span> Checking balance of covariates</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+We can easily check the distribution of covariates among two factor levels. Consider the variable <code>treat</code>, which represents the treatment condition (1=treatment, 0=control). We can describe the distribution of covariates using <code>ebalance()</code>. The table follows recomendations in <a class='org-ref-reference' href="#imbens2015causal">imbens2015causal</a>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R" id="orgc84d62e"><span style="color: #a7aac0;">data</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #bba699;">ebalance</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #e0a0bc;">treatmentVar</span>=<span style="color: #ffa07a; font-style: italic;">'treat'</span><span style="color: #ffffff;">)</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #99bbb4;">print</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #c0afa7;">digits</span>=<span style="color: #a6bb99;">2</span><span style="color: #ffffff;">)</span>
+
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Variable</th>
+<th scope="col" class="org-right">mut</th>
+<th scope="col" class="org-right">st</th>
+<th scope="col" class="org-right">muc</th>
+<th scope="col" class="org-right">sc</th>
+<th scope="col" class="org-right">NorDiff</th>
+<th scope="col" class="org-right">lnRatioSdtDev</th>
+<th scope="col" class="org-right">pit</th>
+<th scope="col" class="org-right">pic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">age</td>
+<td class="org-right">45.83</td>
+<td class="org-right">16.61</td>
+<td class="org-right">44.9</td>
+<td class="org-right">16.27</td>
+<td class="org-right">0.06</td>
+<td class="org-right">0.02</td>
+<td class="org-right">0.03</td>
+<td class="org-right">0.06</td>
+</tr>
+
+<tr>
+<td class="org-left">yi</td>
+<td class="org-right">946.36</td>
+<td class="org-right">1671.84</td>
+<td class="org-right">916.04</td>
+<td class="org-right">1418.32</td>
+<td class="org-right">0.02</td>
+<td class="org-right">0.16</td>
+<td class="org-right">0.03</td>
+<td class="org-right">0.07</td>
+</tr>
+
+<tr>
+<td class="org-left">yi.iht</td>
+<td class="org-right">6.95</td>
+<td class="org-right">1.07</td>
+<td class="org-right">6.98</td>
+<td class="org-right">1.08</td>
+<td class="org-right">-0.03</td>
+<td class="org-right">-0.01</td>
+<td class="org-right">0.03</td>
+<td class="org-right">0.07</td>
+</tr>
+
+<tr>
+<td class="org-left">ys.mean</td>
+<td class="org-right">981.54</td>
+<td class="org-right">297.97</td>
+<td class="org-right">966.04</td>
+<td class="org-right">302.6</td>
+<td class="org-right">0.05</td>
+<td class="org-right">-0.02</td>
+<td class="org-right">0.04</td>
+<td class="org-right">0.02</td>
+</tr>
+
+<tr>
+<td class="org-left">ys.gini</td>
+<td class="org-right">0.52</td>
+<td class="org-right">0.03</td>
+<td class="org-right">0.53</td>
+<td class="org-right">0.03</td>
+<td class="org-right">-0.16</td>
+<td class="org-right">-0.1</td>
+<td class="org-right">0.03</td>
+<td class="org-right">0.05</td>
+</tr>
+
+<tr>
+<td class="org-left">racial.frag.ratio</td>
+<td class="org-right">0.87</td>
+<td class="org-right">0.13</td>
+<td class="org-right">0.87</td>
+<td class="org-right">0.14</td>
+<td class="org-right">0.02</td>
+<td class="org-right">-0.07</td>
+<td class="org-right">0</td>
+<td class="org-right">0.05</td>
+</tr>
+
+<tr>
+<td class="org-left">MahalanobisDist</td>
+<td class="org-right">nil</td>
+<td class="org-right">nil</td>
+<td class="org-right">nil</td>
+<td class="org-right">nil</td>
+<td class="org-right">0.22</td>
+<td class="org-right">nil</td>
+<td class="org-right">nil</td>
+<td class="org-right">nil</td>
+</tr>
+
+<tr>
+<td class="org-left">pscore</td>
+<td class="org-right">0.5</td>
+<td class="org-right">0.5</td>
+<td class="org-right">0.46</td>
+<td class="org-right">0.5</td>
+<td class="org-right">0.07</td>
+<td class="org-right">0</td>
+<td class="org-right">0.02</td>
+<td class="org-right">0.04</td>
+</tr>
+
+<tr>
+<td class="org-left">LinPscore</td>
+<td class="org-right">-0.09</td>
+<td class="org-right">26.61</td>
+<td class="org-right">-1.92</td>
+<td class="org-right">26.54</td>
+<td class="org-right">0.07</td>
+<td class="org-right">0</td>
+<td class="org-right">0.04</td>
+<td class="org-right">0.07</td>
+</tr>
+
+<tr>
+<td class="org-left">N</td>
+<td class="org-right">337</td>
+<td class="org-right">nil</td>
+<td class="org-right">363</td>
+<td class="org-right">nil</td>
+<td class="org-right">nil</td>
+<td class="org-right">nil</td>
+<td class="org-right">nil</td>
+<td class="org-right">nil</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-org0613330" class="outline-3">
+<h3 id="org0613330"><span class="section-number-3">2.4</span> Summary plots</h3>
+<div class="outline-text-3" id="text-2-4">
+<p>
+The package also provides some functions to easily visualise the marginal distribution of many variables at once. The marginal densities can be grouped by factors using the parameter <code>group</code>. When the marginal densities are presented by group, the plot include the p-value of the Kolmogorov-Smirnov distance.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #99bbb4;">g</span> = <span style="color: #a7aac0;">data</span>[,<span style="color: #9999bb;">1</span>:<span style="color: #9999bb;">8</span>] <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #c0afa7;">gge_describe</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span>
+<span style="color: #99bbb4;">print</span><span style="color: #ffffff;">(</span><span style="color: #99bbb4;">g</span><span style="color: #ffffff;">)</span>
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="gge_describe.png" alt="gge_describe.png" />
+</p>
+</div>
+
+
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #99bbb4;">g</span> = <span style="color: #a7aac0;">data</span>[,<span style="color: #9999bb;">1</span>:<span style="color: #a3e0a0;">9</span>] <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #c0afa7;">gge_describe</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #a7aac0;">group</span>=<span style="color: #ffa07a; font-style: italic;">'educ'</span><span style="color: #ffffff;">)</span>
+<span style="color: #99bbb4;">print</span><span style="color: #ffffff;">(</span><span style="color: #99bbb4;">g</span><span style="color: #ffffff;">)</span>
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="gge_describe_group.png" alt="gge_describe_group.png" />
+</p>
+</div>
+
+
+<p>
+Other similar functions provided by the package are:
+</p>
+<ul class="org-ul">
+<li>gge_barplot()</li>
+<li>gge_density()</li>
+<li>gge_histogram()</li>
+<li>gge_barplot()</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org32615ff" class="outline-3">
+<h3 id="org32615ff"><span class="section-number-3">2.5</span> Analyzing output of model estimation</h3>
+<div class="outline-text-3" id="text-2-5">
+</div>
+<div id="outline-container-orge8b9093" class="outline-4">
+<h4 id="orge8b9093"><span class="section-number-4">2.5.1</span> Fitting models</h4>
+<div class="outline-text-4" id="text-2-5-1">
+<p>
+The package <code>edar</code> make it easy to display results of estimation. It can be achieved with minimum code. Suppose we estimated five different models:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R" id="orgafeff9f"><span style="color: #c0a7bd;">set.seed</span><span style="color: #ffffff;">(</span><span style="color: #c0afa7;">77</span><span style="color: #ffffff;">)</span>
+<span style="color: #a7aac0;">data</span> = <span style="color: #e0d0a0;">tibble</span>::<span style="color: #bba699;">data_frame</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">n</span> = <span style="color: #c0a7bd;">300</span>,
+                          <span style="color: #e0d0a0;">x1</span>   = <span style="color: #e0d0a0;">rnorm</span><span style="color: #696969;">(</span><span style="color: #b3c0a7;">n</span>,<span style="color: #e0a0bc;">3</span>,<span style="color: #9999bb;">1</span><span style="color: #696969;">)</span>,
+                          <span style="color: #a7aac0;">x2</span>   = <span style="color: #a6bb99;">rexp</span><span style="color: #696969;">(</span><span style="color: #b3c0a7;">n</span><span style="color: #696969;">)</span>,
+                          <span style="color: #b6a0e0;">cat1</span> = <span style="color: #bb99b4;">sample</span><span style="color: #696969;">(</span><span style="color: #b6a0e0;">c</span><span style="color: #00ffff;">(</span><span style="color: #a7aac0;">0</span>,<span style="color: #9999bb;">1</span><span style="color: #00ffff;">)</span>, <span style="color: #b3c0a7;">n</span>, <span style="color: #a6bb99;">replace</span>=<span style="color: #bb99b4;">T</span><span style="color: #696969;">)</span>,
+                          <span style="color: #b3c0a7;">cat2</span> = <span style="color: #bb99b4;">sample</span><span style="color: #696969;">(</span><span style="color: #bb99b4;">letters</span>[<span style="color: #9999bb;">1</span>:<span style="color: #a0d6e0;">4</span>], <span style="color: #b3c0a7;">n</span>, <span style="color: #a6bb99;">replace</span>=<span style="color: #bb99b4;">T</span><span style="color: #696969;">)</span>,
+                          <span style="color: #bba699;">y</span>    = -<span style="color: #a0d6e0;">10</span>*<span style="color: #e0d0a0;">x1</span>*<span style="color: #b6a0e0;">cat1</span> + <span style="color: #a0d6e0;">10</span>*<span style="color: #a7aac0;">x2</span>*<span style="color: #696969;">(</span><span style="color: #e0a0bc;">3</span>*<span style="color: #00ffff;">(</span><span style="color: #b3c0a7;">cat2</span>==<span style="color: #ffa07a; font-style: italic;">'a'</span><span style="color: #00ffff;">)</span> -<span style="color: #e0a0bc;">3</span>*<span style="color: #00ffff;">(</span><span style="color: #b3c0a7;">cat2</span>==<span style="color: #ffa07a; font-style: italic;">'b'</span><span style="color: #00ffff;">)</span> +<span style="color: #9999bb;">1</span>*<span style="color: #00ffff;">(</span><span style="color: #b3c0a7;">cat2</span>==<span style="color: #ffa07a; font-style: italic;">'c'</span><span style="color: #00ffff;">)</span> -<span style="color: #9999bb;">1</span>*<span style="color: #00ffff;">(</span><span style="color: #b3c0a7;">cat2</span>==<span style="color: #ffa07a; font-style: italic;">'d'</span><span style="color: #00ffff;">)</span><span style="color: #696969;">)</span> + 
+                              <span style="color: #e0d0a0;">rnorm</span><span style="color: #696969;">(</span><span style="color: #b3c0a7;">n</span>,<span style="color: #a7aac0;">0</span>,<span style="color: #a0d6e0;">10</span><span style="color: #696969;">)</span>, 
+                          <span style="color: #a7aac0;">y.bin</span> = <span style="color: #e0a0bc;">ifelse</span><span style="color: #696969;">(</span><span style="color: #bba699;">y</span> &lt; <span style="color: #bb99b4;">mean</span><span style="color: #00ffff;">(</span><span style="color: #bba699;">y</span><span style="color: #00ffff;">)</span>, <span style="color: #a7aac0;">0</span>, <span style="color: #9999bb;">1</span><span style="color: #696969;">)</span>,
+                          <span style="color: #c0a7bd;">y.mul</span> = <span style="color: #9999bb;">1</span>+<span style="color: #e0a0bc;">ifelse</span><span style="color: #696969;">(</span> - <span style="color: #e0d0a0;">x1</span> - <span style="color: #a7aac0;">x2</span> + <span style="color: #e0d0a0;">rnorm</span><span style="color: #00ffff;">(</span><span style="color: #b3c0a7;">n</span>,<span style="color: #b3c0a7;">sd</span>=<span style="color: #a0d6e0;">10</span><span style="color: #00ffff;">)</span> &lt; <span style="color: #a7aac0;">0</span>, <span style="color: #a7aac0;">0</span>,
+                                    <span style="color: #e0a0bc;">ifelse</span><span style="color: #00ffff;">(</span> - <span style="color: #a6bb99;">2</span>*<span style="color: #a7aac0;">x2</span> + <span style="color: #e0d0a0;">rnorm</span><span style="color: #0000ff;">(</span><span style="color: #b3c0a7;">n</span>,<span style="color: #b3c0a7;">sd</span>=<span style="color: #a0d6e0;">10</span><span style="color: #0000ff;">)</span> &lt; <span style="color: #a7aac0;">0</span>, <span style="color: #9999bb;">1</span>, <span style="color: #a6bb99;">2</span><span style="color: #00ffff;">)</span><span style="color: #696969;">)</span>,
+                          <span style="color: #ffffff;">)</span>
+
+<span style="color: #99bbb4;">formula1</span>    = <span style="color: #bba699;">y</span> ~ <span style="color: #e0d0a0;">x1</span>
+<span style="color: #99bbb4;">formula2</span>    = <span style="color: #bba699;">y</span> ~ <span style="color: #e0d0a0;">x1</span> + <span style="color: #a7aac0;">x2</span>
+<span style="color: #e0a0bc;">formula3</span>    = <span style="color: #bba699;">y</span> ~ <span style="color: #e0d0a0;">x1</span>*<span style="color: #b6a0e0;">cat1</span> + <span style="color: #a7aac0;">x2</span>*<span style="color: #b3c0a7;">cat2</span>
+<span style="color: #a0d6e0;">formula4bin</span> = <span style="color: #a7aac0;">y.bin</span> ~ <span style="color: #e0d0a0;">x1</span>+<span style="color: #a7aac0;">x2</span>*<span style="color: #b3c0a7;">cat2</span>
+<span style="color: #99bbb4;">formula4bin1</span> = <span style="color: #a7aac0;">y.bin</span> ~ <span style="color: #e0d0a0;">x1</span>+<span style="color: #a7aac0;">x2</span>
+<span style="color: #e0d0a0;">formula4bin2</span> = <span style="color: #a7aac0;">y.bin</span> ~ <span style="color: #e0d0a0;">x1</span>*<span style="color: #b6a0e0;">cat1</span>+<span style="color: #a7aac0;">x2</span>*<span style="color: #b3c0a7;">cat2</span>
+<span style="color: #c0a7bd;">formula5mul</span> = <span style="color: #c0a7bd;">y.mul</span> ~ <span style="color: #e0d0a0;">x1</span> + <span style="color: #a7aac0;">x2</span>
+
+<span style="color: #b3c0a7;">model.g1</span>    = <span style="color: #bb99b4;">lm</span><span style="color: #ffffff;">(</span><span style="color: #99bbb4;">formula1</span>, <span style="color: #a7aac0;">data</span><span style="color: #ffffff;">)</span>
+<span style="color: #99bbb4;">model.g2</span>    = <span style="color: #bb99b4;">lm</span><span style="color: #ffffff;">(</span><span style="color: #99bbb4;">formula2</span>, <span style="color: #a7aac0;">data</span><span style="color: #ffffff;">)</span>
+<span style="color: #b3c0a7;">model.g3</span>    = <span style="color: #bb99b4;">lm</span><span style="color: #ffffff;">(</span><span style="color: #e0a0bc;">formula3</span>, <span style="color: #a7aac0;">data</span><span style="color: #ffffff;">)</span>
+<span style="color: #bb99b4;">model.bin</span>   = <span style="color: #b3c0a7;">glm</span><span style="color: #ffffff;">(</span><span style="color: #a0d6e0;">formula4bin</span>, <span style="color: #a7aac0;">data</span>=<span style="color: #a7aac0;">data</span>, <span style="color: #e0a0bc;">family</span>=<span style="color: #ffa07a; font-style: italic;">'binomial'</span><span style="color: #ffffff;">)</span>
+<span style="color: #b6a0e0;">model.bin1</span>  = <span style="color: #b3c0a7;">glm</span><span style="color: #ffffff;">(</span><span style="color: #a0d6e0;">formula4bin</span>, <span style="color: #a7aac0;">data</span>=<span style="color: #a7aac0;">data</span>, <span style="color: #e0a0bc;">family</span>=<span style="color: #ffa07a; font-style: italic;">'binomial'</span><span style="color: #ffffff;">)</span>
+<span style="color: #9999bb;">model.bin2</span>  = <span style="color: #b3c0a7;">glm</span><span style="color: #ffffff;">(</span><span style="color: #a0d6e0;">formula4bin</span>, <span style="color: #a7aac0;">data</span>=<span style="color: #a7aac0;">data</span>, <span style="color: #e0a0bc;">family</span>=<span style="color: #ffa07a; font-style: italic;">'binomial'</span><span style="color: #ffffff;">)</span>
+<span style="color: #99bbb4;">model.mul</span>   = <span style="color: #bb99b4;">nnet</span>::<span style="color: #b3c0a7;">multinom</span><span style="color: #ffffff;">(</span><span style="color: #c0a7bd;">formula5mul</span>, <span style="color: #a7aac0;">data</span><span style="color: #ffffff;">)</span>
+
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org47725ce" class="outline-4">
+<h4 id="org47725ce"><span class="section-number-4">2.5.2</span> Tables</h4>
+<div class="outline-text-4" id="text-2-5-2">
+<p>
+We want to vizualize the model estimate. The function <code>tidye</code> creates tidy summary tables with the output. It is a wrap function for <code>broom::tidy()</code>, and it works with list of models. Here are some examples:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">
+<span style="color: #bba699;">tidye</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">model.g3</span><span style="color: #ffffff;">)</span>
+
+<span style="color: #8b7d6b;">## </span><span style="color: #8b7d6b;">works with other types of dependent variables</span>
+<span style="color: #8b7d6b;"># </span><span style="color: #8b7d6b;">tidye(model.bin)</span>
+<span style="color: #8b7d6b;"># </span><span style="color: #8b7d6b;">tidye(model.mul)</span>
+
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">term</th>
+<th scope="col" class="org-right">estimate</th>
+<th scope="col" class="org-right">std.error</th>
+<th scope="col" class="org-right">conf.low</th>
+<th scope="col" class="org-right">conf.high</th>
+<th scope="col" class="org-right">statistic</th>
+<th scope="col" class="org-right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">(Intercept)</td>
+<td class="org-right">3.6042</td>
+<td class="org-right">3.0375</td>
+<td class="org-right">-2.3742</td>
+<td class="org-right">9.5826</td>
+<td class="org-right">1.1866</td>
+<td class="org-right">0.2364</td>
+</tr>
+
+<tr>
+<td class="org-left">x1</td>
+<td class="org-right">-0.9053</td>
+<td class="org-right">0.8167</td>
+<td class="org-right">-2.5126</td>
+<td class="org-right">0.7021</td>
+<td class="org-right">-1.1085</td>
+<td class="org-right">0.2686</td>
+</tr>
+
+<tr>
+<td class="org-left">cat1</td>
+<td class="org-right">-2.2011</td>
+<td class="org-right">3.6151</td>
+<td class="org-right">-9.3164</td>
+<td class="org-right">4.9142</td>
+<td class="org-right">-0.6089</td>
+<td class="org-right">0.5431</td>
+</tr>
+
+<tr>
+<td class="org-left">x2</td>
+<td class="org-right">28.0061</td>
+<td class="org-right">1.3544</td>
+<td class="org-right">25.3403</td>
+<td class="org-right">30.6719</td>
+<td class="org-right">20.6774</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">cat2b</td>
+<td class="org-right">-0.1835</td>
+<td class="org-right">2.3532</td>
+<td class="org-right">-4.8151</td>
+<td class="org-right">4.4481</td>
+<td class="org-right">-0.078</td>
+<td class="org-right">0.9379</td>
+</tr>
+
+<tr>
+<td class="org-left">cat2c</td>
+<td class="org-right">-0.9414</td>
+<td class="org-right">2.2746</td>
+<td class="org-right">-5.4184</td>
+<td class="org-right">3.5355</td>
+<td class="org-right">-0.4139</td>
+<td class="org-right">0.6793</td>
+</tr>
+
+<tr>
+<td class="org-left">cat2d</td>
+<td class="org-right">-1.4556</td>
+<td class="org-right">2.4636</td>
+<td class="org-right">-6.3044</td>
+<td class="org-right">3.3932</td>
+<td class="org-right">-0.5909</td>
+<td class="org-right">0.5551</td>
+</tr>
+
+<tr>
+<td class="org-left">x1:cat1</td>
+<td class="org-right">-9.2755</td>
+<td class="org-right">1.1527</td>
+<td class="org-right">-11.5442</td>
+<td class="org-right">-7.0069</td>
+<td class="org-right">-8.0471</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">x2:cat2b</td>
+<td class="org-right">-58.1667</td>
+<td class="org-right">1.8639</td>
+<td class="org-right">-61.8352</td>
+<td class="org-right">-54.4982</td>
+<td class="org-right">-31.2071</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">x2:cat2c</td>
+<td class="org-right">-17.6127</td>
+<td class="org-right">1.7246</td>
+<td class="org-right">-21.0071</td>
+<td class="org-right">-14.2183</td>
+<td class="org-right">-10.2125</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">x2:cat2d</td>
+<td class="org-right">-38.3783</td>
+<td class="org-right">2.0687</td>
+<td class="org-right">-42.4499</td>
+<td class="org-right">-34.3068</td>
+<td class="org-right">-18.5523</td>
+<td class="org-right">0</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+We can have robust standard errors, and keep or not information of non-corrected values for comparison.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #8b7d6b;">## </span><span style="color: #8b7d6b;">with robust std.errors</span>
+<span style="color: #bba699;">tidye</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">model.g3</span>, <span style="color: #a0d6e0;">hc</span>=<span style="color: #bb99b4;">T</span><span style="color: #ffffff;">)</span>
+
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">term</th>
+<th scope="col" class="org-right">estimate</th>
+<th scope="col" class="org-right">std.error</th>
+<th scope="col" class="org-right">conf.low</th>
+<th scope="col" class="org-right">conf.high</th>
+<th scope="col" class="org-right">statistic</th>
+<th scope="col" class="org-right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">(Intercept)</td>
+<td class="org-right">3.6042</td>
+<td class="org-right">3.2952</td>
+<td class="org-right">-2.8544</td>
+<td class="org-right">10.0628</td>
+<td class="org-right">1.0938</td>
+<td class="org-right">0.275</td>
+</tr>
+
+<tr>
+<td class="org-left">x1</td>
+<td class="org-right">-0.9053</td>
+<td class="org-right">0.8481</td>
+<td class="org-right">-2.5676</td>
+<td class="org-right">0.7571</td>
+<td class="org-right">-1.0673</td>
+<td class="org-right">0.2867</td>
+</tr>
+
+<tr>
+<td class="org-left">cat1</td>
+<td class="org-right">-2.2011</td>
+<td class="org-right">3.7761</td>
+<td class="org-right">-9.6023</td>
+<td class="org-right">5.2001</td>
+<td class="org-right">-0.5829</td>
+<td class="org-right">0.5604</td>
+</tr>
+
+<tr>
+<td class="org-left">x2</td>
+<td class="org-right">28.0061</td>
+<td class="org-right">1.5784</td>
+<td class="org-right">24.9124</td>
+<td class="org-right">31.0998</td>
+<td class="org-right">17.7432</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">cat2b</td>
+<td class="org-right">-0.1835</td>
+<td class="org-right">2.5577</td>
+<td class="org-right">-5.1965</td>
+<td class="org-right">4.8295</td>
+<td class="org-right">-0.0717</td>
+<td class="org-right">0.9429</td>
+</tr>
+
+<tr>
+<td class="org-left">cat2c</td>
+<td class="org-right">-0.9414</td>
+<td class="org-right">2.4039</td>
+<td class="org-right">-5.6531</td>
+<td class="org-right">3.7703</td>
+<td class="org-right">-0.3916</td>
+<td class="org-right">0.6956</td>
+</tr>
+
+<tr>
+<td class="org-left">cat2d</td>
+<td class="org-right">-1.4556</td>
+<td class="org-right">2.691</td>
+<td class="org-right">-6.7299</td>
+<td class="org-right">3.8187</td>
+<td class="org-right">-0.5409</td>
+<td class="org-right">0.589</td>
+</tr>
+
+<tr>
+<td class="org-left">x1:cat1</td>
+<td class="org-right">-9.2755</td>
+<td class="org-right">1.2346</td>
+<td class="org-right">-11.6953</td>
+<td class="org-right">-6.8558</td>
+<td class="org-right">-7.5131</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">x2:cat2b</td>
+<td class="org-right">-58.1667</td>
+<td class="org-right">1.8969</td>
+<td class="org-right">-61.8846</td>
+<td class="org-right">-54.4488</td>
+<td class="org-right">-30.664</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">x2:cat2c</td>
+<td class="org-right">-17.6127</td>
+<td class="org-right">1.8342</td>
+<td class="org-right">-21.2077</td>
+<td class="org-right">-14.0176</td>
+<td class="org-right">-9.6023</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">x2:cat2d</td>
+<td class="org-right">-38.3783</td>
+<td class="org-right">2.3255</td>
+<td class="org-right">-42.9364</td>
+<td class="org-right">-33.8203</td>
+<td class="org-right">-16.5029</td>
+<td class="org-right">0</td>
+</tr>
+</tbody>
+</table>
+
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #bba699;">tidye</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">model.g3</span>, <span style="color: #a0d6e0;">hc</span>=<span style="color: #bb99b4;">T</span>, <span style="color: #a0d6e0;">keep.nohc</span>=<span style="color: #bb99b4;">T</span><span style="color: #ffffff;">)</span> <span style="color: #8b7d6b;"># </span><span style="color: #8b7d6b;">keep no heterocedastic corrected std.errors</span>
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">term</th>
+<th scope="col" class="org-right">estimate</th>
+<th scope="col" class="org-right">std.error</th>
+<th scope="col" class="org-right">conf.low</th>
+<th scope="col" class="org-right">conf.high</th>
+<th scope="col" class="org-right">statistic</th>
+<th scope="col" class="org-right">p.value</th>
+<th scope="col" class="org-right">std.error.nohc</th>
+<th scope="col" class="org-right">statistic.nohc</th>
+<th scope="col" class="org-right">p.value.nohc</th>
+<th scope="col" class="org-right">conf.low.nohc</th>
+<th scope="col" class="org-right">conf.high.nohc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">(Intercept)</td>
+<td class="org-right">3.6042</td>
+<td class="org-right">3.2952</td>
+<td class="org-right">-2.8544</td>
+<td class="org-right">10.0628</td>
+<td class="org-right">1.0938</td>
+<td class="org-right">0.275</td>
+<td class="org-right">3.0375</td>
+<td class="org-right">1.1866</td>
+<td class="org-right">0.2364</td>
+<td class="org-right">-2.3742</td>
+<td class="org-right">9.5826</td>
+</tr>
+
+<tr>
+<td class="org-left">x1</td>
+<td class="org-right">-0.9053</td>
+<td class="org-right">0.8481</td>
+<td class="org-right">-2.5676</td>
+<td class="org-right">0.7571</td>
+<td class="org-right">-1.0673</td>
+<td class="org-right">0.2867</td>
+<td class="org-right">0.8167</td>
+<td class="org-right">-1.1085</td>
+<td class="org-right">0.2686</td>
+<td class="org-right">-2.5126</td>
+<td class="org-right">0.7021</td>
+</tr>
+
+<tr>
+<td class="org-left">cat1</td>
+<td class="org-right">-2.2011</td>
+<td class="org-right">3.7761</td>
+<td class="org-right">-9.6023</td>
+<td class="org-right">5.2001</td>
+<td class="org-right">-0.5829</td>
+<td class="org-right">0.5604</td>
+<td class="org-right">3.6151</td>
+<td class="org-right">-0.6089</td>
+<td class="org-right">0.5431</td>
+<td class="org-right">-9.3164</td>
+<td class="org-right">4.9142</td>
+</tr>
+
+<tr>
+<td class="org-left">x2</td>
+<td class="org-right">28.0061</td>
+<td class="org-right">1.5784</td>
+<td class="org-right">24.9124</td>
+<td class="org-right">31.0998</td>
+<td class="org-right">17.7432</td>
+<td class="org-right">0</td>
+<td class="org-right">1.3544</td>
+<td class="org-right">20.6774</td>
+<td class="org-right">0</td>
+<td class="org-right">25.3403</td>
+<td class="org-right">30.6719</td>
+</tr>
+
+<tr>
+<td class="org-left">cat2b</td>
+<td class="org-right">-0.1835</td>
+<td class="org-right">2.5577</td>
+<td class="org-right">-5.1965</td>
+<td class="org-right">4.8295</td>
+<td class="org-right">-0.0717</td>
+<td class="org-right">0.9429</td>
+<td class="org-right">2.3532</td>
+<td class="org-right">-0.078</td>
+<td class="org-right">0.9379</td>
+<td class="org-right">-4.8151</td>
+<td class="org-right">4.4481</td>
+</tr>
+
+<tr>
+<td class="org-left">cat2c</td>
+<td class="org-right">-0.9414</td>
+<td class="org-right">2.4039</td>
+<td class="org-right">-5.6531</td>
+<td class="org-right">3.7703</td>
+<td class="org-right">-0.3916</td>
+<td class="org-right">0.6956</td>
+<td class="org-right">2.2746</td>
+<td class="org-right">-0.4139</td>
+<td class="org-right">0.6793</td>
+<td class="org-right">-5.4184</td>
+<td class="org-right">3.5355</td>
+</tr>
+
+<tr>
+<td class="org-left">cat2d</td>
+<td class="org-right">-1.4556</td>
+<td class="org-right">2.691</td>
+<td class="org-right">-6.7299</td>
+<td class="org-right">3.8187</td>
+<td class="org-right">-0.5409</td>
+<td class="org-right">0.589</td>
+<td class="org-right">2.4636</td>
+<td class="org-right">-0.5909</td>
+<td class="org-right">0.5551</td>
+<td class="org-right">-6.3044</td>
+<td class="org-right">3.3932</td>
+</tr>
+
+<tr>
+<td class="org-left">x1:cat1</td>
+<td class="org-right">-9.2755</td>
+<td class="org-right">1.2346</td>
+<td class="org-right">-11.6953</td>
+<td class="org-right">-6.8558</td>
+<td class="org-right">-7.5131</td>
+<td class="org-right">0</td>
+<td class="org-right">1.1527</td>
+<td class="org-right">-8.0471</td>
+<td class="org-right">0</td>
+<td class="org-right">-11.5442</td>
+<td class="org-right">-7.0069</td>
+</tr>
+
+<tr>
+<td class="org-left">x2:cat2b</td>
+<td class="org-right">-58.1667</td>
+<td class="org-right">1.8969</td>
+<td class="org-right">-61.8846</td>
+<td class="org-right">-54.4488</td>
+<td class="org-right">-30.664</td>
+<td class="org-right">0</td>
+<td class="org-right">1.8639</td>
+<td class="org-right">-31.2071</td>
+<td class="org-right">0</td>
+<td class="org-right">-61.8352</td>
+<td class="org-right">-54.4982</td>
+</tr>
+
+<tr>
+<td class="org-left">x2:cat2c</td>
+<td class="org-right">-17.6127</td>
+<td class="org-right">1.8342</td>
+<td class="org-right">-21.2077</td>
+<td class="org-right">-14.0176</td>
+<td class="org-right">-9.6023</td>
+<td class="org-right">0</td>
+<td class="org-right">1.7246</td>
+<td class="org-right">-10.2125</td>
+<td class="org-right">0</td>
+<td class="org-right">-21.0071</td>
+<td class="org-right">-14.2183</td>
+</tr>
+
+<tr>
+<td class="org-left">x2:cat2d</td>
+<td class="org-right">-38.3783</td>
+<td class="org-right">2.3255</td>
+<td class="org-right">-42.9364</td>
+<td class="org-right">-33.8203</td>
+<td class="org-right">-16.5029</td>
+<td class="org-right">0</td>
+<td class="org-right">2.0687</td>
+<td class="org-right">-18.5523</td>
+<td class="org-right">0</td>
+<td class="org-right">-42.4499</td>
+<td class="org-right">-34.3068</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+Finally, we can create tables with list of models.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">
+<span style="color: #8b7d6b;">## </span><span style="color: #8b7d6b;">list of models</span>
+<span style="color: #bba699;">tidye</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">list</span><span style="color: #696969;">(</span><span style="color: #a6bb99;">Gaussian</span>=<span style="color: #b3c0a7;">model.g3</span>, <span style="color: #9999bb;">Binomial</span>=<span style="color: #bb99b4;">model.bin</span>, <span style="color: #b6a0e0;">Multinomial</span>=<span style="color: #99bbb4;">model.mul</span><span style="color: #696969;">)</span><span style="color: #ffffff;">)</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #99bbb4;">print</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #b3c0a7;">n</span>=<span style="color: #98fb98;">Inf</span><span style="color: #ffffff;">)</span>
+
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">y.multin.cat</th>
+<th scope="col" class="org-left">model</th>
+<th scope="col" class="org-left">term</th>
+<th scope="col" class="org-right">estimate</th>
+<th scope="col" class="org-right">std.error</th>
+<th scope="col" class="org-right">conf.low</th>
+<th scope="col" class="org-right">conf.high</th>
+<th scope="col" class="org-right">statistic</th>
+<th scope="col" class="org-right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Gaussian</td>
+<td class="org-left">(Intercept)</td>
+<td class="org-right">3.6042</td>
+<td class="org-right">3.0375</td>
+<td class="org-right">-2.3742</td>
+<td class="org-right">9.5826</td>
+<td class="org-right">1.1866</td>
+<td class="org-right">0.2364</td>
+</tr>
+
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Gaussian</td>
+<td class="org-left">x1</td>
+<td class="org-right">-0.9053</td>
+<td class="org-right">0.8167</td>
+<td class="org-right">-2.5126</td>
+<td class="org-right">0.7021</td>
+<td class="org-right">-1.1085</td>
+<td class="org-right">0.2686</td>
+</tr>
+
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Gaussian</td>
+<td class="org-left">cat1</td>
+<td class="org-right">-2.2011</td>
+<td class="org-right">3.6151</td>
+<td class="org-right">-9.3164</td>
+<td class="org-right">4.9142</td>
+<td class="org-right">-0.6089</td>
+<td class="org-right">0.5431</td>
+</tr>
+
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Gaussian</td>
+<td class="org-left">x2</td>
+<td class="org-right">28.0061</td>
+<td class="org-right">1.3544</td>
+<td class="org-right">25.3403</td>
+<td class="org-right">30.6719</td>
+<td class="org-right">20.6774</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Gaussian</td>
+<td class="org-left">cat2b</td>
+<td class="org-right">-0.1835</td>
+<td class="org-right">2.3532</td>
+<td class="org-right">-4.8151</td>
+<td class="org-right">4.4481</td>
+<td class="org-right">-0.078</td>
+<td class="org-right">0.9379</td>
+</tr>
+
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Gaussian</td>
+<td class="org-left">cat2c</td>
+<td class="org-right">-0.9414</td>
+<td class="org-right">2.2746</td>
+<td class="org-right">-5.4184</td>
+<td class="org-right">3.5355</td>
+<td class="org-right">-0.4139</td>
+<td class="org-right">0.6793</td>
+</tr>
+
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Gaussian</td>
+<td class="org-left">cat2d</td>
+<td class="org-right">-1.4556</td>
+<td class="org-right">2.4636</td>
+<td class="org-right">-6.3044</td>
+<td class="org-right">3.3932</td>
+<td class="org-right">-0.5909</td>
+<td class="org-right">0.5551</td>
+</tr>
+
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Gaussian</td>
+<td class="org-left">x1:cat1</td>
+<td class="org-right">-9.2755</td>
+<td class="org-right">1.1527</td>
+<td class="org-right">-11.5442</td>
+<td class="org-right">-7.0069</td>
+<td class="org-right">-8.0471</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Gaussian</td>
+<td class="org-left">x2:cat2b</td>
+<td class="org-right">-58.1667</td>
+<td class="org-right">1.8639</td>
+<td class="org-right">-61.8352</td>
+<td class="org-right">-54.4982</td>
+<td class="org-right">-31.2071</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Gaussian</td>
+<td class="org-left">x2:cat2c</td>
+<td class="org-right">-17.6127</td>
+<td class="org-right">1.7246</td>
+<td class="org-right">-21.0071</td>
+<td class="org-right">-14.2183</td>
+<td class="org-right">-10.2125</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Gaussian</td>
+<td class="org-left">x2:cat2d</td>
+<td class="org-right">-38.3783</td>
+<td class="org-right">2.0687</td>
+<td class="org-right">-42.4499</td>
+<td class="org-right">-34.3068</td>
+<td class="org-right">-18.5523</td>
+<td class="org-right">0</td>
+</tr>
+
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Binomial</td>
+<td class="org-left">(Intercept)</td>
+<td class="org-right">1.3429</td>
+<td class="org-right">0.8402</td>
+<td class="org-right">-0.3366</td>
+<td class="org-right">2.9946</td>
+<td class="org-right">1.5982</td>
+<td class="org-right">0.11</td>
+</tr>
+
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Binomial</td>
+<td class="org-left">x1</td>
+<td class="org-right">-0.7064</td>
+<td class="org-right">0.1766</td>
+<td class="org-right">-1.0668</td>
+<td class="org-right">-0.3716</td>
+<td class="org-right">-3.9992</td>
+<td class="org-right">0.0001</td>
+</tr>
+
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Binomial</td>
+<td class="org-left">x2</td>
+<td class="org-right">6.8998</td>
+<td class="org-right">2.4031</td>
+<td class="org-right">3.1397</td>
+<td class="org-right">12.5526</td>
+<td class="org-right">2.8712</td>
+<td class="org-right">0.0041</td>
+</tr>
+
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Binomial</td>
+<td class="org-left">cat2b</td>
+<td class="org-right">0.8125</td>
+<td class="org-right">0.9307</td>
+<td class="org-right">-0.9529</td>
+<td class="org-right">2.7251</td>
+<td class="org-right">0.8731</td>
+<td class="org-right">0.3826</td>
+</tr>
+
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Binomial</td>
+<td class="org-left">cat2c</td>
+<td class="org-right">0.8889</td>
+<td class="org-right">0.7803</td>
+<td class="org-right">-0.5932</td>
+<td class="org-right">2.5013</td>
+<td class="org-right">1.1392</td>
+<td class="org-right">0.2546</td>
+</tr>
+
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Binomial</td>
+<td class="org-left">cat2d</td>
+<td class="org-right">0.3712</td>
+<td class="org-right">0.7899</td>
+<td class="org-right">-1.1366</td>
+<td class="org-right">1.9951</td>
+<td class="org-right">0.47</td>
+<td class="org-right">0.6384</td>
+</tr>
+
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Binomial</td>
+<td class="org-left">x2:cat2b</td>
+<td class="org-right">-10.5099</td>
+<td class="org-right">2.8835</td>
+<td class="org-right">-17.0461</td>
+<td class="org-right">-5.7408</td>
+<td class="org-right">-3.6449</td>
+<td class="org-right">0.0003</td>
+</tr>
+
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Binomial</td>
+<td class="org-left">x2:cat2c</td>
+<td class="org-right">-6.0388</td>
+<td class="org-right">2.4337</td>
+<td class="org-right">-11.7324</td>
+<td class="org-right">-2.172</td>
+<td class="org-right">-2.4813</td>
+<td class="org-right">0.0131</td>
+</tr>
+
+<tr>
+<td class="org-left">nil</td>
+<td class="org-left">Binomial</td>
+<td class="org-left">x2:cat2d</td>
+<td class="org-right">-7.2537</td>
+<td class="org-right">2.4283</td>
+<td class="org-right">-12.9408</td>
+<td class="org-right">-3.4126</td>
+<td class="org-right">-2.9872</td>
+<td class="org-right">0.0028</td>
+</tr>
+
+<tr>
+<td class="org-left">2</td>
+<td class="org-left">Multinomial</td>
+<td class="org-left">(Intercept)</td>
+<td class="org-right">-0.9266</td>
+<td class="org-right">0.4976</td>
+<td class="org-right">-1.9018</td>
+<td class="org-right">0.0487</td>
+<td class="org-right">-1.8621</td>
+<td class="org-right">0.0626</td>
+</tr>
+
+<tr>
+<td class="org-left">2</td>
+<td class="org-left">Multinomial</td>
+<td class="org-left">x1</td>
+<td class="org-right">-0.0099</td>
+<td class="org-right">0.1505</td>
+<td class="org-right">-0.3048</td>
+<td class="org-right">0.285</td>
+<td class="org-right">-0.0657</td>
+<td class="org-right">0.9477</td>
+</tr>
+
+<tr>
+<td class="org-left">2</td>
+<td class="org-left">Multinomial</td>
+<td class="org-left">x2</td>
+<td class="org-right">-0.2114</td>
+<td class="org-right">0.1776</td>
+<td class="org-right">-0.5596</td>
+<td class="org-right">0.1367</td>
+<td class="org-right">-1.1902</td>
+<td class="org-right">0.234</td>
+</tr>
+
+<tr>
+<td class="org-left">3</td>
+<td class="org-left">Multinomial</td>
+<td class="org-left">(Intercept)</td>
+<td class="org-right">-0.5612</td>
+<td class="org-right">0.5229</td>
+<td class="org-right">-1.586</td>
+<td class="org-right">0.4636</td>
+<td class="org-right">-1.0734</td>
+<td class="org-right">0.2831</td>
+</tr>
+
+<tr>
+<td class="org-left">3</td>
+<td class="org-left">Multinomial</td>
+<td class="org-left">x1</td>
+<td class="org-right">-0.2168</td>
+<td class="org-right">0.1646</td>
+<td class="org-right">-0.5393</td>
+<td class="org-right">0.1058</td>
+<td class="org-right">-1.3173</td>
+<td class="org-right">0.1877</td>
+</tr>
+
+<tr>
+<td class="org-left">3</td>
+<td class="org-left">Multinomial</td>
+<td class="org-left">x2</td>
+<td class="org-right">-0.24</td>
+<td class="org-right">0.1995</td>
+<td class="org-right">-0.6311</td>
+<td class="org-right">0.151</td>
+<td class="org-right">-1.203</td>
+<td class="org-right">0.229</td>
+</tr>
+</tbody>
+</table>
+
+
+
+<p>
+It can easily be exported to standard publication format using the package <code>kable</code> or the function <code>etab()</code> provided by <code>edar</code>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #bba699;">tidye</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">list</span><span style="color: #696969;">(</span><span style="color: #a6bb99;">Gaussian</span>=<span style="color: #b3c0a7;">model.g3</span>, <span style="color: #9999bb;">Binomial</span>=<span style="color: #bb99b4;">model.bin</span>, <span style="color: #b6a0e0;">Multinomial</span>=<span style="color: #99bbb4;">model.mul</span><span style="color: #696969;">)</span><span style="color: #ffffff;">)</span> <span style="color: #7fffd4;">%&gt;%</span>
+    <span style="color: #e0d0a0;">kableExtra</span>::<span style="color: #a7aac0;">kable</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #ffa07a; font-style: italic;">"html"</span>, <span style="color: #bba699;">booktabs</span> = <span style="color: #bb99b4;">T</span> <span style="color: #ffffff;">)</span> <span style="color: #7fffd4;">%&gt;%</span>
+    <span style="color: #e0d0a0;">kableExtra</span>::<span style="color: #bba699;">kable_styling</span><span style="color: #ffffff;">(</span><span style="color: #a7c0b9;">bootstrap_options</span> = <span style="color: #b6a0e0;">c</span><span style="color: #696969;">(</span><span style="color: #ffa07a; font-style: italic;">"striped"</span>, <span style="color: #ffa07a; font-style: italic;">"hover"</span>, <span style="color: #ffa07a; font-style: italic;">"condensed"</span><span style="color: #696969;">)</span><span style="color: #ffffff;">)</span>
+
+<span style="color: #8b7d6b;"># </span><span style="color: #8b7d6b;">tidye(list(Gaussian=model.g3, Binomial=model.bin, Multinomial=model.mul)) %&gt;%</span>
+<span style="color: #8b7d6b;">#     </span><span style="color: #8b7d6b;">kableExtra::kable(., "html", booktabs = T ) %&gt;%</span>
+<span style="color: #8b7d6b;">#     </span><span style="color: #8b7d6b;">kableExtra::kable_styling(latex_options = c("scale_down"))</span>
+
+</pre>
+</div>
+
+<table class="table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> y.multin.cat </th>
+   <th style="text-align:left;"> model </th>
+   <th style="text-align:left;"> term </th>
+   <th style="text-align:right;"> estimate </th>
+   <th style="text-align:right;"> std.error </th>
+   <th style="text-align:right;"> conf.low </th>
+   <th style="text-align:right;"> conf.high </th>
+   <th style="text-align:right;"> statistic </th>
+   <th style="text-align:right;"> p.value </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Gaussian </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> 3.6042 </td>
+   <td style="text-align:right;"> 3.0375 </td>
+   <td style="text-align:right;"> -2.3742 </td>
+   <td style="text-align:right;"> 9.5826 </td>
+   <td style="text-align:right;"> 1.1866 </td>
+   <td style="text-align:right;"> 0.2364 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Gaussian </td>
+   <td style="text-align:left;"> x1 </td>
+   <td style="text-align:right;"> -0.9053 </td>
+   <td style="text-align:right;"> 0.8167 </td>
+   <td style="text-align:right;"> -2.5126 </td>
+   <td style="text-align:right;"> 0.7021 </td>
+   <td style="text-align:right;"> -1.1085 </td>
+   <td style="text-align:right;"> 0.2686 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Gaussian </td>
+   <td style="text-align:left;"> cat1 </td>
+   <td style="text-align:right;"> -2.2011 </td>
+   <td style="text-align:right;"> 3.6151 </td>
+   <td style="text-align:right;"> -9.3164 </td>
+   <td style="text-align:right;"> 4.9142 </td>
+   <td style="text-align:right;"> -0.6089 </td>
+   <td style="text-align:right;"> 0.5431 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Gaussian </td>
+   <td style="text-align:left;"> x2 </td>
+   <td style="text-align:right;"> 28.0061 </td>
+   <td style="text-align:right;"> 1.3544 </td>
+   <td style="text-align:right;"> 25.3403 </td>
+   <td style="text-align:right;"> 30.6719 </td>
+   <td style="text-align:right;"> 20.6774 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Gaussian </td>
+   <td style="text-align:left;"> cat2b </td>
+   <td style="text-align:right;"> -0.1835 </td>
+   <td style="text-align:right;"> 2.3532 </td>
+   <td style="text-align:right;"> -4.8151 </td>
+   <td style="text-align:right;"> 4.4481 </td>
+   <td style="text-align:right;"> -0.0780 </td>
+   <td style="text-align:right;"> 0.9379 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Gaussian </td>
+   <td style="text-align:left;"> cat2c </td>
+   <td style="text-align:right;"> -0.9414 </td>
+   <td style="text-align:right;"> 2.2746 </td>
+   <td style="text-align:right;"> -5.4184 </td>
+   <td style="text-align:right;"> 3.5355 </td>
+   <td style="text-align:right;"> -0.4139 </td>
+   <td style="text-align:right;"> 0.6793 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Gaussian </td>
+   <td style="text-align:left;"> cat2d </td>
+   <td style="text-align:right;"> -1.4556 </td>
+   <td style="text-align:right;"> 2.4636 </td>
+   <td style="text-align:right;"> -6.3044 </td>
+   <td style="text-align:right;"> 3.3932 </td>
+   <td style="text-align:right;"> -0.5909 </td>
+   <td style="text-align:right;"> 0.5551 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Gaussian </td>
+   <td style="text-align:left;"> x1:cat1 </td>
+   <td style="text-align:right;"> -9.2755 </td>
+   <td style="text-align:right;"> 1.1527 </td>
+   <td style="text-align:right;"> -11.5442 </td>
+   <td style="text-align:right;"> -7.0069 </td>
+   <td style="text-align:right;"> -8.0471 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Gaussian </td>
+   <td style="text-align:left;"> x2:cat2b </td>
+   <td style="text-align:right;"> -58.1667 </td>
+   <td style="text-align:right;"> 1.8639 </td>
+   <td style="text-align:right;"> -61.8352 </td>
+   <td style="text-align:right;"> -54.4982 </td>
+   <td style="text-align:right;"> -31.2071 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Gaussian </td>
+   <td style="text-align:left;"> x2:cat2c </td>
+   <td style="text-align:right;"> -17.6127 </td>
+   <td style="text-align:right;"> 1.7246 </td>
+   <td style="text-align:right;"> -21.0071 </td>
+   <td style="text-align:right;"> -14.2183 </td>
+   <td style="text-align:right;"> -10.2125 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Gaussian </td>
+   <td style="text-align:left;"> x2:cat2d </td>
+   <td style="text-align:right;"> -38.3783 </td>
+   <td style="text-align:right;"> 2.0687 </td>
+   <td style="text-align:right;"> -42.4499 </td>
+   <td style="text-align:right;"> -34.3068 </td>
+   <td style="text-align:right;"> -18.5523 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Binomial </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> 1.3429 </td>
+   <td style="text-align:right;"> 0.8402 </td>
+   <td style="text-align:right;"> -0.3366 </td>
+   <td style="text-align:right;"> 2.9946 </td>
+   <td style="text-align:right;"> 1.5982 </td>
+   <td style="text-align:right;"> 0.1100 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Binomial </td>
+   <td style="text-align:left;"> x1 </td>
+   <td style="text-align:right;"> -0.7064 </td>
+   <td style="text-align:right;"> 0.1766 </td>
+   <td style="text-align:right;"> -1.0668 </td>
+   <td style="text-align:right;"> -0.3716 </td>
+   <td style="text-align:right;"> -3.9992 </td>
+   <td style="text-align:right;"> 0.0001 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Binomial </td>
+   <td style="text-align:left;"> x2 </td>
+   <td style="text-align:right;"> 6.8998 </td>
+   <td style="text-align:right;"> 2.4031 </td>
+   <td style="text-align:right;"> 3.1397 </td>
+   <td style="text-align:right;"> 12.5526 </td>
+   <td style="text-align:right;"> 2.8712 </td>
+   <td style="text-align:right;"> 0.0041 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Binomial </td>
+   <td style="text-align:left;"> cat2b </td>
+   <td style="text-align:right;"> 0.8125 </td>
+   <td style="text-align:right;"> 0.9307 </td>
+   <td style="text-align:right;"> -0.9529 </td>
+   <td style="text-align:right;"> 2.7251 </td>
+   <td style="text-align:right;"> 0.8731 </td>
+   <td style="text-align:right;"> 0.3826 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Binomial </td>
+   <td style="text-align:left;"> cat2c </td>
+   <td style="text-align:right;"> 0.8889 </td>
+   <td style="text-align:right;"> 0.7803 </td>
+   <td style="text-align:right;"> -0.5932 </td>
+   <td style="text-align:right;"> 2.5013 </td>
+   <td style="text-align:right;"> 1.1392 </td>
+   <td style="text-align:right;"> 0.2546 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Binomial </td>
+   <td style="text-align:left;"> cat2d </td>
+   <td style="text-align:right;"> 0.3712 </td>
+   <td style="text-align:right;"> 0.7899 </td>
+   <td style="text-align:right;"> -1.1366 </td>
+   <td style="text-align:right;"> 1.9951 </td>
+   <td style="text-align:right;"> 0.4700 </td>
+   <td style="text-align:right;"> 0.6384 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Binomial </td>
+   <td style="text-align:left;"> x2:cat2b </td>
+   <td style="text-align:right;"> -10.5099 </td>
+   <td style="text-align:right;"> 2.8835 </td>
+   <td style="text-align:right;"> -17.0461 </td>
+   <td style="text-align:right;"> -5.7408 </td>
+   <td style="text-align:right;"> -3.6449 </td>
+   <td style="text-align:right;"> 0.0003 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Binomial </td>
+   <td style="text-align:left;"> x2:cat2c </td>
+   <td style="text-align:right;"> -6.0388 </td>
+   <td style="text-align:right;"> 2.4337 </td>
+   <td style="text-align:right;"> -11.7324 </td>
+   <td style="text-align:right;"> -2.1720 </td>
+   <td style="text-align:right;"> -2.4813 </td>
+   <td style="text-align:right;"> 0.0131 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> Binomial </td>
+   <td style="text-align:left;"> x2:cat2d </td>
+   <td style="text-align:right;"> -7.2537 </td>
+   <td style="text-align:right;"> 2.4283 </td>
+   <td style="text-align:right;"> -12.9408 </td>
+   <td style="text-align:right;"> -3.4126 </td>
+   <td style="text-align:right;"> -2.9872 </td>
+   <td style="text-align:right;"> 0.0028 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Category 2 </td>
+   <td style="text-align:left;"> Multinomial </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -0.9266 </td>
+   <td style="text-align:right;"> 0.4976 </td>
+   <td style="text-align:right;"> -1.9018 </td>
+   <td style="text-align:right;"> 0.0487 </td>
+   <td style="text-align:right;"> -1.8621 </td>
+   <td style="text-align:right;"> 0.0626 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Category 2 </td>
+   <td style="text-align:left;"> Multinomial </td>
+   <td style="text-align:left;"> x1 </td>
+   <td style="text-align:right;"> -0.0099 </td>
+   <td style="text-align:right;"> 0.1505 </td>
+   <td style="text-align:right;"> -0.3048 </td>
+   <td style="text-align:right;"> 0.2850 </td>
+   <td style="text-align:right;"> -0.0657 </td>
+   <td style="text-align:right;"> 0.9477 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Category 2 </td>
+   <td style="text-align:left;"> Multinomial </td>
+   <td style="text-align:left;"> x2 </td>
+   <td style="text-align:right;"> -0.2114 </td>
+   <td style="text-align:right;"> 0.1776 </td>
+   <td style="text-align:right;"> -0.5596 </td>
+   <td style="text-align:right;"> 0.1367 </td>
+   <td style="text-align:right;"> -1.1902 </td>
+   <td style="text-align:right;"> 0.2340 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Category 3 </td>
+   <td style="text-align:left;"> Multinomial </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -0.5612 </td>
+   <td style="text-align:right;"> 0.5229 </td>
+   <td style="text-align:right;"> -1.5860 </td>
+   <td style="text-align:right;"> 0.4636 </td>
+   <td style="text-align:right;"> -1.0734 </td>
+   <td style="text-align:right;"> 0.2831 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Category 3 </td>
+   <td style="text-align:left;"> Multinomial </td>
+   <td style="text-align:left;"> x1 </td>
+   <td style="text-align:right;"> -0.2168 </td>
+   <td style="text-align:right;"> 0.1646 </td>
+   <td style="text-align:right;"> -0.5393 </td>
+   <td style="text-align:right;"> 0.1058 </td>
+   <td style="text-align:right;"> -1.3173 </td>
+   <td style="text-align:right;"> 0.1877 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Category 3 </td>
+   <td style="text-align:left;"> Multinomial </td>
+   <td style="text-align:left;"> x2 </td>
+   <td style="text-align:right;"> -0.2400 </td>
+   <td style="text-align:right;"> 0.1995 </td>
+   <td style="text-align:right;"> -0.6311 </td>
+   <td style="text-align:right;"> 0.1510 </td>
+   <td style="text-align:right;"> -1.2030 </td>
+   <td style="text-align:right;"> 0.2290 </td>
+  </tr>
+</tbody>
+</table>
+
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #b3c0a7;">list</span><span style="color: #ffffff;">(</span><span style="color: #9999bb;">Binomial</span>=<span style="color: #bb99b4;">model.bin</span>, <span style="color: #b6a0e0;">Multinomial</span>=<span style="color: #99bbb4;">model.mul</span>,<span style="color: #a6bb99;">Gaussian</span>=<span style="color: #b3c0a7;">model.g3</span><span style="color: #ffffff;">)</span> <span style="color: #7fffd4;">%&gt;%</span>
+    <span style="color: #a7aac0;">etab</span>
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Covariate</th>
+<th scope="col" class="org-left">Binomial</th>
+<th scope="col" class="org-left">Gaussian</th>
+<th scope="col" class="org-left">Multinomial Category 2</th>
+<th scope="col" class="org-left">Multinomial Category 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">(Intercept)</td>
+<td class="org-left">1.3429</td>
+<td class="org-left">3.6042</td>
+<td class="org-left">-0.9266</td>
+<td class="org-left">-0.5612</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">(-0.3366, 2.9946)</td>
+<td class="org-left">(-2.3742, 9.5826)</td>
+<td class="org-left">(-1.9018, 0.0487)</td>
+<td class="org-left">(-1.586, 0.4636)</td>
+</tr>
+
+<tr>
+<td class="org-left">x1</td>
+<td class="org-left">-0.7064</td>
+<td class="org-left">-0.9053</td>
+<td class="org-left">-0.0099</td>
+<td class="org-left">-0.2168</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">(-1.0668, -0.3716)</td>
+<td class="org-left">(-2.5126, 0.7021)</td>
+<td class="org-left">(-0.3048, 0.285)</td>
+<td class="org-left">(-0.5393, 0.1058)</td>
+</tr>
+
+<tr>
+<td class="org-left">x2</td>
+<td class="org-left">6.8998</td>
+<td class="org-left">28.0061</td>
+<td class="org-left">-0.2114</td>
+<td class="org-left">-0.24</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">(3.1397, 12.5526)</td>
+<td class="org-left">(25.3403, 30.6719)</td>
+<td class="org-left">(-0.5596, 0.1367)</td>
+<td class="org-left">(-0.6311, 0.151)</td>
+</tr>
+
+<tr>
+<td class="org-left">cat1</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">-2.2011</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">(-9.3164, 4.9142)</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">cat2b</td>
+<td class="org-left">0.8125</td>
+<td class="org-left">-0.1835</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">(-0.9529, 2.7251)</td>
+<td class="org-left">(-4.8151, 4.4481)</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">cat2c</td>
+<td class="org-left">0.8889</td>
+<td class="org-left">-0.9414</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">(-0.5932, 2.5013)</td>
+<td class="org-left">(-5.4184, 3.5355)</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">cat2d</td>
+<td class="org-left">0.3712</td>
+<td class="org-left">-1.4556</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">(-1.1366, 1.9951)</td>
+<td class="org-left">(-6.3044, 3.3932)</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">x1:cat1</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">-9.2755</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">(-11.5442, -7.0069)</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">x2:cat2b</td>
+<td class="org-left">-10.5099</td>
+<td class="org-left">-58.1667</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">(-17.0461, -5.7408)</td>
+<td class="org-left">(-61.8352, -54.4982)</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">x2:cat2c</td>
+<td class="org-left">-6.0388</td>
+<td class="org-left">-17.6127</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">(-11.7324, -2.172)</td>
+<td class="org-left">(-21.0071, -14.2183)</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">x2:cat2d</td>
+<td class="org-left">-7.2537</td>
+<td class="org-left">-38.3783</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">(-12.9408, -3.4126)</td>
+<td class="org-left">(-42.4499, -34.3068)</td>
+<td class="org-left">&#xa0;</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-org6eca324" class="outline-4">
+<h4 id="org6eca324"><span class="section-number-4">2.5.3</span> Plot fitted values</h4>
+<div class="outline-text-4" id="text-2-5-3">
+<p>
+After the estimation a good way to visualize and present marginal effects are plots with fitted values. It is easy to do with <code>edar</code> package.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #b3c0a7;">model.g1</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #e0a0bc;">gge_fit</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #a7aac0;">data</span>, <span style="color: #ffa07a; font-style: italic;">'y'</span>, <span style="color: #ffa07a; font-style: italic;">"x1"</span><span style="color: #ffffff;">)</span>
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="fig-fitted-value-1.png" alt="fig-fitted-value-1.png" />
+</p>
+</div>
+
+<p>
+There are many options avaiable with the <code>gge_fit()</code> function. We can at once:
+</p>
+<ul class="org-ul">
+<li>Compare fitted values for different groups</li>
+<li>Compare fitted values for different model specifications, given a list of models</li>
+<li>Create a grid of plots with fitted values for different groups and model specifications</li>
+</ul>
+</div>
+
+<ol class="org-ol">
+<li><a id="org07705f4"></a>Fitted values for different groups<br />
+<div class="outline-text-5" id="text-2-5-3-1">
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #b3c0a7;">model.g3</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #e0a0bc;">gge_fit</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #a7aac0;">data</span>, <span style="color: #ffa07a; font-style: italic;">'y'</span>, <span style="color: #ffa07a; font-style: italic;">"x2"</span>, <span style="color: #a0d6e0;">cat.values</span>=<span style="color: #b3c0a7;">list</span><span style="color: #696969;">(</span><span style="color: #b3c0a7;">cat2</span>=<span style="color: #b6a0e0;">c</span><span style="color: #00ffff;">(</span><span style="color: #ffa07a; font-style: italic;">'a'</span>,<span style="color: #ffa07a; font-style: italic;">"b"</span><span style="color: #00ffff;">)</span><span style="color: #696969;">)</span><span style="color: #ffffff;">)</span>
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="fig-fiited-cat-1.png" alt="fig-fiited-cat-1.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #bb99b4;">g1</span> = <span style="color: #b3c0a7;">model.g3</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #e0a0bc;">gge_fit</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #a7aac0;">data</span>, <span style="color: #ffa07a; font-style: italic;">'y'</span>, <span style="color: #ffa07a; font-style: italic;">"x2"</span>,  <span style="color: #a0d6e0;">cat.values</span>=<span style="color: #b3c0a7;">list</span><span style="color: #696969;">(</span><span style="color: #b3c0a7;">cat2</span>=<span style="color: #b6a0e0;">c</span><span style="color: #00ffff;">(</span><span style="color: #ffa07a; font-style: italic;">'a'</span><span style="color: #00ffff;">)</span><span style="color: #696969;">)</span>, <span style="color: #a6bb99;">title</span>=<span style="color: #ffa07a; font-style: italic;">'Variable cat2 fixed at a'</span><span style="color: #ffffff;">)</span>
+<span style="color: #e0a0bc;">g2</span> = <span style="color: #b3c0a7;">model.g3</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #e0a0bc;">gge_fit</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #a7aac0;">data</span>, <span style="color: #ffa07a; font-style: italic;">'y'</span>, <span style="color: #ffa07a; font-style: italic;">"x2"</span>,  <span style="color: #a0d6e0;">cat.values</span>=<span style="color: #b3c0a7;">list</span><span style="color: #696969;">(</span><span style="color: #b3c0a7;">cat2</span>=<span style="color: #b6a0e0;">c</span><span style="color: #00ffff;">(</span><span style="color: #ffa07a; font-style: italic;">'b'</span><span style="color: #00ffff;">)</span><span style="color: #696969;">)</span>, <span style="color: #a6bb99;">title</span>=<span style="color: #ffa07a; font-style: italic;">'Variable cat2 fixed at b'</span><span style="color: #ffffff;">)</span>
+<span style="color: #a7c0b9;">ggpubr</span>::<span style="color: #9999bb;">ggarrange</span><span style="color: #ffffff;">(</span><span style="color: #bb99b4;">g1</span>,<span style="color: #e0a0bc;">g2</span><span style="color: #ffffff;">)</span>
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="fig-fiited-cat-2.png" alt="fig-fiited-cat-2.png" />
+</p>
+</div>
+
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #b3c0a7;">model.g3</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #e0a0bc;">gge_fit</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #a7aac0;">data</span>, <span style="color: #ffa07a; font-style: italic;">'y'</span>, <span style="color: #ffa07a; font-style: italic;">"x2"</span>, <span style="color: #a7aac0;">facets</span>=<span style="color: #ffa07a; font-style: italic;">'cat2'</span> <span style="color: #ffffff;">)</span>
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="fig-fiited-cat-3.png" alt="fig-fiited-cat-3.png" />
+</p>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #b3c0a7;">model.g3</span> <span style="color: #7fffd4;">%&gt;%</span> <span style="color: #c0afa7;">edar</span>::<span style="color: #e0a0bc;">gge_fit</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #a7aac0;">data</span>, <span style="color: #ffa07a; font-style: italic;">'y'</span>, <span style="color: #ffa07a; font-style: italic;">'x1'</span>, <span style="color: #a7aac0;">facets</span>=<span style="color: #ffa07a; font-style: italic;">'cat2'</span>, <span style="color: #e0d0a0;">pch.col.cat</span>=<span style="color: #ffa07a; font-style: italic;">'cat1'</span>, <span style="color: #c0a7bd;">pch.col.palette</span>=<span style="color: #b6a0e0;">c</span><span style="color: #696969;">(</span><span style="color: #bba699;">brewer</span>=<span style="color: #ffa07a; font-style: italic;">"Set2"</span><span style="color: #696969;">)</span><span style="color: #ffffff;">)</span>
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="fig-fitted-4.png" alt="fig-fitted-4.png" />
+</p>
+</div>
+
+<p>
+We can also compare a list of models
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #a7c0b9;">formulas</span> = <span style="color: #b3c0a7;">list</span><span style="color: #ffffff;">(</span><span style="color: #ffa07a; font-style: italic;">"Model 1"</span> = <span style="color: #99bbb4;">formula1</span>, <span style="color: #ffa07a; font-style: italic;">"Model 2"</span> = <span style="color: #99bbb4;">formula2</span>, <span style="color: #ffa07a; font-style: italic;">"Model 3"</span> = <span style="color: #e0a0bc;">formula3</span><span style="color: #ffffff;">)</span>
+<span style="color: #a0d6e0;">models</span>   = <span style="color: #b3c0a7;">list</span><span style="color: #ffffff;">(</span><span style="color: #ffa07a; font-style: italic;">"Model 1"</span> = <span style="color: #b3c0a7;">model.g1</span>, <span style="color: #ffa07a; font-style: italic;">"Model 2"</span> = <span style="color: #99bbb4;">model.g2</span>, <span style="color: #ffa07a; font-style: italic;">"Model 3"</span> = <span style="color: #b3c0a7;">model.g3</span><span style="color: #ffffff;">)</span>
+
+<span style="color: #a0d6e0;">models</span> <span style="color: #7fffd4;">%&gt;%</span>  <span style="color: #e0a0bc;">gge_fit</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #a7aac0;">data</span>, <span style="color: #ffa07a; font-style: italic;">"y"</span>, <span style="color: #ffa07a; font-style: italic;">"x2"</span>, <span style="color: #a7c0b9;">formulas</span><span style="color: #ffffff;">)</span>
+
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="fig-fitted-many-models-1.png" alt="fig-fitted-many-models-1.png" />
+</p>
+</div>
+
+
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #a7c0b9;">formulas</span> = <span style="color: #b3c0a7;">list</span><span style="color: #ffffff;">(</span><span style="color: #ffa07a; font-style: italic;">"Model 1"</span> = <span style="color: #99bbb4;">formula1</span>, <span style="color: #ffa07a; font-style: italic;">"Model 2"</span> = <span style="color: #99bbb4;">formula2</span>, <span style="color: #ffa07a; font-style: italic;">"Model 3"</span> = <span style="color: #e0a0bc;">formula3</span><span style="color: #ffffff;">)</span>
+<span style="color: #a0d6e0;">models</span>   = <span style="color: #b3c0a7;">list</span><span style="color: #ffffff;">(</span><span style="color: #ffa07a; font-style: italic;">"Model 1"</span> = <span style="color: #b3c0a7;">model.g1</span>, <span style="color: #ffa07a; font-style: italic;">"Model 2"</span> = <span style="color: #99bbb4;">model.g2</span>, <span style="color: #ffa07a; font-style: italic;">"Model 3"</span> = <span style="color: #b3c0a7;">model.g3</span><span style="color: #ffffff;">)</span>
+
+<span style="color: #a0d6e0;">models</span> <span style="color: #7fffd4;">%&gt;%</span>  <span style="color: #e0a0bc;">gge_fit</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #a7aac0;">data</span>, <span style="color: #ffa07a; font-style: italic;">"y"</span>, <span style="color: #ffa07a; font-style: italic;">"x2"</span>, <span style="color: #a7c0b9;">formulas</span>,  <span style="color: #a7c0b9;">legend.ncol.fill</span>=<span style="color: #e0a0bc;">3</span>, <span style="color: #a7aac0;">facets</span>=<span style="color: #ffa07a; font-style: italic;">'cat2'</span><span style="color: #ffffff;">)</span>
+
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="fig-fitted-many-models-1.png" alt="fig-fitted-many-models-1.png" />
+</p>
+</div>
+
+
+<p>
+The same applies for logistic regressions.
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #bb99b4;">formula.bin1</span> = <span style="color: #a7aac0;">y.bin</span> ~ <span style="color: #e0d0a0;">x1</span>+<span style="color: #a7aac0;">x2</span>
+<span style="color: #e0d0a0;">formula.bin2</span> = <span style="color: #a7aac0;">y.bin</span> ~ <span style="color: #e0d0a0;">x1</span>+<span style="color: #a7aac0;">x2</span>*<span style="color: #b3c0a7;">cat2</span>
+<span style="color: #b6a0e0;">model.bin1</span>   = <span style="color: #b3c0a7;">glm</span><span style="color: #ffffff;">(</span><span style="color: #bb99b4;">formula.bin1</span>, <span style="color: #a7aac0;">data</span>=<span style="color: #a7aac0;">data</span>, <span style="color: #e0a0bc;">family</span>=<span style="color: #ffa07a; font-style: italic;">'binomial'</span><span style="color: #ffffff;">)</span>
+<span style="color: #9999bb;">model.bin2</span>   = <span style="color: #b3c0a7;">glm</span><span style="color: #ffffff;">(</span><span style="color: #e0d0a0;">formula.bin2</span>, <span style="color: #a7aac0;">data</span>=<span style="color: #a7aac0;">data</span>, <span style="color: #e0a0bc;">family</span>=<span style="color: #ffa07a; font-style: italic;">'binomial'</span><span style="color: #ffffff;">)</span>
+
+<span style="color: #a7c0b9;">formulas</span> = <span style="color: #b3c0a7;">list</span><span style="color: #ffffff;">(</span><span style="color: #ffa07a; font-style: italic;">"Model 1"</span> = <span style="color: #bb99b4;">formula.bin1</span>, <span style="color: #ffa07a; font-style: italic;">"Model 2"</span> = <span style="color: #e0d0a0;">formula.bin2</span><span style="color: #ffffff;">)</span>
+<span style="color: #a0d6e0;">models</span>   = <span style="color: #b3c0a7;">list</span><span style="color: #ffffff;">(</span><span style="color: #ffa07a; font-style: italic;">"Model 1"</span> = <span style="color: #b6a0e0;">model.bin1</span>, <span style="color: #ffa07a; font-style: italic;">"Model 2"</span> = <span style="color: #9999bb;">model.bin2</span><span style="color: #ffffff;">)</span>
+
+<span style="color: #a0d6e0;">models</span> <span style="color: #7fffd4;">%&gt;%</span>  <span style="color: #e0a0bc;">gge_fit</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #a7aac0;">data</span>, <span style="color: #ffa07a; font-style: italic;">"y.bin"</span>, <span style="color: #ffa07a; font-style: italic;">"x1"</span>, <span style="color: #a7c0b9;">formulas</span><span style="color: #ffffff;">)</span>
+
+
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="fig-fitted-many-models-bin.png" alt="fig-fitted-many-models-bin.png" />
+</p>
+</div>
+
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #a0d6e0;">models</span> <span style="color: #7fffd4;">%&gt;%</span>  <span style="color: #e0a0bc;">gge_fit</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #a7aac0;">data</span>, <span style="color: #ffa07a; font-style: italic;">"y.bin"</span>, <span style="color: #ffa07a; font-style: italic;">"x2"</span>, <span style="color: #a7c0b9;">formulas</span>, <span style="color: #a7aac0;">facets</span>=<span style="color: #ffa07a; font-style: italic;">'cat2'</span><span style="color: #ffffff;">)</span>
+
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="fig-fitted-many-models-bin-2.png" alt="fig-fitted-many-models-bin-2.png" />
+</p>
+</div>
+</div>
+</li>
+</ol>
+</div>
+
+
+<div id="outline-container-orge5fa691" class="outline-4">
+<h4 id="orge5fa691"><span class="section-number-4">2.5.4</span> Plot with coefficients (dotwisker)</h4>
+<div class="outline-text-4" id="text-2-5-4">
+<p>
+The <code>edar</code> package also provides a wrap function for the <code>dotwisker()</code> plot from the package with same name. As before, the function accepts list of models or tidy summaries of the estimation. There are also options to use robust standard errors in the plot.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #a0d6e0;">models</span>=<span style="color: #bba699;">tidye</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">list</span><span style="color: #696969;">(</span><span style="color: #ffa07a; font-style: italic;">'Standard Model'</span>=<span style="color: #9999bb;">model.bin2</span><span style="color: #696969;">)</span><span style="color: #ffffff;">)</span> <span style="color: #7fffd4;">%&gt;%</span>
+    <span style="color: #bba699;">dplyr</span>::<span style="color: #e0a0bc;">bind_rows</span><span style="color: #ffffff;">(</span><span style="color: #bba699;">tidye</span><span style="color: #696969;">(</span><span style="color: #b3c0a7;">list</span><span style="color: #00ffff;">(</span><span style="color: #ffa07a; font-style: italic;">'Robust std. error'</span>=<span style="color: #9999bb;">model.bin2</span><span style="color: #00ffff;">)</span>, <span style="color: #a0d6e0;">hc</span>=<span style="color: #bb99b4;">T</span><span style="color: #696969;">)</span> <span style="color: #ffffff;">)</span>
+<span style="color: #c0a7bd;">gge_coef</span><span style="color: #ffffff;">(</span><span style="color: #a0d6e0;">models</span>, <span style="color: #c0afa7;">model.id</span>=<span style="color: #ffa07a; font-style: italic;">'model'</span><span style="color: #ffffff;">)</span>
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="dotwisker-1.png" alt="dotwisker-1.png" />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgd31b2b3" class="outline-3">
+<h3 id="orgd31b2b3"><span class="section-number-3">2.6</span> Multiple-imputation and post-stratification</h3>
+<div class="outline-text-3" id="text-2-6">
+<p>
+Multiple imputation and post-stratification are easy to conduct. The options are limited. Tha package <code>survey</code> and the package <code>mice</code> contain more options.
+</p>
+
+<p>
+Here is an example of multiple imputation for two models with different output variables.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #a7aac0;">data</span> = <span style="color: #e0d0a0;">tibble</span>::<span style="color: #bba699;">data_frame</span><span style="color: #ffffff;">(</span><span style="color: #e0d0a0;">x1</span> = <span style="color: #e0d0a0;">rnorm</span><span style="color: #696969;">(</span><span style="color: #c0a7bd;">200</span>,<span style="color: #e0a0bc;">3</span>,<span style="color: #9999bb;">1</span><span style="color: #696969;">)</span>,
+                          <span style="color: #a7aac0;">x2</span> = <span style="color: #a6bb99;">rexp</span><span style="color: #696969;">(</span><span style="color: #c0a7bd;">200</span><span style="color: #696969;">)</span>,
+                          <span style="color: #c0afa7;">cat.var</span>  = <span style="color: #bb99b4;">sample</span><span style="color: #696969;">(</span><span style="color: #b6a0e0;">c</span><span style="color: #00ffff;">(</span><span style="color: #a7aac0;">0</span>,<span style="color: #9999bb;">1</span><span style="color: #00ffff;">)</span>, <span style="color: #c0a7bd;">200</span>, <span style="color: #a6bb99;">replace</span>=<span style="color: #bb99b4;">T</span><span style="color: #696969;">)</span>,
+                          <span style="color: #a3e0a0;">cat.var2</span> = <span style="color: #bb99b4;">sample</span><span style="color: #696969;">(</span><span style="color: #bb99b4;">letters</span>[<span style="color: #9999bb;">1</span>:<span style="color: #a0d6e0;">4</span>], <span style="color: #c0a7bd;">200</span>, <span style="color: #a6bb99;">replace</span>=<span style="color: #bb99b4;">T</span><span style="color: #696969;">)</span>,
+                          <span style="color: #c0afa7;">y1</span> = <span style="color: #a0d6e0;">10</span>*<span style="color: #e0d0a0;">x1</span>*<span style="color: #c0afa7;">cat.var</span>+<span style="color: #e0d0a0;">rnorm</span><span style="color: #696969;">(</span><span style="color: #c0a7bd;">200</span>,<span style="color: #a7aac0;">0</span>,<span style="color: #a0d6e0;">10</span><span style="color: #696969;">)</span> +
+                              <span style="color: #e0a0bc;">3</span>*<span style="color: #a7aac0;">x2</span>*<span style="color: #696969;">(</span><span style="color: #a3e0a0;">6</span>*<span style="color: #00ffff;">(</span><span style="color: #a3e0a0;">cat.var2</span>==<span style="color: #ffa07a; font-style: italic;">'a'</span><span style="color: #00ffff;">)</span> -<span style="color: #e0a0bc;">3</span>*<span style="color: #00ffff;">(</span><span style="color: #a3e0a0;">cat.var2</span>==<span style="color: #ffa07a; font-style: italic;">'b'</span><span style="color: #00ffff;">)</span> +
+                                    <span style="color: #9999bb;">1</span>*<span style="color: #00ffff;">(</span><span style="color: #a3e0a0;">cat.var2</span>==<span style="color: #ffa07a; font-style: italic;">'c'</span><span style="color: #00ffff;">)</span> +<span style="color: #9999bb;">1</span>*<span style="color: #00ffff;">(</span><span style="color: #a3e0a0;">cat.var2</span>==<span style="color: #ffa07a; font-style: italic;">'d'</span><span style="color: #00ffff;">)</span><span style="color: #696969;">)</span>,
+                          <span style="color: #e0d0a0;">y2</span> = -<span style="color: #a0d6e0;">10</span>*<span style="color: #e0d0a0;">x1</span>*<span style="color: #c0afa7;">cat.var</span>+<span style="color: #e0d0a0;">rnorm</span><span style="color: #696969;">(</span><span style="color: #c0a7bd;">200</span>,<span style="color: #a7aac0;">0</span>,<span style="color: #a0d6e0;">10</span><span style="color: #696969;">)</span> +
+                              <span style="color: #a0d6e0;">10</span>*<span style="color: #a7aac0;">x2</span>*<span style="color: #696969;">(</span><span style="color: #e0a0bc;">3</span>*<span style="color: #00ffff;">(</span><span style="color: #a3e0a0;">cat.var2</span>==<span style="color: #ffa07a; font-style: italic;">'a'</span><span style="color: #00ffff;">)</span> -<span style="color: #e0a0bc;">3</span>*<span style="color: #00ffff;">(</span><span style="color: #a3e0a0;">cat.var2</span>==<span style="color: #ffa07a; font-style: italic;">'b'</span><span style="color: #00ffff;">)</span> +
+                                     <span style="color: #9999bb;">1</span>*<span style="color: #00ffff;">(</span><span style="color: #a3e0a0;">cat.var2</span>==<span style="color: #ffa07a; font-style: italic;">'c'</span><span style="color: #00ffff;">)</span> -<span style="color: #9999bb;">1</span>*<span style="color: #00ffff;">(</span><span style="color: #a3e0a0;">cat.var2</span>==<span style="color: #ffa07a; font-style: italic;">'d'</span><span style="color: #00ffff;">)</span><span style="color: #696969;">)</span>
+                          <span style="color: #ffffff;">)</span>  <span style="color: #7fffd4;">%&gt;%</span>
+    <span style="color: #bba699;">dplyr</span>::<span style="color: #e0a0bc;">mutate</span><span style="color: #ffffff;">(</span><span style="color: #c0afa7;">cat.var</span>=<span style="color: #bb99b4;">as.factor</span><span style="color: #696969;">(</span><span style="color: #c0afa7;">cat.var</span><span style="color: #696969;">)</span><span style="color: #ffffff;">)</span> 
+<span style="color: #a7aac0;">data</span>$<span style="color: #e0d0a0;">x1</span>[<span style="color: #bb99b4;">sample</span><span style="color: #696969;">(</span><span style="color: #9999bb;">1</span>:<span style="color: #a7c0b9;">nrow</span><span style="color: #00ffff;">(</span><span style="color: #a7aac0;">data</span><span style="color: #00ffff;">)</span>, <span style="color: #a0d6e0;">10</span><span style="color: #696969;">)</span>] = <span style="color: #98fb98;">NA</span>
+
+
+<span style="color: #bba699;">formula</span> = <span style="color: #ffa07a; font-style: italic;">"x1*cat.var+x2*cat.var2"</span>
+<span style="color: #a6bb99;">imp</span> = <span style="color: #a7aac0;">emultimputation</span><span style="color: #ffffff;">(</span><span style="color: #a7aac0;">data</span>, <span style="color: #bba699;">formula</span>,  <span style="color: #a7c0b9;">dep.vars</span> = <span style="color: #b6a0e0;">c</span><span style="color: #696969;">(</span><span style="color: #ffa07a; font-style: italic;">"y1"</span>, <span style="color: #ffa07a; font-style: italic;">"y2"</span><span style="color: #696969;">)</span>, <span style="color: #9999bb;">ind.vars</span>=<span style="color: #b6a0e0;">c</span><span style="color: #696969;">(</span><span style="color: #ffa07a; font-style: italic;">"x1"</span>, <span style="color: #ffa07a; font-style: italic;">"x2"</span>, <span style="color: #ffa07a; font-style: italic;">"cat.var"</span>, <span style="color: #ffa07a; font-style: italic;">"cat.var2"</span><span style="color: #696969;">)</span><span style="color: #ffffff;">)</span>
+<span style="color: #a6bb99;">imp</span>
+
+</pre>
+</div>
+
+<pre class="example">
+$y1
+           term estimate     se        t    df p.value  low.95 high.95 nmis    fmi lambda
+1   (Intercept)   1.2196 3.4872   0.3497 183.9  0.7269  -5.660   8.100   NA 0.0218 0.0112
+2            x1   0.3293 0.8412   0.3914 182.8  0.6959  -1.331   1.989   10 0.0245 0.0139
+3      cat.var2  -4.9541 4.5860  -1.0802 158.3  0.2817 -14.012   4.104    0 0.0638 0.0521
+4            x2  17.2509 1.3802  12.4993 181.6  0.0000  14.528  19.974    0 0.0274 0.0167
+5     cat.var2b   0.5389 3.0200   0.1784 176.4  0.8586  -5.421   6.499   NA 0.0375 0.0266
+6     cat.var2c  -3.7201 3.0468  -1.2210 179.1  0.2237  -9.732   2.292   NA 0.0325 0.0218
+7     cat.var2d  -2.1013 3.0617  -0.6863 177.7  0.4934  -8.143   3.941   NA 0.0351 0.0243
+8   x1:cat.var2  10.5961 1.4690   7.2130 155.1  0.0000   7.694  13.498   NA 0.0680 0.0560
+9  x2:cat.var2b -26.7177 2.0414 -13.0880 185.4  0.0000 -30.745 -22.690   NA 0.0173 0.0068
+ [ reached getOption("max.print") -- omitted 2 rows ]
+
+$y2
+           term estimate     se        t    df p.value   low.95  high.95 nmis    fmi lambda
+1   (Intercept)   7.0397 3.4878   2.0184 122.8  0.0457   0.1357  13.9437   NA 0.1089 0.0946
+2            x1  -0.4107 0.8368  -0.4908 127.6  0.6244  -2.0664   1.2450   10 0.1028 0.0888
+3      cat.var2   2.9983 4.5419   0.6601 104.7  0.5106  -6.0077  12.0043    0 0.1344 0.1181
+4            x2  27.6086 1.3153  20.9904 185.2  0.0000  25.0137  30.2035    0 0.0178 0.0072
+5     cat.var2b  -5.6630 2.9412  -1.9254 152.0  0.0560 -11.4740   0.1479   NA 0.0719 0.0598
+6     cat.var2c  -6.4962 3.0161  -2.1538 129.7  0.0331 -12.4634  -0.5290   NA 0.1000 0.0862
+7     cat.var2d  -2.4124 3.0181  -0.7993 134.9  0.4255  -8.3812   3.5564   NA 0.0933 0.0800
+8   x1:cat.var2 -10.6894 1.4361  -7.4433 111.9  0.0000 -13.5349  -7.8439   NA 0.1240 0.1085
+9  x2:cat.var2b -58.4786 1.9527 -29.9479 186.0  0.0000 -62.3309 -54.6264   NA 0.0150 0.0045
+ [ reached getOption("max.print") -- omitted 2 rows ]
+</pre>
+
+<p>
+Post-stratification for simple probabilistic sample is also straightforward.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">
+<span style="color: #a7aac0;">data</span> = <span style="color: #e0d0a0;">tibble</span>::<span style="color: #bba699;">data_frame</span><span style="color: #ffffff;">(</span><span style="color: #a3e0a0;">educ</span> = <span style="color: #bb99b4;">sample</span><span style="color: #696969;">(</span><span style="color: #b6a0e0;">c</span><span style="color: #00ffff;">(</span><span style="color: #ffa07a; font-style: italic;">"Low"</span>, <span style="color: #ffa07a; font-style: italic;">"High"</span><span style="color: #00ffff;">)</span>, <span style="color: #c0a7bd;">200</span>, <span style="color: #bb99b4;">T</span><span style="color: #696969;">)</span>, <span style="color: #a7aac0;">gender</span>=<span style="color: #bb99b4;">sample</span><span style="color: #696969;">(</span><span style="color: #b6a0e0;">c</span><span style="color: #00ffff;">(</span><span style="color: #ffa07a; font-style: italic;">'Man'</span>, <span style="color: #ffa07a; font-style: italic;">"Woman"</span><span style="color: #00ffff;">)</span>, <span style="color: #c0a7bd;">200</span>, <span style="color: #bb99b4;">T</span><span style="color: #696969;">)</span>, <span style="color: #a7aac0;">other.variable</span>=<span style="color: #e0d0a0;">rnorm</span><span style="color: #696969;">(</span><span style="color: #c0a7bd;">200</span><span style="color: #696969;">)</span><span style="color: #ffffff;">)</span> 
+<span style="color: #e0d0a0;">pop.prop</span> = <span style="color: #e0d0a0;">tibble</span>::<span style="color: #bba699;">data_frame</span><span style="color: #ffffff;">(</span><span style="color: #a3e0a0;">educ</span> = <span style="color: #b6a0e0;">c</span><span style="color: #696969;">(</span><span style="color: #ffa07a; font-style: italic;">"Low"</span>, <span style="color: #ffa07a; font-style: italic;">"High"</span><span style="color: #696969;">)</span><span style="color: #ffffff;">)</span>  <span style="color: #7fffd4;">%&gt;%</span>
+    <span style="color: #9999bb;">tidyr</span>::<span style="color: #e0a0bc;">crossing</span><span style="color: #ffffff;">(</span><span style="color: #a7aac0;">gender</span>=<span style="color: #b6a0e0;">c</span><span style="color: #696969;">(</span><span style="color: #ffa07a; font-style: italic;">"Man"</span>, <span style="color: #ffa07a; font-style: italic;">"Woman"</span><span style="color: #696969;">)</span><span style="color: #ffffff;">)</span> <span style="color: #7fffd4;">%&gt;%</span>
+    <span style="color: #bba699;">dplyr</span>::<span style="color: #e0a0bc;">mutate</span><span style="color: #ffffff;">(</span><span style="color: #a7aac0;">Freq</span> = <span style="color: #c0afa7;">100</span>*<span style="color: #b6a0e0;">c</span><span style="color: #696969;">(</span><span style="color: #a0d6e0;">.3</span>,<span style="color: #c0a7bd;">.25</span>,<span style="color: #a0d6e0;">.3</span>,<span style="color: #e0d0a0;">.15</span><span style="color: #696969;">)</span><span style="color: #ffffff;">)</span> 
+
+<span style="color: #c0afa7;">epoststrat</span><span style="color: #ffffff;">(</span><span style="color: #a7aac0;">data</span>, <span style="color: #e0d0a0;">pop.prop</span>, <span style="color: #a6bb99;">strata</span> = ~<span style="color: #a3e0a0;">educ</span>+<span style="color: #a7aac0;">gender</span><span style="color: #ffffff;">)</span> 
+</pre>
+</div>
+
+<pre class="example">
+$weights
+  [1] 0.6250 0.5357 0.3061 0.5357 0.6250 0.3061 0.5357 0.5319 0.5357 0.6250 0.5357 0.3061 0.5319 0.5357 0.5357 0.6250
+ [17] 0.3061 0.6250 0.5319 0.5319 0.5357 0.3061 0.5357 0.5319 0.6250 0.5357 0.5357 0.6250 0.5319 0.5357 0.6250 0.3061
+ [33] 0.5357 0.5319 0.5357 0.6250 0.5357 0.5357 0.5319 0.3061 0.3061 0.5357 0.5357 0.5319 0.5319 0.5357 0.5357 0.5357
+ [49] 0.3061 0.6250 0.3061 0.5319 0.5357 0.6250 0.5319 0.3061 0.5319 0.6250 0.3061 0.6250 0.3061 0.5319 0.5357 0.5357
+ [65] 0.3061 0.5357 0.3061 0.6250 0.6250 0.3061 0.5357 0.6250 0.5319 0.6250 0.6250 0.3061 0.3061 0.5357 0.5357 0.5319
+ [81] 0.5319 0.3061 0.3061 0.5357 0.5357 0.6250 0.5357 0.5357 0.6250 0.3061 0.6250 0.6250 0.6250 0.6250 0.5357 0.5319
+ [97] 0.5357 0.5357 0.3061 0.6250
+ [ reached getOption("max.print") -- omitted 100 entries ]
+
+$weights.trimmed
+  [1] 0.6250 0.5357 0.3061 0.5357 0.6250 0.3061 0.5357 0.5319 0.5357 0.6250 0.5357 0.3061 0.5319 0.5357 0.5357 0.6250
+ [17] 0.3061 0.6250 0.5319 0.5319 0.5357 0.3061 0.5357 0.5319 0.6250 0.5357 0.5357 0.6250 0.5319 0.5357 0.6250 0.3061
+ [33] 0.5357 0.5319 0.5357 0.6250 0.5357 0.5357 0.5319 0.3061 0.3061 0.5357 0.5357 0.5319 0.5319 0.5357 0.5357 0.5357
+ [49] 0.3061 0.6250 0.3061 0.5319 0.5357 0.6250 0.5319 0.3061 0.5319 0.6250 0.3061 0.6250 0.3061 0.5319 0.5357 0.5357
+ [65] 0.3061 0.5357 0.3061 0.6250 0.6250 0.3061 0.5357 0.6250 0.5319 0.6250 0.6250 0.3061 0.3061 0.5357 0.5357 0.5319
+ [81] 0.5319 0.3061 0.3061 0.5357 0.5357 0.6250 0.5357 0.5357 0.6250 0.3061 0.6250 0.6250 0.6250 0.6250 0.5357 0.5319
+ [97] 0.5357 0.5357 0.3061 0.6250
+ [ reached getOption("max.print") -- omitted 100 entries ]
+</pre>
+
+
+
+
+<p>
+
+<h1 class='org-ref-bib-h1'>Bibliography</h1>
+<ul class='org-ref-bib'><li><a id="imbens2015causal">[imbens2015causal]</a> <a name="imbens2015causal"></a>Imbens & Rubin, Causal Inference in Statistics, Social, and Biomedical Sciences: An Introduction, Cambridge University Press (2015).</li>
+</ul>
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Date: 2018-05-25 Fri 14:01</p>
+<p class="author">Author: Diogo Ferrari</p>
+<p class="date">Created: 2018-05-25 Fri 16:09</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
