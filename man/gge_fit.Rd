@@ -4,16 +4,20 @@
 \alias{gge_fit}
 \title{Plot fitted values}
 \usage{
-gge_fit(model, data, y, x, formula = NULL, n = 200, show.points = T,
-  cat.values = NULL, colour.groups = NULL, facets = NULL,
-  facets.ncol = NULL, col.pch = NULL, subtitle = NULL, footnote = NULL,
-  legend.position = "top", legend.title = NULL, legend.omit = F,
-  title = NULL, title.position = "left", ylim = NULL, xlim = NULL,
-  xlab = NULL, ylab = NULL, scales = "fixed",
-  facet.title.position = "left")
+gge_fit(model, data, y, x, formula = NULL, n = 200, cat.values = NULL,
+  show.points = T, pch.col = "#00000044", pch.col.cat = NULL,
+  ylim = NULL, xlim = NULL, xlab = NULL, ylab = NULL, facets = NULL,
+  facets.title.position = "left", facets.ncol = NULL,
+  facets.scales = "fixed", title = NULL, title.position = "left",
+  subtitle = NULL, footnote = NULL, legend.show.formulas = TRUE,
+  legend.show.cat = FALSE, legend.position = "top", legend.omit = F,
+  legend.title = NULL, legend.direction = "horizontal",
+  legend.box = "horizontal", legend.ncol.colour = NULL,
+  legend.ncol.fill = NULL, legend.col.label = NULL,
+  pch.col.palette = c(brewer = "BrBG"), fill.palette = c(brewer = "Paired"))
 }
 \arguments{
-\item{model}{either a model object or a data frame with summary of the estimation. A model object can be one produced as output of \code{\link[stats]{lm} } or \code{\link[stats]{glm}}.  If the summary is provided instead of the model object it must contain the columns \code{term} and \code{estimate} (the point estimate). The content of the column \code{term} must match the name of the covariate associated the estimates as produced by \code{attr(terms(formula), 'term.labels')}, and \code{formula} must also be provided as a parameter.}
+\item{model}{a model object, a list of them, or a tidy data frame with summary(ies) of the estimation(s). A model object can be one produced as output of \code{\link[stats]{lm} } or \code{\link[stats]{glm}}.  If the tidy summary is provided instead of the model object it must contain the columns \code{term}, \code{estimate} (the point estimate), and std.error (standard error of the estimates). The content of the column \code{term} must match the name of the covariate associated the estimates as produced by \code{attr(terms(formula), 'term.labels')}, and \code{formula} must also be provided as a parameter. If there are more than one model in the summary table, it must have a column identifying the models.}
 
 \item{data}{the original data set used to fit the model}
 
@@ -21,35 +25,17 @@ gge_fit(model, data, y, x, formula = NULL, n = 200, show.points = T,
 
 \item{x}{a string with the name of the independent variable that will be used to plotted in the x-axis.}
 
-\item{formula}{a expression as used in \code{lm} function. It is used when the parameter \code{model} receives a tidy summary.}
+\item{formula}{a expression as used in \code{lm} function. It is used when the parameter \code{model} receives a tidy summary. If more than one model is provided in the table, \code{formula} must be a named list. The names must match the values in the column in the table that identify each model. The formula must also match the model. See examples.}
 
 \item{n}{an integer, the number of points of \code{x} generated to produce the predicted/fitted values}
 
-\item{show.points}{boolean, indicating if the points from the original data set must be plotted or not}
-
 \item{cat.values}{named list of string vectors. The name of each element of the list (the string vectors) must match variable names in the data. The element of the string vectors must be strings with the name of the categories to use in the plot with the fitted values. To generate the fitted values, the numeric columns will be set to their mean value, except the column specified in the parameter \code{x}. The categorical values are set to their first category or the first category in alphabetic order. One can set the categorical variables to different values or use more than one category by setting this parameter \code{cat.value} as desired. For instance, suppose there is a categorical variable in the data set named education, taking the values of \code{High} or \code{Low}, which was used in the model. If \code{cat.value=NULL}, the plot with the predicted values will be fixed at \code{education=High}. One can use \code{education="Low"} by setting \code{cat.value=list(eductation="low")}. One can generate predicted values for both levels of education by setting \code{cat.value=list(eductation=c("low", "high"))}. See more examples in the documentation below.}
 
-\item{colour.groups}{a string with the name of the categorical variable to produce the color code for the points of the plot}
+\item{show.points}{boolean, indicating if the points from the original data set must be plotted or not}
 
-\item{facets}{a string vector with the name of the categorical variable to generate the facets. The fitted values will be produced for each facet.}
+\item{pch.col}{a string or rgb code.}
 
-\item{facets.ncol}{an integer, the number of columns of grid when using facets.}
-
-\item{col.pch}{a string or rgb code.}
-
-\item{subtitle}{a string, the subtitle of the plot}
-
-\item{footnote}{a string, the footnote of the plot}
-
-\item{legend.position}{a string (\code{top}, \code{bottom}, \code{left} (Default)), \code{right}}
-
-\item{legend.title}{a string with the title of the legend}
-
-\item{legend.omit}{boolean, if \code{TRUE} the legend is omitted}
-
-\item{title}{a string, the title of the plot}
-
-\item{title.position}{a string (or an number) with \code{center} (or .5), \code{left} (or 0), or \code{right} (or 1)}
+\item{pch.col.cat}{a string vector with the name of the categorical variable in the data to use as color key for the points}
 
 \item{ylim}{two-dimensional numeric vector with the limits of the y-axis}
 
@@ -59,73 +45,46 @@ gge_fit(model, data, y, x, formula = NULL, n = 200, show.points = T,
 
 \item{ylab}{string with text to display in the y-axis}
 
-\item{scales}{used when facets are used. See \code{\link[ggplot2]{facet_wrap}}}
+\item{facets}{a string vector with the name of the categorical variable to generate the facets. The fitted values will be produced for each facet.}
 
-\item{facet.title.position}{a string with either \code{left} (Default), \code{right}, or \code{center}. It indicates the position of the facet tiltle}
+\item{facets.title.position}{a string with \code{left}, \code{right}, or \code{center}. Indicates the position of the title of the facets}
+
+\item{facets.ncol}{an integer, the number of columns of grid when using facets.}
+
+\item{facets.scales}{used when facets are used. See \code{\link[ggplot2]{facet_wrap}}}
+
+\item{title}{a string, the title of the plot}
+
+\item{title.position}{a string (or an number) with \code{center} (or .5), \code{left} (or 0), or \code{right} (or 1)}
+
+\item{subtitle}{a string, the subtitle of the plot}
+
+\item{footnote}{a string, the footnote of the plot}
+
+\item{legend.show.formulas}{boolean, if \code{TRUE} and more than one model is provided, the formula associated with the model is displayed in the legend}
+
+\item{legend.show.cat}{boolean, if \code{TRUE} and both cat.values and more than one model are provided, it shows the categories used to fit the values in each model}
+
+\item{legend.position}{a string (\code{top}, \code{bottom}, \code{left} (Default)), \code{right}}
+
+\item{legend.omit}{boolean, if \code{TRUE} the legend is omitted}
+
+\item{legend.title}{a string with the title of the legend}
+
+\item{legend.direction}{see \code{\link[ggplot2]{guide_legend}}}
+
+\item{legend.box}{see \code{\link[ggplot2]{guide_legend}}}
+
+\item{legend.ncol.colour}{an integer indicating the number of columns to use in the legend with color code}
+
+\item{legend.ncol.fill}{an integer indicating the number of columns to use in the legend with fill code (fitted line estimation interval)}
+
+\item{legend.col.label}{string, the title of the legend with color code. Default: \code{Categories}}
+
+\item{pch.col.palette}{a named string vector with one element. The name must be the color palette (brewer, viridis and the value a string with the pallete available (ex: "Blues" for brewer palette, "A" for viridis, etc)}
+
+\item{fill.palette}{as as for pch.col.palette}
 }
 \description{
 This function plot the fitted value or the predicted probability given the model estimated using \code{lm} or \code{glm} and the original data.
-}
-\examples{
-library(magrittr)
-set.seed(77)
-
-data = tibble::data_frame(n = 300,
-                          x1   = rnorm(n,3,1),
-                          x2   = rexp(n),
-                          cat1 = sample(c(0,1), n, replace=TRUE),
-                          cat2 = sample(letters[1:4], n, replace=TRUE),
-                          y    = -10*x1*cat1 + 10*x2*(3*(cat2=='a')
-                                 -3*(cat2=='b') +1*(cat2=='c') -1*(cat2=='d')) + 
-                              rnorm(n,0,10), 
-                          y.bin = ifelse(y < mean(y), 0, 1),
-                          y.mul = 1+ifelse( - x1 - x2 + rnorm(n,sd=10) < 0, 0,
-                                    ifelse( - 2 * x2 + rnorm(n,sd=10) < 0, 1, 2)),
-                          ) \%>\%
-    dplyr::mutate(cat1 = as.factor(cat1), cat2=as.factor(cat2)) 
-
-model.g1 = lm(y ~ x1, data)
-model.g2 = lm(y ~ x1 + x2, data)
-model.g  = lm(y ~ x1*cat1 + x2*cat2, data)
-model.bin = glm(y.bin ~ x1+x2*cat2, data=data, family='binomial')
-model.mul <- nnet::multinom(y.mul ~ x1 + x2, data)
-
-model.g \%>\% edar::gge_fit(., data, 'y', 'x1')
-model.g \%>\% edar::gge_fit(., data, 'y', 'x2')
-
-model.g \%>\% edar::gge_fit(., data, 'y', 'x1', cat.values=list('cat1'="0"))
-model.g \%>\% edar::gge_fit(., data, 'y', 'x1', cat.values=list('cat1'="1"))
-model.g \%>\% edar::gge_fit(., data, 'y', 'x1', cat.values=list('cat1'=c("0","1")))
-
-
-model.g \%>\% edar::gge_fit(., data, 'y', 'x1', cat.values=list('cat2'="a"))
-model.g \%>\% edar::gge_fit(., data, 'y', 'x1', cat.values=list('cat2'="b"))
-
-model.g \%>\% edar::gge_fit(., data, 'y', 'x1', cat.values=list('cat1'="0"), colour.group='cat1')
-model.g \%>\% edar::gge_fit(., data, 'y', 'x1', cat.values=list('cat1'="1"), colour.group='cat1')
-model.g \%>\% edar::gge_fit(., data, 'y', 'x1',
-                          cat.values=list('cat1'=c("0","1")), colour.group='cat1')
-
-model.bin \%>\% edar::gge_fit(., data, 'y.bin', 'x2', facets="cat2")
-model.bin \%>\% edar::gge_fit(., data, 'y.bin', 'x2', facets="cat2", facets.ncol=1)
-
-model.bin \%>\% edar::gge_fit(., data, 'y.bin', 'x2', facets="cat2", colour.groups='cat1')
-model.bin \%>\% edar::gge_fit(., data, 'y.bin', 'x2', facets="cat2", colour.groups='cat2')
-
-model.bin \%>\% edar::gge_fit(., data, 'y.bin', 'x2', facets=c("cat1", "cat2"))
-
-
-
-## note: gge_fit produces the same result as geom_smooth under the same model
-## -----
-model = glm(y.bin ~ x1, data=data, family='binomial')
-
-model \%>\% edar::gge_fit(., data, 'y.bin', 'x1')
-
-data \%>\%
-    ggplot2::ggplot(.,ggplot2::aes(x=x1, y=y.bin) ) +
-    ggplot2::geom_point(size=2) +
-    ggplot2::geom_smooth(size=.5,  method="glm", method.args = list(family = "binomial"))+
-    ggplot2::theme_bw()
- 
 }

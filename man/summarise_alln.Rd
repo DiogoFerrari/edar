@@ -4,7 +4,7 @@
 \alias{summarise_alln}
 \title{Summarise numerical variables of the data set}
 \usage{
-summarise_alln(df, group = NULL, weight = NULL, spread = F)
+summarise_alln(df, group = NULL, weight = NULL, spread = F, digits = 4)
 }
 \arguments{
 \item{df}{data frame}
@@ -14,6 +14,8 @@ summarise_alln(df, group = NULL, weight = NULL, spread = F)
 \item{weight}{string vector with the name of the column in the data set containing the weights. Default \code{NULL}.}
 
 \item{spread}{boolean, if \code{TRUE} the summaries for each group are spread along the columns. Default \code{FALSE}}
+
+\item{digits}{integer, number of digiits to return in the summaries (defualt 4)}
 }
 \value{
 It returns a tibble data frame with summaries for all numerical variables

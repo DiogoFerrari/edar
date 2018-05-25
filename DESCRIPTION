@@ -47,7 +47,9 @@ Imports: viridis,
     stringr,
     raster,
     dotwhisker,
-    nnet
+    nnet,
+    foreach,
+    doParallel
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr

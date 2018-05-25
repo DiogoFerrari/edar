@@ -452,11 +452,32 @@ ebalance   <- function(data, treatmentVar, alpha=0.05, ttest=F, showMahalanobisD
     if(!showLinPscore){
         results <- results[!rownames(results) == 'LinPscore',]}
 
-    cat('\n')
-    print(results, na.print = " ")
-    invisible(list(balance=results, pscore=phat, lpscore=phatlin))
+    results = results %>% data.frame(Variable=rownames(results))  %>%
+    tibble::as_data_frame(.)  %>%
+        dplyr::select(Variable, dplyr::everything())
+    results = list(balance=results, pscore=phat, lpscore=phatlin)
+    class(results) = "edar_balance"
+    return(results)
 }
 
+## {{{ docs }}}
+
+#' Print
+#'
+#' Generic method to print the output of a \code{ebalance}
+#'
+#' @param x an output of the function \code{ebalance}
+#' @param digits integer, number of digits to display 
+#' @param ... ingored
+#'
+#'
+#' @export
+## }}}
+print.edar_balance <- function(x, digits=4, ...)
+{
+    x$balance = x$balance %>% dplyr::mutate_if(is.numeric, round, digits=digits)
+    return(x$balance)
+}
 
 ## Note: funcions summarise_alln and summarise_allcbundle in this package are better option to used instead of edescribe edar_bundle_cat 
 ## {{{ doc }}}

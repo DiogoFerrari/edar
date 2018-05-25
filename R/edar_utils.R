@@ -152,3 +152,4 @@ colorRampPaletteAlpha <- function(colors, n=32, interpolate='linear') {
     cr <- addalpha(cr, l$y/255.0)
     return(cr)
 }
+

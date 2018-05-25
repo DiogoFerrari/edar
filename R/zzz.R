@@ -77,5 +77,11 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".",
                                                         "tidye_func",
                                                         "statistic",
                                                         "conf.low",
-                                                        "conf.high"
+                                                        "conf.high",
+                                                        "CI",
+                                                        "id",
+                                                        "model.label",
+                                                        "Model",
+                                                        "Cats",
+                                                        "digits"
                                                         ))
