@@ -1,0 +1,210 @@
+%% =================================================
+%% basic-article.sty
+%% --------------------
+%% Author: Diogo Ferrari
+%%
+%%
+%% latex template for article (basic setup)
+%% Last version: Jun/2016
+%=================================================
+
+
+\ProvidesPackage{basic-article}
+% ================================================================
+% Packages 
+% ================================================================
+\usepackage{a4wide} 
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{indentfirst}       %- identation of the paragraphs (including the first)
+\usepackage{multicol}
+\usepackage{calc}
+\usepackage{ifthen}
+%\usepackage{hyperref}
+\usepackage{collectbox} % box around text or equation
+\usepackage{lmodern}
+\usepackage{amsmath}
+\everymath=\expandafter{\the\everymath\displaystyle}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{mathtools}
+%\usepackage{commath}
+\usepackage{amsfonts}
+\usepackage{thmtools}
+\usepackage{empheq}            % to draw multiline box around equations
+\usepackage{centernot}         % to use negation sign in math (ex: \centernot\implies)
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{graphicx}          %- allows to include .png files 
+\usepackage{url}
+\usepackage{framed}
+\usepackage{epigraph}
+%\usepackage{bibentry}         %-  full citation in the body of the text (turn on \bibliographystyle{apalike} at the end)
+%\nobibliography*              %-  do not generate .bibtex file using natbib but the bibentry
+\usepackage[round]{natbib}		%- bibliography package )
+\usepackage{soul}                   % to highlight the text
+\usepackage{todonotes}			%- generate todo list
+\usepackage{docmute}			%- Include another .tex file and mute the preambule of that file (for \input)
+\usepackage[space]{grffile}	%- include path that contains space
+\usepackage[
+    singlelinecheck=false,
+    justification=centering
+]{caption}                     %- to use caption with tabular
+\usepackage[section]{placeins} %- put float env in the section 
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.10}
+\usepgfplotslibrary{fillbetween}
+\usetikzlibrary{patterns}
+\usepackage{enumitem}				%- easy customization of list, items, enumeration, etc
+%\usepackage{ulem}
+\usepackage{mdwlist}            %- to suspend list enumeration \\suspend{enumerate} ... \\resume{enumerate}
+\usepackage{arydshln}           %- for dashed hline in tables
+\usepackage{centernot}          %- math symbol of not imply
+\usepackage{rotating}           %- to rotate table
+%\usepackage{parskip}
+%\setlength\parindent{24pt}	%- identation in paragraphs (excluding the first)
+\usepackage{algorithm,algorithmic}
+% to improve the quality of the pdf exported (only pslate + fontenc or ae+aecompl are nedded, leaving all won't cause problem)
+\usepackage[T1]{fontenc}
+\usepackage{pslatex}
+\usepackage{ae,aecompl}
+\usepackage{acro}               %- package for acronym (use \ac{<acronym>} in the text, and declare it in this file below)
+\usepackage{array}              %- create a type x to use as p{..cm}: it is x{..cm}
+\newcolumntype{x}[1]{>{\centering\arraybackslash\hspace{0pt}}p{#1}}
+\usepackage{booktabs}           %- for improved tab aesthetics (ex: toprule, midrule, etc)
+%==================================================
+% FORMATING HYPERREF
+%==================================================
+\usepackage{hyperref}
+\hypersetup{
+	bookmarks=true,         	% show bookmarks bar?
+	unicode=false,          	% non-Latin characters in Acrobat's bookmarks
+	pdftoolbar=true,        	% show Acrobat's toolbar?
+	pdfmenubar=true,        	% show Acrobat's menu?
+	pdffitwindow=true,        	% page fit to window when opened
+	pdftitle={},    		% title
+	pdfauthor={Diogo A.Ferrari}, 	% author
+	pdfnewwindow=true,      	% links in new window
+	colorlinks=true,            	% false: boxed links; true: colored links
+	linkcolor=blue,			% color of internal links
+	citecolor=blue,            	% color of links to bibliography
+	filecolor=magenta,        	% color of file links
+	urlcolor=blue                	% color of external links
+}
+%==================================================
+% customizing code blocks
+%==================================================
+% fot the title of the code block
+\usepackage{caption}                             % to create a non standard title of the code block
+\definecolor{lightgray2}{rgb}{1,1,1}
+\DeclareCaptionFont{black}{\color{black}}
+\DeclareCaptionFormat{listing}{\colorbox{lightgray2}{\parbox{\textwidth}{#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,labelfont=black,textfont=black}
+
+% fot the body of the code block
+\usepackage{listings}          % include code from R, C, Python, etc. (http://texdoc.net/texmf-dist/doc/latex/listings/listings.pdf)
+\definecolor{lightgray}{rgb}{.93,.93,.93}  % {.94,.97,1} for other colors http://www.rapidtables.com/web/color/RGB_Color.htm
+\renewcommand{\ttdefault}{pcr}
+\renewcommand{\lstlistingname}{Code}  % name of the code block
+\lstset {
+	language=R,
+	basicstyle={\footnotesize\ttfamily},	%- the size of the fonts that are used for the code
+	%breakatwhitespace=false,		%- sets if automatic breaks should only happen at whitespace
+	numbers=none,                           %- none, left, right
+	%numberstyle=\tiny, 
+	%stepnumber=1,                           %- the step between two line-numbers. If it's 1, each line will be numbered
+	%numbersep=5pt,                          %- how far the line-numbers are from the code
+	backgroundcolor=\color{lightgray},	%- choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+	aboveskip=1.5mm,
+	belowskip=1.5mm,
+	showspaces=false,                       %- show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+	showstringspaces=false,
+	showtabs=false,                         %- show tabs within strings adding particular underscores
+	columns=flexible,
+	keywordstyle={\color{Black}},
+	commentstyle={\color{Red}\textit},
+	stringstyle=\color{Magenta},
+		frame=single, 			            %- adds a frame around the code
+	breaklines=true,                        %- sets automatic line breaking
+	breakatwhitespace=true,
+	tabsize=4,
+	%morekeywords={rdf,rdfs,owl},		%- if you want to add more keywords to the set
+	moredelim=*[s][\ttfamily]{:}{:}    %- Newly added line
+	%	captionpos=b,                   %- sets the caption-position to bottom
+	%	deletekeywords={...},           %- if you want to delete keywords from the given language
+	escapeinside={(*}{*)},              %- to include reference of a line inside the code (*\label{line:xx}*) and them just \ref{line:xx}
+    % escapechar=\&                    % char to escape out of listings and back to LaTeX
+	%	extendedchars=true,             %- lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+	keepspaces=true,                    %- keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+	rulecolor=\color{black},           %- if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+	%		title=\lstname             %- show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+% ================================================================
+% Other options 
+% ================================================================
+% settings for box around equation and text
+\makeatletter
+\newcommand{\mybox}{%
+    \collectbox{%
+        \setlength{\fboxsep}{1.5pt}%
+        \fbox{\BOXCONTENT}%
+    }%
+  }
+  
+% multiline box around equation (with package empheq in basic-article.sty)
+\newcommand*\widefbox[1]{\fbox{\hspace{2em}#1\hspace{2em}}}
+
+% creating a cases environment with multicolumn alignment
+\makeatletter
+\newenvironment{mcases}[1][l]
+ {\let\@ifnextchar\new@ifnextchar
+  \left\lbrace
+  \def\arraystretch{1.2}%
+  \array{@{}l@{\quad}#1@{}}}
+ {\endarray\right.}
+\makeatother
+
+%=================================================
+%					New commands
+%=================================================
+% For citation
+\newcommand{\citeapos}[1]{\citeauthor{#1}'s \citeyearpar{#1}} % citation with apostrophe
+\renewcommand*{\familydefault}{\sfdefault} % font
+% \rmdefault: roman famiyl
+% \sfdefault: sans sarif family
+% \ttdefault: default
+% redefining todonotes options
+% todo list
+% For lit and citation to color text or biblio if I have already read it (used in my prelim or any reading list)
+%\renewcommand*\read{\color{red}\textbf{**Read**} \color{black}}
+% command to affect only up to the end of the paragraph
+\def\read{%
+  \begingroup\def\par{\endgroup\par}%
+  \color{red}
+}
+\def\toread{%
+  \begingroup\def\par{\endgroup\par}%
+  \color{blue}
+}
+% todo list (meta)
+\newcommand{\todos}[2][]
+{\todo[linecolor=black,,backgroundcolor=white, #1]{#2}}
+% Others
+\newcommand{\mc}[3]{\multicolumn{#1}{#2}{#3}} % to apreviate multicolumn
+%==================================================
+% setting portuguese characteres
+%==================================================
+%\usepackage[latin1]{inputenc}
+%\usepackage[brazilian, portuguese]{babel}
+%\usepackage[T1]{fontenc}
+
+%==================================================
+% acronyms
+%==================================================
+% Example
+% \DeclareAcronym{dpp}{
+%   short = DPP ,
+%   long  = Dirichlet Process Prior ,
+%   class = abbrev
+% }

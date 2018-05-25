@@ -1,0 +1,267 @@
+%% =================================================
+%% my-math-commands.sty
+%% --------------------
+%% Author: Diogo Ferrari
+%%
+%%
+%% latex template for mathematical anotation
+%% Last version: Dez/2015
+%=================================================
+
+
+\ProvidesPackage{math-commands}
+\RequirePackage{tikz}
+%=================================================
+%		Letters and math symbols
+%=================================================
+%% -------------
+%% Prob and Stat
+%% -------------
+\newcommand{\F}{\mathcal{F}}									   %- funcy f
+\newcommand{\Sa}{\mathcal{S}}                                      %- sample space
+\newcommand{\Ev}{\mathcal{E}}                                      %- event
+\newcommand{\U}{\mathcal{U}}									   %- Universe
+\newcommand{\M}{\mathcal{M}}									   %- Model
+\newcommand{\Hf}{\mathcal{H}}									   %- func or set H
+\newcommand{\Lf}{\mathcal{L}}									   %- func or set L
+\newcommand{\If}{\mathcal{I}}									   %- func or set I
+\newcommand{\Zf}{\mathcal{Z}}									   %- func or set Z
+\newcommand{\Ps}{\mathcal{P}}									   %- set of probability distributions
+\newcommand{\E}{\mathbb{E}}                                        %- expectation
+\newcommand{\Var}{\mathbb{V}\text{ar}}                             %- variance
+\newcommand{\Cov}{\mathbb{C}\text{ov}}                             %- covariance
+\newcommand{\Corr}{\mathbb{C}\text{orr}}		                   %- correlation
+\newcommand{\supp}{\text{supp}}                                    %- support 
+\newcommand{\given}{\mid}                                          %- given/conditional
+\newcommand{\bgiven}{\middle\vert}                                 %- big given/conditional
+\newcommand{\I}{\mathbb{I}}                                        %- Indicator function
+\newcommand{\rmatr}[1]{\mathbf{#1}}                                %- random matrix (bold upper case)
+\DeclareMathOperator*{\plim}{plim}                                 %- prob limit
+\newcommand\ind{\protect\mathpalette{\protect\independenT}{\perp}} %- stoch independence
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}}       %- stoch independence
+\newcommand{\iid}{\overset{iid}{\sim}}                             %- iid
+\newcommand{\distas}[1]{\overset{#1}{\sim}}                        %- distributed as
+\newcommand{\convdist}{\overset{d}{\rightarrow}}                   %- conv in distribution
+\newcommand{\convprob}{\overset{p}{\rightarrow}}                   %- conv in probability
+\newcommand{\convas}{\overset{a.s.}{\rightarrow}}                  %- conv almost sure
+%% Distributions
+\newcommand{\supp}{\text{supp}}                                    %- support of a distribution
+\newcommand{\No}{\mathcal{N}}                                      %- Normal Distribution
+\newcommand{\DP}{\mathcal{D}\mathcal{P}}                           %- Diriclhet Process
+%% -----------------
+%% Sets/Set notation
+%% -----------------
+\DeclarePairedDelimiterX\set[1]\lbrace\rbrace{
+                         \def\given{\;\delimsize\vert\;}#1}        %- Set delimiters
+\newcommand{\N}{\mathbb{N}}                                        %- Set of Natural Numbers
+\newcommand{\Z}{\mathbb{Z}}                                        %- Set of Integers
+\newcommand{\Q}{\mathbb{Q}}                                        %- Set of rationals
+\newcommand{\R}{\mathbb{R}}                                        %- Set of reals
+\newcommand{\Co}{\mathbb{C}}                                        %- Set of complex numbers
+\newcommand{\A}{\mathcal{A}}									   %- Set  A
+\newcommand{\B}{\mathcal{B}}									   %- Set  B
+\newcommand{\C}{\mathcal{C}}									   %- Set  C
+\newcommand{\D}{\mathcal{D}}									   %- Set  D
+\newcommand{\G}{\mathcal{G}}									   %- Set  G
+\newcommand{\X}{\mathcal{X}}									   %- Set  X
+\newcommand{\Y}{\mathcal{Y}}									   %- Set  Y
+\newcommand{\card}[1]{\left|#1\right|}                             %- cardinality 1
+\newcommand{\cardi}{\text{card}}                             %- cardinality 2
+\newcommand{\aff}{\text{aff}}                                        %- Affine hull
+\newcommand{\conv}{\text{conv}}                                        %- Convex hull
+\newcommand{\coni}{\text{coni}}                                        %- conic hull
+\newcommand{\span}{\text{span}}                                        %- span
+\newcommand{\union}{\bigcup}                                        %- disjoint union
+\newcommand{\dunion}{\bigsqcup}                                        %- disjoint union
+
+%% -----
+%% Logic
+%% -----
+\newcommand{\AND}{\wedge}                                          %- and
+\newcommand{\OR}{\vee}                                             %- or
+\newcommand{\notimplies}{\centernot\implies}                       %- does not imply
+%% --------------
+%% Linear Algebra
+%% --------------
+\newcommand{\inner}[1]{\langle#1\rangle}                           %- inner product
+%% --------
+%% Calculus
+%% --------
+\newcommand{\p}{\partial}                                          %- partial derivatives
+\DeclareMathOperator*{\limsup}{lim sup}                            %- lim sup    
+\DeclareMathOperator*{\liminf}{lim inf}                            %- lim inf
+\DeclareMathOperator*{\argmax}{argmax}                             %- argmax
+\DeclareMathOperator*{\argmin}{argmin}                             %- argmin
+\newcommand{\grad}{\nabla}                                         %- gradient
+\newcommand{\dom}{\text{dom}}                                      %- domain of f
+\newcommand{\img}{\text{img}}                                      %- image of f
+\newcommand\at[2]{\left.#1\right|_{#2}}                            %- derivative at
+\newcommand{\Lagr}{\mathcal{L}}                                    %- Lagrangian
+\newcommand{\e}{\varepsilon}                                       %- epsilon
+%% ------
+%% Others
+%% ------
+\newcommand{\vect}[1]{\boldsymbol{#1}}                             %- vector bold font
+\newcommand{\vectm}[1]{\mathbf{#1}}                             %- vector bold font for matrices
+\newcommand{\abs}[1]{\left|#1\right|}                             %- module
+\newcommand{\erf}[1]{\text{erf}\left(#1\right)}                    %- error function
+\newcommand{\defined}{\triangleq}                                      %- definition
+\newcommand{\definedas}{\triangleq}                                      %- definition
+\newcommand{\norm}[1]{\lVert#1\rVert}                             %- norm
+\usepackage{mathtools}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}                    %- ceiling func
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}                 %- floor func
+%% condition environment, for description of vars (works similar to align)
+\newenvironment{conditions}
+{\par\vspace{\abovedisplayskip}\noindent\begin{tabular}{>{$}l<{$} @{${}={}$} l}}
+{\end{tabular}\par\vspace{\belowdisplayskip}}
+
+
+
+%% ================================================
+%% For graphs
+%% ================================================
+% tikzlibrary.code.tex
+% https://github.com/jluttine/tikz-bayesnet
+% 
+% Copyright 2010-2011 by Laura Dietz
+% Copyright 2012 by Jaakko Luttinen
+%
+% This file may be distributed and/or modified
+%
+% 1. under the LaTeX Project Public License and/or
+% 2. under the GNU General Public License.
+%
+% See the files LICENSE_LPPL and LICENSE_GPL for more details.
+
+% Load other libraries
+\usetikzlibrary{shapes}
+\usetikzlibrary{fit}
+\usetikzlibrary{chains}
+\usetikzlibrary{arrows}
+
+% Latent node
+\tikzstyle{latent} = [circle,fill=white,draw=black,inner sep=1pt,
+minimum size=20pt, font=\fontsize{10}{10}\selectfont, node distance=1]
+% Observed node
+\tikzstyle{obs} = [latent,fill=gray!25]
+% Constant node
+\tikzstyle{const} = [rectangle, inner sep=0pt, node distance=1]
+% Factor node
+\tikzstyle{factor} = [rectangle, fill=black,minimum size=5pt, inner
+sep=0pt, node distance=0.4]
+% Deterministic node
+\tikzstyle{det} = [latent, diamond]
+
+% Plate node
+%\tikzstyle{plate} = [draw, rectangle, rounded corners, fit=#1]
+\tikzstyle{plate} = [draw, rectangle,  fit=#1]
+% Invisible wrapper node
+\tikzstyle{wrap} = [inner sep=0pt, fit=#1]
+% Gate
+\tikzstyle{gate} = [draw, rectangle, dashed, fit=#1]
+
+% Caption node
+\tikzstyle{caption} = [font=\footnotesize, node distance=0] %
+\tikzstyle{plate caption} = [caption, node distance=0, inner sep=0pt,
+below left=5pt and 0pt of #1.south east] %
+\tikzstyle{factor caption} = [caption] %
+\tikzstyle{every label} += [caption] %
+
+\tikzset{>={triangle 45}}
+
+%\pgfdeclarelayer{b}
+%\pgfdeclarelayer{f}
+%\pgfsetlayers{b,main,f}
+
+% \factoredge [options] {inputs} {factors} {outputs}
+\newcommand{\factoredge}[4][]{ %
+  % Connect all nodes #2 to all nodes #4 via all factors #3.
+  \foreach \f in {#3} { %
+    \foreach \x in {#2} { %
+      \path (\x) edge[-,#1] (\f) ; %
+      %\draw[-,#1] (\x) edge[-] (\f) ; %
+    } ;
+    \foreach \y in {#4} { %
+      \path (\f) edge[->,#1] (\y) ; %
+      %\draw[->,#1] (\f) -- (\y) ; %
+    } ;
+  } ;
+}
+
+% \edge [options] {inputs} {outputs}
+\newcommand{\edge}[3][]{ %
+  % Connect all nodes #2 to all nodes #3.
+  \foreach \x in {#2} { %
+    \foreach \y in {#3} { %
+      \path (\x) edge [->,#1] (\y) ;%
+      %\draw[->,#1] (\x) -- (\y) ;%
+    } ;
+  } ;
+}
+
+% \factor [options] {name} {caption} {inputs} {outputs}
+\newcommand{\factor}[5][]{ %
+  % Draw the factor node. Use alias to allow empty names.
+  \node[factor, label={[name=#2-caption]#3}, name=#2, #1,
+  alias=#2-alias] {} ; %
+  % Connect all inputs to outputs via this factor
+  \factoredge {#4} {#2-alias} {#5} ; %
+}
+
+% \plate [options] {name} {fitlist} {caption}
+\newcommand{\plate}[4][]{ %
+  \node[wrap=#3] (#2-wrap) {}; %
+  \node[plate caption=#2-wrap] (#2-caption) {#4}; %
+  \node[plate=(#2-wrap)(#2-caption), #1] (#2) {}; %
+}
+
+% \gate [options] {name} {fitlist} {inputs}
+\newcommand{\gate}[4][]{ %
+  \node[gate=#3, name=#2, #1, alias=#2-alias] {}; %
+  \foreach \x in {#4} { %
+    \draw [-*,thick] (\x) -- (#2-alias); %
+  } ;%
+}
+
+% \vgate {name} {fitlist-left} {caption-left} {fitlist-right}
+% {caption-right} {inputs}
+\newcommand{\vgate}[6]{ %
+  % Wrap the left and right parts
+  \node[wrap=#2] (#1-left) {}; %
+  \node[wrap=#4] (#1-right) {}; %
+  % Draw the gate
+  \node[gate=(#1-left)(#1-right)] (#1) {}; %
+  % Add captions
+  \node[caption, below left=of #1.north ] (#1-left-caption)
+  {#3}; %
+  \node[caption, below right=of #1.north ] (#1-right-caption)
+  {#5}; %
+  % Draw middle separation
+  \draw [-, dashed] (#1.north) -- (#1.south); %
+  % Draw inputs
+  \foreach \x in {#6} { %
+    \draw [-*,thick] (\x) -- (#1); %
+  } ;%
+}
+
+% \hgate {name} {fitlist-top} {caption-top} {fitlist-bottom}
+% {caption-bottom} {inputs}
+\newcommand{\hgate}[6]{ %
+  % Wrap the left and right parts
+  \node[wrap=#2] (#1-top) {}; %
+  \node[wrap=#4] (#1-bottom) {}; %
+  % Draw the gate
+  \node[gate=(#1-top)(#1-bottom)] (#1) {}; %
+  % Add captions
+  \node[caption, above right=of #1.west ] (#1-top-caption)
+  {#3}; %
+  \node[caption, below right=of #1.west ] (#1-bottom-caption)
+  {#5}; %
+  % Draw middle separation
+  \draw [-, dashed] (#1.west) -- (#1.east); %
+  % Draw inputs
+  \foreach \x in {#6} { %
+    \draw [-*,thick] (\x) -- (#1); %
+  } ;%
+}
