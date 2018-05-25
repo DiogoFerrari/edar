@@ -211,7 +211,8 @@ edar_get_new_data          <- function(data, n, x, cat.values=NULL)
 #' @param legend.box see \code{\link[ggplot2]{guide_legend}}
 #' @param legend.ncol.colour an integer indicating the number of columns to use in the legend with color code
 #' @param legend.ncol.fill an integer indicating the number of columns to use in the legend with fill code (fitted line estimation interval)
-#' @param legend.col.label string, the title of the legend with color code. Default: \code{Categories} 
+#' @param legend.col.title string, the title of the legend with color code of the points. Default: \code{Categories}
+#' @param legend.fill.title string, the title of the legend with color code of the fitted values estimated interval 
 #' @inheritParams tidye
 #'
 #' 
@@ -374,12 +375,12 @@ gge_fit <- function(model, data, y, x, formula=NULL, n=200, cat.values=NULL,
                     legend.position='top',
                     legend.omit=F,
                     legend.title=NULL,
-
                     legend.direction = "horizontal",
                     legend.box = "horizontal",
                     legend.ncol.colour = NULL,
                     legend.ncol.fill = NULL,
-                    legend.col.label=NULL,
+                    legend.col.title=NULL,
+                    legend.fill.title = NULL,
                     ## color palettes/colors
                     ## ------
                     pch.col.palette = c(brewer="BrBG"),
@@ -510,11 +511,11 @@ gge_fit <- function(model, data, y, x, formula=NULL, n=200, cat.values=NULL,
     ## -----------
     if(show.points){
         if(!is.null(pch.col.cat)){
-            if (is.null(legend.col.label)) legend.col.label = "Categories"
+            if (is.null(legend.col.title)) legend.col.title = "Categories"
             pch.col.cat   = 'pch.col.cat'
             g = g + ggplot2::geom_point(data=data,ggplot2::aes_string(x= x, y= y, colour=pch.col.cat), size=2, alpha=.7) 
-            if (names(pch.col.palette) == 'brewer')  {g = g + ggplot2::scale_colour_brewer(palette=pch.col.palette, name=legend.col.label)}
-            if (names(pch.col.palette) == 'viridis') {g = g + viridis::scale_color_viridis(option=pch.col.palette, discrete=TRUE, alpha=.6, name=legend.col.label) }
+            if (names(pch.col.palette) == 'brewer')  {g = g + ggplot2::scale_colour_brewer(palette=pch.col.palette, name=legend.col.title)}
+            if (names(pch.col.palette) == 'viridis') {g = g + viridis::scale_color_viridis(option=pch.col.palette, discrete=TRUE, alpha=.6, name=legend.col.title) }
                 
         }else{
             g = g + ggplot2::geom_point(data=data,ggplot2::aes_string(x= x, y= y), colour=pch.col, size=2) 
@@ -562,11 +563,14 @@ gge_fit <- function(model, data, y, x, formula=NULL, n=200, cat.values=NULL,
 
     ## fill
     ## ----
+    if(is.null(legend.fill.title)) legend.fill.title = 'Groups'
+    if(is.null(legend.fill.title) & !is.null(cat.groups)) 
+        if(cat.groups != 'Model') legend.fill.title = 'Groups'
     if (any(sapply(cat.values, length)>1) | "Model" %in% cat.groups ) {
         ## if ("Model" %in% cat.groups) {
-            if (names(fill.palette) == 'brewer')  g = g + ggplot2::scale_fill_brewer(palette=fill.palette)
-            ## if (names(fill.palette) == 'dutchmasters')  g = g + scale_fill_dutchmasters(palette=fill.palette, alpha=1)
-            if (names(fill.palette) == 'viridis') g = g + viridis::scale_fill_viridis(option=fill.palette, discrete=TRUE, alpha=1)
+        if (names(fill.palette) == 'brewer')  g = g + ggplot2::scale_fill_brewer(palette=fill.palette, name=legend.fill.title )
+        ## if (names(fill.palette) == 'dutchmasters')  g = g + scale_fill_dutchmasters(palette=fill.palette, alpha=1)
+        if (names(fill.palette) == 'viridis') g = g + viridis::scale_fill_viridis(option=fill.palette, discrete=TRUE, alpha=1, name=legend.fill.title )
         ## }else{    
         ##     g = g + viridis::scale_fill_viridis(option="viridis", discrete=TRUE, alpha=1)
         ## }

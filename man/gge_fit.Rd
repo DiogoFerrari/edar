@@ -13,8 +13,9 @@ gge_fit(model, data, y, x, formula = NULL, n = 200, cat.values = NULL,
   legend.show.cat = FALSE, legend.position = "top", legend.omit = F,
   legend.title = NULL, legend.direction = "horizontal",
   legend.box = "horizontal", legend.ncol.colour = NULL,
-  legend.ncol.fill = NULL, legend.col.label = NULL,
-  pch.col.palette = c(brewer = "BrBG"), fill.palette = c(brewer = "Paired"))
+  legend.ncol.fill = NULL, legend.col.title = NULL,
+  legend.fill.title = NULL, pch.col.palette = c(brewer = "BrBG"),
+  fill.palette = c(brewer = "Paired"))
 }
 \arguments{
 \item{model}{a model object, a list of them, or a tidy data frame with summary(ies) of the estimation(s). A model object can be one produced as output of \code{\link[stats]{lm} } or \code{\link[stats]{glm}}.  If the tidy summary is provided instead of the model object it must contain the columns \code{term}, \code{estimate} (the point estimate), and std.error (standard error of the estimates). The content of the column \code{term} must match the name of the covariate associated the estimates as produced by \code{attr(terms(formula), 'term.labels')}, and \code{formula} must also be provided as a parameter. If there are more than one model in the summary table, it must have a column identifying the models.}
@@ -79,7 +80,9 @@ gge_fit(model, data, y, x, formula = NULL, n = 200, cat.values = NULL,
 
 \item{legend.ncol.fill}{an integer indicating the number of columns to use in the legend with fill code (fitted line estimation interval)}
 
-\item{legend.col.label}{string, the title of the legend with color code. Default: \code{Categories}}
+\item{legend.col.title}{string, the title of the legend with color code of the points. Default: \code{Categories}}
+
+\item{legend.fill.title}{string, the title of the legend with color code of the fitted values estimated interval}
 
 \item{pch.col.palette}{a named string vector with one element. The name must be the color palette (brewer, viridis and the value a string with the pallete available (ex: "Blues" for brewer palette, "A" for viridis, etc)}
 
