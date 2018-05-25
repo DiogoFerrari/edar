@@ -393,7 +393,7 @@ gge_fit <- function(model, data, y, x, formula=NULL, n=200, cat.values=NULL,
     dir.default <- getwd()
     on.exit(setwd(dir.default), add=TRUE)
 
-    if ( any(lapply(models, function(x) class(x) %in% 'multinom')  %>% unlist) ) 
+    if ( any(lapply(model, function(x) class(x) %in% 'multinom')  %>% unlist) ) 
         stop("\n\nFunction not implemented to display 'nnet::multinomial' models\n\n")
     if ("y.multin.cat" %in% names(model))
         stop("\n\nFunction not implemented to display 'nnet::multinomial' models\n\n")
