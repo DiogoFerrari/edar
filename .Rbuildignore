@@ -4,6 +4,4 @@ dev.R
 ./.R/
 README.org
 LICENSE.md
-edar.md
-edar.org
-edar.html
+vignettes/
