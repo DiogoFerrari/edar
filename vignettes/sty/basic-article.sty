@@ -14,6 +14,7 @@
 % Packages 
 % ================================================================
 \usepackage{a4wide} 
+\usepackage[utf8]{inputenc}
 \usepackage{setspace}
 \onehalfspacing
 \usepackage{indentfirst}       %- identation of the paragraphs (including the first)
@@ -115,7 +116,7 @@
 	%numberstyle=\tiny, 
 	%stepnumber=1,                           %- the step between two line-numbers. If it's 1, each line will be numbered
 	%numbersep=5pt,                          %- how far the line-numbers are from the code
-	backgroundcolor=\color{lightgray},	%- choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+	backgroundcolor=\color{white},	%- choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
 	aboveskip=1.5mm,
 	belowskip=1.5mm,
 	showspaces=false,                       %- show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
@@ -124,8 +125,8 @@
 	columns=flexible,
 	keywordstyle={\color{Black}},
 	commentstyle={\color{Red}\textit},
-	stringstyle=\color{Magenta},
-		frame=single, 			            %- adds a frame around the code
+	stringstyle=\color{Green},
+	frame=single, 			            %- adds a frame around the code
 	breaklines=true,                        %- sets automatic line breaking
 	breakatwhitespace=true,
 	tabsize=4,
@@ -138,7 +139,9 @@
 	%	extendedchars=true,             %- lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
 	keepspaces=true,                    %- keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
 	rulecolor=\color{black},           %- if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
-	%		title=\lstname             %- show the filename of files included with \lstinputlisting; also try caption instead of title
+	%% keywordstyle=\color{RoyalBlue},      % keyword style
+        %% commentstyle=\color{red},   % comment style
+        %% stringstyle=\color{ForestGreen}      % string literal style%		title=\lstname             %- show the filename of files included with \lstinputlisting; also try caption instead of title
 }
 % ================================================================
 % Other options 

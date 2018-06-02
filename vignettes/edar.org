@@ -472,10 +472,6 @@ tidye(list(Gaussian=model.g3, Binomial=model.bin, Multinomial=model.mul)) %>%
     kableExtra::kable(., "html", booktabs = T ) %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 
-# tidye(list(Gaussian=model.g3, Binomial=model.bin, Multinomial=model.mul)) %>%
-#     kableExtra::kable(., "html", booktabs = T ) %>%
-#     kableExtra::kable_styling(latex_options = c("scale_down"))
-
 #+END_SRC
 
 #+RESULTS[549eabdbbb69d8ce5f57fbb5b9802256c19b9fb8]:
@@ -915,8 +911,9 @@ models %>%  gge_fit(., data, "y.bin", "x2", formulas, facets='cat2')
 
 #+END_SRC
 
-#+RESULTS[695f6accb3fc1830b293214100364d27864381a2]:
-[[file:fig-fitted-many-models-bin.png]]
+#+RESULTS[9999ba56eab709a533eb48cdbfe54556fb42a5dd]:
+[[file:fig-fitted-many-models-bin-2.png]]
+
 *** Plot with coefficients (dotwisker)
 The =edar= package also provides a wrap function for the =dotwisker()= plot from the package with same name. As before, the function accepts list of models or tidy summaries of the estimation. There are also options to use robust standard errors in the plot.
 

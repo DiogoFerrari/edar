@@ -1200,7 +1200,8 @@ gge_barplot_one <- function(df, variable, group=NULL)
             dplyr::ungroup(.) %>%
             dplyr::group_by(group) %>% 
             dplyr::mutate("Percentage"=round(100*n/sum(n),2))  %>%
-            dplyr::mutate(label = paste0(Percentage, "%") ) %>%
+            dplyr::mutate(label = paste0(Percentage, "%") ,
+                          ylabel=factor(ylabel, levels=as.character(ylabel[order(Percentage)]))) %>% 
             ggplot2::ggplot(.) +
             ggplot2::geom_bar(ggplot2::aes(y= Percentage, x = ylabel, fill=group), stat='identity',position = 'dodge', alpha=.5) + 
             ggplot2::geom_text(ggplot2::aes(y= Percentage, x = ylabel, label=label), hjust=-.1, size=4)+
@@ -1218,7 +1219,8 @@ gge_barplot_one <- function(df, variable, group=NULL)
             dplyr::mutate(ylabel = paste0(unique(cat), "\n(N=",n(),")") )  %>% 
             dplyr::group_by(ylabel) %>% 
             dplyr::summarise(n=n())  %>% dplyr::mutate("Percentage"=round(100*n/sum(n),2)) %>% 
-            dplyr::mutate(label = paste0(Percentage, "%") )  %>% 
+            dplyr::mutate(label = paste0(Percentage, "%") ,
+                          ylabel=factor(ylabel, levels=as.character(ylabel[order(Percentage)]))) %>% 
             ggplot2::ggplot(.) +
             ggplot2::geom_bar(ggplot2::aes(y= Percentage, x = ylabel), stat='identity',position = 'dodge', alpha=.5) + 
             ggplot2::geom_text(ggplot2::aes(y= Percentage, x = ylabel, label=label), hjust=-.1, size=4)+
@@ -1281,7 +1283,6 @@ edar_barPlot       <- function(y, title='', show.group.name=T, show.group.count=
 }
 
 ## }}}
-
 ## {{{ Bivariate    Analysis (plots) }}}
 
 ## continuous variables
