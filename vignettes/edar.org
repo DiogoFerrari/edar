@@ -152,7 +152,7 @@ Source:
 
 
 #+NAME: turn-off-tibble-colors-to-print-table-correctly
-#+BEGIN_SRC R :session *R-org* :exports results :results silent :tangle edar.R :cache yes :hlines yes :colnames yes
+#+BEGIN_SRC R :session *R-org* :exports none :results silent :tangle edar.R :cache yes :hlines yes :colnames yes
 options(crayon.enabled = FALSE)
 options(tibble.width=100)
 options(tibble.digits=4)

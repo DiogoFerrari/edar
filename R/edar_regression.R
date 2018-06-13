@@ -423,12 +423,11 @@ gge_fit <- function(model, data, y, x, formula=NULL, n=200, cat.values=NULL,
         ## if it is a list, convert to tibble summary
         if (class(model)[1] == 'list') model = model %>% tidye(.)
         
-        ## if tidy summary is provided as model, formula must be provided as well
-        if (is.null(formula)) {stop("\n\n'formula' must be provided\n\n")}
-
         ## check if there are non numeric columns other than the columns term (covar names), which identify the different models in the table
         ids = model %>%  dplyr::select_if(function(col) !is.numeric(col)) %>% dplyr::select(-term)  %>% names
 
+        ## if tidy summary is provided as model, formula must be provided as well
+        if (is.null(formula)) {stop("\n\n'formula' must be provided\n\n")}
         ## if there are multiple models in the table, find predicted value for each one of them (in parallel)
         if(length(ids) > 0){
             if (is.null(names(formula))) {stop("\n\n'formula' must be a named list and the names must match the names of the models\n\n")}
@@ -621,7 +620,6 @@ gge_fit_get_new_data <- function(data, facets, cat.values, n, x)
     newdata = edar_get_new_data(data=data, n=n, x=x, cat.values = cat.values.newdata)
     return(newdata)
 }
-
 ## }}}
 ## {{{ Plot Coefficients }}}
 

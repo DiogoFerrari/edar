@@ -3,7 +3,7 @@ Title: Exploratory Data Analysis in R
 Version: 0.0.0.9000
 Authors@R: person("Diogo", "Ferrari", email="diogoferrari@gmail.com", role=c("aut", "cre"))
 Description: Package provides a set of wrap functions to conduct fast exploratory data analysis with minimum code.
-Depends: R (>= 3.4.2), mice
+Depends: R (>= 3.4.1), mice
 License: MIT + file LICENSE
 URL: https://github.com/DiogoFerrari/edar
 BugReports: https://github.com/DiogoFerrari/edar/issues

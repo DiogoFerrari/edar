@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2018-05-25 Fri 19:12 -->
+<!-- 2018-06-03 Sun 07:48 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Exploratory Data Analysis in R (edar)</title>
@@ -234,30 +234,30 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org898235a">1. Introduction</a></li>
-<li><a href="#org5357f3a">2. Workflow</a>
+<li><a href="#orgf56602a">1. Introduction</a></li>
+<li><a href="#orgca66207">2. Workflow</a>
 <ul>
-<li><a href="#org5510f46">2.1. Data</a></li>
-<li><a href="#org6affc26">2.2. Summary tables</a></li>
-<li><a href="#org769c250">2.3. Checking balance of covariates</a></li>
-<li><a href="#orgca28659">2.4. Summary plots</a></li>
-<li><a href="#orgc13f193">2.5. Analyzing output of model estimation</a>
+<li><a href="#orgea91fd7">2.1. Data</a></li>
+<li><a href="#orge045702">2.2. Summary tables</a></li>
+<li><a href="#orgb18b1a4">2.3. Checking balance of covariates</a></li>
+<li><a href="#org578afb4">2.4. Summary plots</a></li>
+<li><a href="#org2bcc3b8">2.5. Analyzing output of model estimation</a>
 <ul>
-<li><a href="#org6e67405">2.5.1. Fitting models</a></li>
-<li><a href="#orga462dc5">2.5.2. Tables</a></li>
-<li><a href="#org9398a0b">2.5.3. Plot fitted values</a></li>
-<li><a href="#org0613dfa">2.5.4. Plot with coefficients (dotwisker)</a></li>
+<li><a href="#org4fde115">2.5.1. Fitting models</a></li>
+<li><a href="#org366c34e">2.5.2. Tables</a></li>
+<li><a href="#org539ac17">2.5.3. Plot fitted values</a></li>
+<li><a href="#org91e2c77">2.5.4. Plot with coefficients (dotwisker)</a></li>
 </ul>
 </li>
-<li><a href="#org4228530">2.6. Multiple-imputation and post-stratification</a></li>
+<li><a href="#orge6df785">2.6. Multiple-imputation and post-stratification</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org898235a" class="outline-2">
-<h2 id="org898235a"><span class="section-number-2">1</span> Introduction</h2>
+<div id="outline-container-orgf56602a" class="outline-2">
+<h2 id="orgf56602a"><span class="section-number-2">1</span> Introduction</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 The package Exploratory Data Analysis in R (edar) allows efficient exploratory data analyses with few lines of code. It contains some functions to:
@@ -284,20 +284,20 @@ Quantitative researchers conduct those tasks repeatedly. The package provides fu
 <li>Look for outliers and missing values</li>
 <li>Check distribution of the variables</li>
 </ul></li>
-<li><a id="orgc0d58e9"></a> Fit a multivariate regression model</li>
-<li><a id="org3821d9a"></a> Display and check the results</li>
+<li><a id="orgb886bda"></a> Fit a multivariate regression model</li>
+<li><a id="org2ead8bc"></a> Display and check the results</li>
 <li>Do multiple imputation and post-stratification (in surveys)</li>
-<li>Repeat <a href="#orgc0d58e9">2</a> and <a href="#org3821d9a">3</a></li>
-<li><a id="orgdd95685"></a> Recode some Variables or change model specifications</li>
+<li>Repeat <a href="#orgb886bda">2</a> and <a href="#org2ead8bc">3</a></li>
+<li><a id="org4d4c2d2"></a> Recode some Variables or change model specifications</li>
 <li>Repeat</li>
 </ol>
 
 <p>
-Execpt for item <a href="#orgdd95685">6</a>, the package <code>edar</code> can spead up all those tasks. For instance, suppose <code>data</code> contains the data set. Those tasks can be performed with few lines of code:
+Execpt for item <a href="#org4d4c2d2">6</a>, the package <code>edar</code> can spead up all those tasks. For instance, suppose <code>data</code> contains the data set. Those tasks can be performed with few lines of code:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-R" id="orgb3cfaef"><span style="color: #5B6268;"># </span><span style="color: #5B6268;">summary tables</span>
+<pre class="src src-R" id="org7af3b91"><span style="color: #5B6268;"># </span><span style="color: #5B6268;">summary tables</span>
 <span style="color: #a7aac0;">data</span> <span style="color: #a9a1e1;">%&gt;%</span> <span style="color: #bb99b4;">summarise_alln</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span> <span style="color: #5B6268;"># </span><span style="color: #5B6268;">summarise all numerical variables of the data in a table</span>
 <span style="color: #a7aac0;">data</span> <span style="color: #a9a1e1;">%&gt;%</span> <span style="color: #a0d6e0;">summarise_allc</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span> <span style="color: #5B6268;"># </span><span style="color: #5B6268;">summarise all categorical variables of the data in a table </span>
 <span style="color: #a7aac0;">data</span> <span style="color: #a9a1e1;">%&gt;%</span> <span style="color: #b3c0a7;">summarise_allcbundle</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span> <span style="color: #5B6268;"># </span><span style="color: #5B6268;">summarise all categorical variables of the data in a table</span>
@@ -325,19 +325,19 @@ Execpt for item <a href="#orgdd95685">6</a>, the package <code>edar</code> can s
 </div>
 </div>
 
-<div id="outline-container-org5357f3a" class="outline-2">
-<h2 id="org5357f3a"><span class="section-number-2">2</span> Workflow</h2>
+<div id="outline-container-orgca66207" class="outline-2">
+<h2 id="orgca66207"><span class="section-number-2">2</span> Workflow</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-org5510f46" class="outline-3">
-<h3 id="org5510f46"><span class="section-number-3">2.1</span> Data</h3>
+<div id="outline-container-orgea91fd7" class="outline-3">
+<h3 id="orgea91fd7"><span class="section-number-3">2.1</span> Data</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 Here is an example of workflow with <code>edar</code>. We will use the data set <code>edar_survey</code> that comes with the package:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-R" id="orgccebce5"><span style="color: #a9a1e1;">library</span><span style="color: #ffffff;">(</span><span style="color: #9999bb;">magrittr</span><span style="color: #ffffff;">)</span>
+<pre class="src src-R" id="org5033186"><span style="color: #a9a1e1;">library</span><span style="color: #ffffff;">(</span><span style="color: #9999bb;">magrittr</span><span style="color: #ffffff;">)</span>
 <span style="color: #a9a1e1;">library</span><span style="color: #ffffff;">(</span><span style="color: #c0afa7;">edar</span><span style="color: #ffffff;">)</span>
 
 <span style="color: #a7aac0;">data</span><span style="color: #ffffff;">(</span><span style="color: #c0a7bd;">edar_survey</span><span style="color: #ffffff;">)</span>
@@ -348,7 +348,7 @@ Here is an example of workflow with <code>edar</code>. We will use the data set 
 </div>
 
 <div class="org-src-container">
-<pre class="src src-ascii" id="orge8b1a91">A National Survey from Brazil
+<pre class="src src-ascii" id="orgef8a7b3">A National Survey from Brazil
 Description:
 
      The data set is a subset of a national suvery conducted in Brazil
@@ -428,8 +428,8 @@ Source:
 </div>
 
 
-<div id="outline-container-org6affc26" class="outline-3">
-<h3 id="org6affc26"><span class="section-number-3">2.2</span> Summary tables</h3>
+<div id="outline-container-orge045702" class="outline-3">
+<h3 id="orge045702"><span class="section-number-3">2.2</span> Summary tables</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
 First, we can have a quick overview of the data set using the functions <code>summarise_alln</code> and <code>summarise_allc</code> provided by <code>edar</code> package. They show the summary of numerical and categorical variables in the data set, respectively:
@@ -443,34 +443,22 @@ First, we can have a quick overview of the data set using the functions <code>su
 
 <pre class="example">
 # A tibble: 10 x 7
-   var        N   NAs Categories Frequency                           
-   &lt;chr&gt;  &lt;dbl&gt; &lt;int&gt;      &lt;int&gt; &lt;chr&gt;                               
- 1 educ     700     0          2 high  (39.71 %), low   (60.29 %)    
- 2 gender   700     0          2 man   (41.29 %), woman (58.71 %)    
- 3 minim…   695     5          4 Each  (8.63 %), Each  (16.40 %), Sh…
- 4 red.t…   679    21          4 Each  (11.78 %), Each  (18.56 %), S…
- 5 reduc…   700     0          5 A     (72.43 %), A+    (10.57 %), D…
- 6 region   700     0          5 CO    (6.14 %), NE    (47.57 %), NO…
- 7 state    700     0         27 AC    (0.29 %), AL    (0.86 %), AM …
- 8 trans…   700     0          5 A     (70.14 %), A+    (14.71 %), D…
- 9 trust    694     6          3 high  (56.92 %), low   (43.08 %)    
-10 unemp…   699     1          4 Each  (9.59 %), Each  (17.17 %), Sh…
-   Table  Categories.Labels  
-   &lt;list&gt; &lt;chr&gt;              
- 1 &lt;data… high, low          
- 2 &lt;data… man, woman         
- 3 &lt;data… Each city should d…
- 4 &lt;data… Each city should d…
- 5 &lt;data… A, A+, D, D+, N    
- 6 &lt;data… CO, NE, NO, SE, SU 
- 7 &lt;data… AC, AL, AM, AP, BA…
- 8 &lt;data… A, A+, D, D+, N    
- 9 &lt;data… high, low          
-10 &lt;data… Each city should d…
+   var                     N   NAs Categories Frequency                  Table  Categories.Labels  
+   &lt;chr&gt;               &lt;dbl&gt; &lt;int&gt;      &lt;int&gt; &lt;chr&gt;                      &lt;list&gt; &lt;chr&gt;              
+ 1 educ                  700     0          2 high  (39.71 %), low   (6… &lt;data… high, low          
+ 2 gender                700     0          2 man   (41.29 %), woman (5… &lt;data… man, woman         
+ 3 minimum.wage          695     5          4 Each  (8.63 %), Each  (16… &lt;data… Each city should d…
+ 4 red.to.poor           679    21          4 Each  (11.78 %), Each  (1… &lt;data… Each city should d…
+ 5 reduce.income.gap     700     0          5 A     (72.43 %), A+    (1… &lt;data… A, A+, D, D+, N    
+ 6 region                700     0          5 CO    (6.14 %), NE    (47… &lt;data… CO, NE, NO, SE, SU 
+ 7 state                 700     0         27 AC    (0.29 %), AL    (0.… &lt;data… AC, AL, AM, AP, BA…
+ 8 transfer.state.tax    700     0          5 A     (70.14 %), A+    (1… &lt;data… A, A+, D, D+, N    
+ 9 trust                 694     6          3 high  (56.92 %), low   (4… &lt;data… high, low          
+10 unemployment.policy   699     1          4 Each  (9.59 %), Each  (17… &lt;data… Each city should d…
 </pre>
 
 <div class="org-src-container">
-<pre class="src src-R" id="orgcd94f32"><span style="color: #a7aac0;">data</span> <span style="color: #a9a1e1;">%&gt;%</span> <span style="color: #a0d6e0;">summarise_allc</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span>
+<pre class="src src-R" id="orga93d3a0"><span style="color: #a7aac0;">data</span> <span style="color: #a9a1e1;">%&gt;%</span> <span style="color: #a0d6e0;">summarise_allc</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span>
 </pre>
 </div>
 
@@ -495,7 +483,7 @@ The summary of categorical variables produced by <code>summarise_allc</code> con
 </p>
 
 <div class="org-src-container">
-<pre class="src src-R" id="orgf37c6a3"><span style="color: #bba699;">tab</span> = <span style="color: #a7aac0;">data</span> <span style="color: #a9a1e1;">%&gt;%</span> <span style="color: #a0d6e0;">summarise_allc</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span>
+<pre class="src src-R" id="org10c6650"><span style="color: #bba699;">tab</span> = <span style="color: #a7aac0;">data</span> <span style="color: #a9a1e1;">%&gt;%</span> <span style="color: #a0d6e0;">summarise_allc</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span>
 <span style="color: #bba699;">tab</span>$<span style="color: #bb99b4;">Table</span>[[<span style="color: #a3e0a0;">6</span>]]
 </pre>
 </div>
@@ -547,28 +535,21 @@ It is common to have data sets in which many categorical variables have the same
 </p>
 
 <div class="org-src-container">
-<pre class="src src-R" id="orga615531"><span style="color: #a7aac0;">data</span> <span style="color: #a9a1e1;">%&gt;%</span> <span style="color: #b3c0a7;">summarise_allcbundle</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span> 
+<pre class="src src-R" id="orga7a4428"><span style="color: #a7aac0;">data</span> <span style="color: #a9a1e1;">%&gt;%</span> <span style="color: #b3c0a7;">summarise_allcbundle</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span> 
 </pre>
 </div>
 
 <pre class="example">
 # A tibble: 6 x 6
-  N.Variables Variables Categories.Labels                            
-        &lt;int&gt; &lt;list&gt;    &lt;chr&gt;                                        
-1           2 &lt;chr [2]&gt; A, A+, D, D+, N                              
-2           1 &lt;chr [1]&gt; AC, AL, AM, AP, BA, CE, DF, ES, GO, MA, MG, …
-3           1 &lt;chr [1]&gt; CO, NE, NO, SE, SU                           
-4           3 &lt;chr [3]&gt; Each city should decide, Each state should d…
-5           2 &lt;chr [2]&gt; high, low                                    
-6           1 &lt;chr [1]&gt; man, woman                                   
-  Table    Tablep    Tablel  
-  &lt;list&gt;   &lt;list&gt;    &lt;list&gt;  
-1 &lt;data.f… &lt;data.fr… &lt;data.f…
-2 &lt;data.f… &lt;data.fr… &lt;data.f…
-3 &lt;data.f… &lt;data.fr… &lt;data.f…
-4 &lt;data.f… &lt;data.fr… &lt;data.f…
-5 &lt;data.f… &lt;data.fr… &lt;data.f…
-6 &lt;data.f… &lt;data.fr… &lt;data.f…
+  N.Variables Variables Categories.Labels                          Table      Tablep     Tablel    
+        &lt;int&gt; &lt;list&gt;    &lt;chr&gt;                                      &lt;list&gt;     &lt;list&gt;     &lt;list&gt;    
+1           2 &lt;chr [2]&gt; A, A+, D, D+, N                            &lt;data.fra… &lt;data.fra… &lt;data.fra…
+2           1 &lt;chr [1]&gt; AC, AL, AM, AP, BA, CE, DF, ES, GO, MA, M… &lt;data.fra… &lt;data.fra… &lt;data.fra…
+3           1 &lt;chr [1]&gt; CO, NE, NO, SE, SU                         &lt;data.fra… &lt;data.fra… &lt;data.fra…
+4           3 &lt;chr [3]&gt; Each city should decide, Each state shoul… &lt;data.fra… &lt;data.fra… &lt;data.fra…
+5           2 &lt;chr [2]&gt; high, low                                  &lt;data.fra… &lt;data.fra… &lt;data.fra…
+6           1 &lt;chr [1]&gt; man, woman                                 &lt;data.fra… &lt;data.fra… &lt;data.fra…
+
 </pre>
 
 
@@ -578,7 +559,7 @@ It is common to have data sets in which many categorical variables have the same
 
 
 <div class="org-src-container">
-<pre class="src src-R" id="org5c050af"><span style="color: #bba699;">tab</span> = <span style="color: #a7aac0;">data</span> <span style="color: #a9a1e1;">%&gt;%</span> <span style="color: #b3c0a7;">summarise_allcbundle</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span>
+<pre class="src src-R" id="org9296744"><span style="color: #bba699;">tab</span> = <span style="color: #a7aac0;">data</span> <span style="color: #a9a1e1;">%&gt;%</span> <span style="color: #b3c0a7;">summarise_allcbundle</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span><span style="color: #ffffff;">)</span>
 <span style="color: #bba699;">tab</span>$<span style="color: #bb99b4;">Table</span>[[<span style="color: #a3e0a0;">5</span>]]
 </pre>
 </div>
@@ -623,7 +604,7 @@ It is common to have data sets in which many categorical variables have the same
 
 
 <div class="org-src-container">
-<pre class="src src-R" id="orgebd57a6"><span style="color: #bba699;">tab</span>$<span style="color: #a0d6e0;">Tablep</span>[[<span style="color: #a3e0a0;">5</span>]]
+<pre class="src src-R" id="org6e51687"><span style="color: #bba699;">tab</span>$<span style="color: #a0d6e0;">Tablep</span>[[<span style="color: #a3e0a0;">5</span>]]
 </pre>
 </div>
 
@@ -667,7 +648,7 @@ It is common to have data sets in which many categorical variables have the same
 
 
 <div class="org-src-container">
-<pre class="src src-R" id="org241fb1c"><span style="color: #bba699;">tab</span>$<span style="color: #b6a0e0;">Tablel</span>[[<span style="color: #a3e0a0;">5</span>]]
+<pre class="src src-R" id="orgbce467b"><span style="color: #bba699;">tab</span>$<span style="color: #b6a0e0;">Tablel</span>[[<span style="color: #a3e0a0;">5</span>]]
 </pre>
 </div>
 
@@ -710,15 +691,15 @@ It is common to have data sets in which many categorical variables have the same
 </div>
 </div>
 
-<div id="outline-container-org769c250" class="outline-3">
-<h3 id="org769c250"><span class="section-number-3">2.3</span> Checking balance of covariates</h3>
+<div id="outline-container-orgb18b1a4" class="outline-3">
+<h3 id="orgb18b1a4"><span class="section-number-3">2.3</span> Checking balance of covariates</h3>
 <div class="outline-text-3" id="text-2-3">
 <p>
 We can easily check the distribution of covariates among two factor levels. Consider the variable <code>treat</code>, which represents the treatment condition (1=treatment, 0=control). We can describe the distribution of covariates using <code>ebalance()</code>. The table follows recomendations in <a class='org-ref-reference' href="#imbens2015causal">imbens2015causal</a>.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-R" id="orgf75511c"><span style="color: #a7aac0;">data</span> <span style="color: #a9a1e1;">%&gt;%</span> <span style="color: #bba699;">ebalance</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #e0a0bc;">treatmentVar</span>=<span style="color: #e9967a; font-style: italic;">'treat'</span><span style="color: #ffffff;">)</span> <span style="color: #a9a1e1;">%&gt;%</span> <span style="color: #99bbb4;">print</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #c0afa7;">digits</span>=<span style="color: #a6bb99;">2</span><span style="color: #ffffff;">)</span>
+<pre class="src src-R" id="orgb0ee968"><span style="color: #a7aac0;">data</span> <span style="color: #a9a1e1;">%&gt;%</span> <span style="color: #bba699;">ebalance</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #e0a0bc;">treatmentVar</span>=<span style="color: #e9967a; font-style: italic;">'treat'</span><span style="color: #ffffff;">)</span> <span style="color: #a9a1e1;">%&gt;%</span> <span style="color: #99bbb4;">print</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #c0afa7;">digits</span>=<span style="color: #a6bb99;">2</span><span style="color: #ffffff;">)</span>
 
 </pre>
 </div>
@@ -883,8 +864,8 @@ We can easily check the distribution of covariates among two factor levels. Cons
 </div>
 </div>
 
-<div id="outline-container-orgca28659" class="outline-3">
-<h3 id="orgca28659"><span class="section-number-3">2.4</span> Summary plots</h3>
+<div id="outline-container-org578afb4" class="outline-3">
+<h3 id="org578afb4"><span class="section-number-3">2.4</span> Summary plots</h3>
 <div class="outline-text-3" id="text-2-4">
 <p>
 The package also provides some functions to easily visualise the marginal distribution of many variables at once. The marginal densities can be grouped by factors using the parameter <code>group</code>. When the marginal densities are presented by group, the plot include the p-value of the Kolmogorov-Smirnov distance.
@@ -928,19 +909,19 @@ Other similar functions provided by the package are:
 </ul>
 </div>
 </div>
-<div id="outline-container-orgc13f193" class="outline-3">
-<h3 id="orgc13f193"><span class="section-number-3">2.5</span> Analyzing output of model estimation</h3>
+<div id="outline-container-org2bcc3b8" class="outline-3">
+<h3 id="org2bcc3b8"><span class="section-number-3">2.5</span> Analyzing output of model estimation</h3>
 <div class="outline-text-3" id="text-2-5">
 </div>
-<div id="outline-container-org6e67405" class="outline-4">
-<h4 id="org6e67405"><span class="section-number-4">2.5.1</span> Fitting models</h4>
+<div id="outline-container-org4fde115" class="outline-4">
+<h4 id="org4fde115"><span class="section-number-4">2.5.1</span> Fitting models</h4>
 <div class="outline-text-4" id="text-2-5-1">
 <p>
 The package <code>edar</code> make it easy to display results of estimation. It can be achieved with minimum code. Suppose we estimated five different models:
 </p>
 
 <div class="org-src-container">
-<pre class="src src-R" id="orgaf4835b"><span style="color: #c0a7bd;">set.seed</span><span style="color: #ffffff;">(</span><span style="color: #c0afa7;">77</span><span style="color: #ffffff;">)</span>
+<pre class="src src-R" id="org42b5091"><span style="color: #c0a7bd;">set.seed</span><span style="color: #ffffff;">(</span><span style="color: #c0afa7;">77</span><span style="color: #ffffff;">)</span>
 <span style="color: #a7aac0;">data</span> = <span style="color: #e0d0a0;">tibble</span>::<span style="color: #bba699;">data_frame</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">n</span> = <span style="color: #c0a7bd;">300</span>,
                           <span style="color: #e0d0a0;">x1</span>   = <span style="color: #e0d0a0;">rnorm</span><span style="color: #696969;">(</span><span style="color: #b3c0a7;">n</span>,<span style="color: #e0a0bc;">3</span>,<span style="color: #9999bb;">1</span><span style="color: #696969;">)</span>,
                           <span style="color: #a7aac0;">x2</span>   = <span style="color: #a6bb99;">rexp</span><span style="color: #696969;">(</span><span style="color: #b3c0a7;">n</span><span style="color: #696969;">)</span>,
@@ -974,8 +955,8 @@ The package <code>edar</code> make it easy to display results of estimation. It 
 </div>
 </div>
 
-<div id="outline-container-orga462dc5" class="outline-4">
-<h4 id="orga462dc5"><span class="section-number-4">2.5.2</span> Tables</h4>
+<div id="outline-container-org366c34e" class="outline-4">
+<h4 id="org366c34e"><span class="section-number-4">2.5.2</span> Tables</h4>
 <div class="outline-text-4" id="text-2-5-2">
 <p>
 We want to vizualize the model estimate. The function <code>tidye</code> creates tidy summary tables with the output. It is a wrap function for <code>broom::tidy()</code>, and it works with list of models. Here are some examples:
@@ -1897,7 +1878,7 @@ It can easily be exported to standard publication format using the package <code
  </thead>
 <tbody>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Gaussian </td>
    <td style="text-align:left;"> (Intercept) </td>
    <td style="text-align:right;"> 3.6042 </td>
@@ -1908,7 +1889,7 @@ It can easily be exported to standard publication format using the package <code
    <td style="text-align:right;"> 0.2364 </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Gaussian </td>
    <td style="text-align:left;"> x1 </td>
    <td style="text-align:right;"> -0.9053 </td>
@@ -1919,7 +1900,7 @@ It can easily be exported to standard publication format using the package <code
    <td style="text-align:right;"> 0.2686 </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Gaussian </td>
    <td style="text-align:left;"> cat1 </td>
    <td style="text-align:right;"> -2.2011 </td>
@@ -1930,7 +1911,7 @@ It can easily be exported to standard publication format using the package <code
    <td style="text-align:right;"> 0.5431 </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Gaussian </td>
    <td style="text-align:left;"> x2 </td>
    <td style="text-align:right;"> 28.0061 </td>
@@ -1941,7 +1922,7 @@ It can easily be exported to standard publication format using the package <code
    <td style="text-align:right;"> 0.0000 </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Gaussian </td>
    <td style="text-align:left;"> cat2b </td>
    <td style="text-align:right;"> -0.1835 </td>
@@ -1952,7 +1933,7 @@ It can easily be exported to standard publication format using the package <code
    <td style="text-align:right;"> 0.9379 </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Gaussian </td>
    <td style="text-align:left;"> cat2c </td>
    <td style="text-align:right;"> -0.9414 </td>
@@ -1963,7 +1944,7 @@ It can easily be exported to standard publication format using the package <code
    <td style="text-align:right;"> 0.6793 </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Gaussian </td>
    <td style="text-align:left;"> cat2d </td>
    <td style="text-align:right;"> -1.4556 </td>
@@ -1974,7 +1955,7 @@ It can easily be exported to standard publication format using the package <code
    <td style="text-align:right;"> 0.5551 </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Gaussian </td>
    <td style="text-align:left;"> x1:cat1 </td>
    <td style="text-align:right;"> -9.2755 </td>
@@ -1985,7 +1966,7 @@ It can easily be exported to standard publication format using the package <code
    <td style="text-align:right;"> 0.0000 </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Gaussian </td>
    <td style="text-align:left;"> x2:cat2b </td>
    <td style="text-align:right;"> -58.1667 </td>
@@ -1996,7 +1977,7 @@ It can easily be exported to standard publication format using the package <code
    <td style="text-align:right;"> 0.0000 </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Gaussian </td>
    <td style="text-align:left;"> x2:cat2c </td>
    <td style="text-align:right;"> -17.6127 </td>
@@ -2007,7 +1988,7 @@ It can easily be exported to standard publication format using the package <code
    <td style="text-align:right;"> 0.0000 </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Gaussian </td>
    <td style="text-align:left;"> x2:cat2d </td>
    <td style="text-align:right;"> -38.3783 </td>
@@ -2018,7 +1999,7 @@ It can easily be exported to standard publication format using the package <code
    <td style="text-align:right;"> 0.0000 </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Binomial </td>
    <td style="text-align:left;"> (Intercept) </td>
    <td style="text-align:right;"> 1.3429 </td>
@@ -2029,7 +2010,7 @@ It can easily be exported to standard publication format using the package <code
    <td style="text-align:right;"> 0.1100 </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Binomial </td>
    <td style="text-align:left;"> x1 </td>
    <td style="text-align:right;"> -0.7064 </td>
@@ -2040,7 +2021,7 @@ It can easily be exported to standard publication format using the package <code
    <td style="text-align:right;"> 0.0001 </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Binomial </td>
    <td style="text-align:left;"> x2 </td>
    <td style="text-align:right;"> 6.8998 </td>
@@ -2051,7 +2032,7 @@ It can easily be exported to standard publication format using the package <code
    <td style="text-align:right;"> 0.0041 </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Binomial </td>
    <td style="text-align:left;"> cat2b </td>
    <td style="text-align:right;"> 0.8125 </td>
@@ -2062,7 +2043,7 @@ It can easily be exported to standard publication format using the package <code
    <td style="text-align:right;"> 0.3826 </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Binomial </td>
    <td style="text-align:left;"> cat2c </td>
    <td style="text-align:right;"> 0.8889 </td>
@@ -2073,7 +2054,7 @@ It can easily be exported to standard publication format using the package <code
    <td style="text-align:right;"> 0.2546 </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Binomial </td>
    <td style="text-align:left;"> cat2d </td>
    <td style="text-align:right;"> 0.3712 </td>
@@ -2084,7 +2065,7 @@ It can easily be exported to standard publication format using the package <code
    <td style="text-align:right;"> 0.6384 </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Binomial </td>
    <td style="text-align:left;"> x2:cat2b </td>
    <td style="text-align:right;"> -10.5099 </td>
@@ -2095,7 +2076,7 @@ It can easily be exported to standard publication format using the package <code
    <td style="text-align:right;"> 0.0003 </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Binomial </td>
    <td style="text-align:left;"> x2:cat2c </td>
    <td style="text-align:right;"> -6.0388 </td>
@@ -2106,7 +2087,7 @@ It can easily be exported to standard publication format using the package <code
    <td style="text-align:right;"> 0.0131 </td>
   </tr>
   <tr>
-   <td style="text-align:left;">  </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:left;"> Binomial </td>
    <td style="text-align:left;"> x2:cat2d </td>
    <td style="text-align:right;"> -7.2537 </td>
@@ -2395,8 +2376,8 @@ It can easily be exported to standard publication format using the package <code
 </table>
 </div>
 </div>
-<div id="outline-container-org9398a0b" class="outline-4">
-<h4 id="org9398a0b"><span class="section-number-4">2.5.3</span> Plot fitted values</h4>
+<div id="outline-container-org539ac17" class="outline-4">
+<h4 id="org539ac17"><span class="section-number-4">2.5.3</span> Plot fitted values</h4>
 <div class="outline-text-4" id="text-2-5-3">
 <p>
 After the estimation a good way to visualize and present marginal effects are plots with fitted values. It is easy to do with <code>edar</code> package.
@@ -2424,7 +2405,7 @@ There are many options avaiable with the <code>gge_fit()</code> function. We can
 </div>
 
 <ol class="org-ol">
-<li><a id="orge0cfa47"></a>Fitted values for different groups<br />
+<li><a id="org0a013f2"></a>Fitted values for different groups<br />
 <div class="outline-text-5" id="text-2-5-3-1">
 <div class="org-src-container">
 <pre class="src src-R"><span style="color: #b3c0a7;">model.g3</span> <span style="color: #a9a1e1;">%&gt;%</span> <span style="color: #e0a0bc;">gge_fit</span><span style="color: #ffffff;">(</span><span style="color: #b3c0a7;">.</span>, <span style="color: #a7aac0;">data</span>, <span style="color: #e9967a; font-style: italic;">'y'</span>, <span style="color: #e9967a; font-style: italic;">"x2"</span>, <span style="color: #a0d6e0;">cat.values</span>=<span style="color: #b3c0a7;">list</span><span style="color: #696969;">(</span><span style="color: #b3c0a7;">cat2</span>=<span style="color: #b6a0e0;">c</span><span style="color: #00ffff;">(</span><span style="color: #e9967a; font-style: italic;">'a'</span>,<span style="color: #e9967a; font-style: italic;">"b"</span><span style="color: #00ffff;">)</span><span style="color: #696969;">)</span><span style="color: #ffffff;">)</span>
@@ -2552,8 +2533,8 @@ The same applies for logistic regressions.
 </ol>
 </div>
 
-<div id="outline-container-org0613dfa" class="outline-4">
-<h4 id="org0613dfa"><span class="section-number-4">2.5.4</span> Plot with coefficients (dotwisker)</h4>
+<div id="outline-container-org91e2c77" class="outline-4">
+<h4 id="org91e2c77"><span class="section-number-4">2.5.4</span> Plot with coefficients (dotwisker)</h4>
 <div class="outline-text-4" id="text-2-5-4">
 <p>
 The <code>edar</code> package also provides a wrap function for the <code>dotwisker()</code> plot from the package with same name. As before, the function accepts list of models or tidy summaries of the estimation. There are also options to use robust standard errors in the plot.
@@ -2574,8 +2555,8 @@ The <code>edar</code> package also provides a wrap function for the <code>dotwis
 </div>
 </div>
 </div>
-<div id="outline-container-org4228530" class="outline-3">
-<h3 id="org4228530"><span class="section-number-3">2.6</span> Multiple-imputation and post-stratification</h3>
+<div id="outline-container-orge6df785" class="outline-3">
+<h3 id="orge6df785"><span class="section-number-3">2.6</span> Multiple-imputation and post-stratification</h3>
 <div class="outline-text-3" id="text-2-6">
 <p>
 Multiple imputation and post-stratification are easy to conduct. The options are limited. Tha package <code>survey</code> and the package <code>mice</code> contain more options.
@@ -2689,7 +2670,7 @@ $weights.trimmed
 <div id="postamble" class="status">
 <p class="date">Date: 2018-05-25 Fri 14:01</p>
 <p class="author">Author: Diogo Ferrari</p>
-<p class="date">Created: 2018-05-25 Fri 19:12</p>
+<p class="date">Created: 2018-06-03 Sun 07:48</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
