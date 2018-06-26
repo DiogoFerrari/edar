@@ -55,3 +55,7 @@ vignette(edar)
 
 More information
 ================
+
+See [this webpage](https://dioferrari.com/software/) and
+[pdf](https://dioferrari.files.wordpress.com/2018/06/edar_vignette.pdf)
+with examples.
