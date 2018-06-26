@@ -7,7 +7,10 @@
 
 * Introduction
 
-The package Exploratory Data Analysis in R (edar) allows efficient exploratory data analyses with few lines of code. It contains some functions to:
+The package *Exploratory Data Analysis in R* (edar) was created to facilitate exploratory data analysis in R. See [[https://github.com/DiogoFerrari/edar][github]] and [[https://dioferrari.com/software/][software]] pages.
+
+The pabckage allows efficient exploratory data analyses with few lines of code. It contains some functions to:
+
 - overview and summarise the data set 
 - check balance of covariates among control and treatment groups
 - create organized and ready to export (to latex, html, etc) tables with results of model estimation

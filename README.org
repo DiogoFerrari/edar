@@ -56,4 +56,4 @@ vignette(edar)
 
 * More information
 
-
+See [[https://dioferrari.com/software/][this webpage]] and [[https://dioferrari.files.wordpress.com/2018/06/edar_vignette.pdf][pdf]] with examples.

@@ -47,6 +47,11 @@ data %>% ebalance(., treatmentVar='treat')
 
 ```
 
+See other functions in the package vignette.
+
+``` {.r .rundoc-block rundoc-language="R" rundoc-exports="code"}
+vignette(edar)
+```
+
 More information
 ================
-See 

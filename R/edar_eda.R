@@ -1087,13 +1087,13 @@ gge_histogram <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.in
 
 #' Plot categorical Variables using barplot
 #'
-#'
 #' @inheritParams gge_describe
+#' @param ncol integer with number of columns in the grid to plot. If \code{NULL} (default), plots will be places in a squared grid
 #'
 #' @export
 
 ## }}}
-gge_barplot <- function(df, group=NULL)
+gge_barplot <- function(df, group=NULL, ncol=NULL, nrow=NULL)
 {
     if (length(group)>1) {
         stop("\n\nCurrently, this function supports only 1 group")
@@ -1119,7 +1119,7 @@ gge_barplot <- function(df, group=NULL)
             }
         }
     }
-    print(ggpubr::ggarrange(plotlist=g, common.legend=TRUE))
+    print(ggpubr::ggarrange(plotlist=g, common.legend=TRUE, ncol=ncol, nrow=nrow))
     invisible()
 }
 ## {{{ docs }}}
