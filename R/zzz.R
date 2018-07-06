@@ -83,5 +83,11 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".",
                                                         "model.label",
                                                         "Model",
                                                         "Cats",
-                                                        "digits"
+                                                        "digits",
+                                                        "variable",
+                                                        "time.value",
+                                                        "var__to__interpolate__",
+                                                        "time.var.__tmp",
+                                                        "var__interpolated__.ili",
+                                                        "var__interpolated__.isp"
                                                         ))

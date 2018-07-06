@@ -4,12 +4,16 @@
 \alias{gge_barplot}
 \title{Plot categorical Variables using barplot}
 \usage{
-gge_barplot(df, group = NULL)
+gge_barplot(df, group = NULL, ncol = NULL, nrow = NULL)
 }
 \arguments{
 \item{df}{a data frame}
 
 \item{group}{a string with the name of the varible(s) to group the plots}
+
+\item{ncol}{integer with the number of columns in the grid to plot. If \code{NULL} (default), plots will be places in a squared grid}
+
+\item{nrow}{inteter with the number of rows in the grid to plot. If \code{NULL} (default), plots will be places in a squared grid}
 }
 \description{
 Plot categorical Variables using barplot

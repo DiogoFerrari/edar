@@ -169,7 +169,6 @@ edar_get_new_data          <- function(data, n, x, cat.values=NULL)
 }
 
 ## }}}
-
 ## {{{ Plot with fitted values }}}
 
 ## {{{ docs }}}
@@ -1104,5 +1103,153 @@ plot_diagnostic <- function(model)
     readline('Partial Regression Plot ... Press [Enter]...') ; plot_partialRegression(model)
     readline('Partial Residuals Plot ... Press [Enter]...')  ; plot_partialResidual(model)
 }
+
+## }}}
+## {{{ Interpolation }}}
+
+
+## auxiliar to compute interpolation
+compute_if_linear  <- function(v)
+{
+    if(sum(!is.na(v))>1){
+        return(stats::approxfun(base::seq_along(v), v)(base::seq_along(v)))
+    }else{
+        return(v)
+    }
+}
+compute_if_splines <- function(v, yr)
+{
+    if(sum(!is.na(v))>1){
+        return( stats::spline(x = yr, y = v,  xout=yr)$y )
+    }else{
+        return(v)
+    }
+}
+## {{{ docs }}}
+#' Interpolation
+#'
+#' This function produces linear and spline interpolated values
+#'
+#' @param data a data frame to interpolate. It must contain at least the variables we want to interpolate and the \code{time.var}, which marks the intervals we want to fill with interpolated value.
+#' @param vars.to.interpolate a string vector with the names of the variables to interpolate
+#' @param group a string vector with the names of the grouping variables. The interpolation will be conducted within each group. Note: if you are using time.values and extending the current data set, only the variables specified in \code{group}, \code{vars.to.interpolate}, and \code{time.var} will be extended to fill the values in \code{time.values}. The other variables will receive \code{NA} for the extended cases. If the data set is extended using \code{time.values} parameter and there are two categorical variables that represent the same group used to interpolated in different ways, it is possible to pass that variable in the parameter \code{group} as well to avoid NA values in the extended data set that is returned (see examples) 
+#' @param time.var a string with the name of the variable indicating the interval in which the measurements of the \code{vars.to.interpolate} were collected or are missing. Usually it represents time (years, months) for which there are some NA values in the variables described in \code{vars.to.interpolate}, which we want to substitute for interpolated values.
+#' @param time.values either \code{NULL} (default) or a vector with values in the same unit of time.var. This range will be used to expand the data set and interpolate the values.
+#' @param extrapolate.spline boolean, if \code{TRUE} the values intepolated using the spline function will also return extrapolted values
+#'
+#' @details The function linear interpolated values in a variable sufixed with .ili (interplation, linear) and interpolated values using the default method of the \code{spline} function. Those values are stored in a value suffixed with .isp (interpolated, spline)
+#'
+#' @examples
+#'
+#' library(magrittr)
+#' library(ggplot2)
+#' dat = tibble::data_frame(cat2 = c("a1", "a1", "b1", "a1", "b1", "a1", "b1"),
+#'                          cat = c("a", "a", "b", "a", "b", "a", "b"),
+#'                          yr = c(1980, 1990, 1987, 1993, 1990, 1999, 1999),
+#'                          value1 = c(NA, 1, 10, NA, NA, 50, NA),
+#'                          value2 = c(2, NA, 1, 10, 5, NA, 100)) 
+#' 
+#' einterpolate(dat, vars.to.interpolate=c('value1'), group='cat', time.var='yr')
+#' ## using pipe and interpolating multiple variables at once
+#' dat %>% einterpolate(., vars.to.interpolate=c('value1', "value1"), group='cat',
+#'                      time.var='yr')
+#' 
+#' ## extending the data set
+#' dat  %>%  einterpolate(., vars.to.interpolate=c('value1', "value2"),
+#'                        group=c('cat'), time.var='yr', time.values = 1980:1999)
+#' 
+#' ##  cat and cat2 are two ways to desctibe the same group. but in the previous code
+#' ## cat2 returns NA for the extended values. To avoid this:
+#' dat  %>%  einterpolate(., vars.to.interpolate=c('value1', "value2"),
+#'                        group=c('cat', 'cat2'), time.var='yr', time.values = 1980:1999)
+#' 
+#' ## to extrapolate (only using spline)
+#' dat  %>%  einterpolate(., vars.to.interpolate=c('value1', "value2"),
+#'                        group=c('cat', 'cat2'), time.var='yr', time.values = 1980:1999,
+#'                        extrapolate.spline=TRUE)
+#' 
+#' ## see it visually:
+#' 
+#' v = dat %>%
+#'     einterpolate(., vars.to.interpolate=c('value1', "value2"),
+#'                  group=c('cat', 'cat2'), time.var='yr',
+#'                  time.values = 1980:1999, extrapolate=TRUE)
+#' 
+#' ## plot interpolated variable value2
+#' v %>%
+#'     dplyr::select(dplyr::contains("value2"), cat, yr)  %>%
+#'     tidyr::gather(key = Method, value=value, -cat,  -yr) %>% 
+#'     dplyr::mutate(labels =
+#'             dplyr::case_when(
+#'                    Method == "value2" ~ "Observed",
+#'                    Method == "value2.ili" ~ "Interpolated (linear)",
+#'                    Method == 'value2.isp' ~ 'Interpolated + Extrapolation (spline)') ) %>% 
+#'     ggplot2::ggplot(.) +
+#'     ggplot2::geom_point(aes(x=yr, y=value , colour=labels, size=labels), alpha=.3) +
+#'     ggplot2::geom_line(aes(x=yr, y=value, group=labels, colour=labels)) +
+#'     ggplot2::facet_wrap( ~ cat, ncol = , scales='free',labeller=label_parsed)  +
+#'     ggplot2::scale_size_discrete(range=c(2,10), name='')+
+#'     ggplot2::scale_colour_manual(
+#'                 values = c("Observed"= "red",
+#'                 "Interpolated (linear)" = "black",
+#'                 "Interpolated + Extrapolation (spline)"="lightblue"), name='') +
+#'     ggplot2::theme_bw()+
+#'     ggplot2::theme(legend.position = "bottom") +
+#'     ggplot2::ggtitle("Variable: Value 2")
+#' @export
+## }}}
+einterpolate <- function(data, vars.to.interpolate, group=NULL, time.var=NULL, time.values=NULL, extrapolate.spline=FALSE)
+{
+    if (!is.null(time.values)) {
+        ## create a in long format
+        tab.long = data %>%
+            dplyr::select(group, time.var, vars.to.interpolate)  %>%
+            dplyr::filter(!duplicated(.)) %>%
+            tidyr::gather(key = variable, value=value, -group, -time.var) 
+        ## complete that tab with the years in the range time.values and convert to wide format
+        tab = data %>%
+            dplyr::select(group)  %>%
+            dplyr::filter(!duplicated(.)) %>%
+            tidyr::crossing(time.value = time.values) %>%
+            dplyr::rename_at(dplyr::vars(time.value), ~ paste0(time.var) )  %>%
+            tidyr::crossing( 
+                data %>%
+                dplyr::select(group, vars.to.interpolate,time.var)  %>% 
+                tidyr::gather(key = variable, value=value, -group, -time.var ) %>% 
+                dplyr::mutate_at(dplyr::vars(time.var), dplyr::funs(as.character)) %>% 
+                dplyr::select_if(function(col) !is.numeric(col)) %>%
+                dplyr::select(-group, -time.var)  %>% 
+                dplyr::filter(!duplicated(.))
+            ) %>%
+            dplyr::left_join(., tab.long) %>%
+            tidyr::spread(., key=variable, value=value) %>%
+            dplyr::left_join(., data) 
+    }else{
+        tab = data
+    }
+
+    for (var in vars.to.interpolate)
+    {
+        tab = tab %>% 
+            ## rename variable to facilitate manipulation in dplyr
+            dplyr::rename(var__to__interpolate__ = !!var, time.var.__tmp = !!time.var) %>% 
+            dplyr::group_by_at(dplyr::vars(dplyr::one_of(group))) %>% 
+            ## dplyr::arrange_(group, "time.var.__tmp") %>% 
+            dplyr::mutate(var__interpolated__.ili = compute_if_linear (var__to__interpolate__),
+                          var__interpolated__.isp = compute_if_splines(var__to__interpolate__, time.var.__tmp),
+                   ) %>%
+            dplyr::ungroup(.) 
+        if (!extrapolate.spline) tab = tab %>% dplyr::mutate(var__interpolated__.isp = dplyr::case_when(is.na(var__interpolated__.ili) ~ NA_real_, TRUE ~ var__interpolated__.isp))
+        ## rename variable back to its original name
+        tab = tab %>%
+            dplyr::rename_at(dplyr::vars(var__to__interpolate__, var__interpolated__.ili, var__interpolated__.isp, time.var.__tmp),
+                             dplyr::funs(c(var, paste0(var,".ili"), paste0(var, '.isp'), time.var   )) ) 
+    }
+    return(tab)
+}
+
+
+
+
 
 ## }}}

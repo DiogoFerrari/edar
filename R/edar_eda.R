@@ -1088,13 +1088,17 @@ gge_histogram <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.in
 #' Plot categorical Variables using barplot
 #'
 #' @inheritParams gge_describe
-#' @param ncol integer with number of columns in the grid to plot. If \code{NULL} (default), plots will be places in a squared grid
+#' @param ncol integer with the number of columns in the grid to plot. If \code{NULL} (default), plots will be places in a squared grid
+#' @param nrow inteter with the number of rows in the grid to plot. If \code{NULL} (default), plots will be places in a squared grid
 #'
 #' @export
 
 ## }}}
 gge_barplot <- function(df, group=NULL, ncol=NULL, nrow=NULL)
 {
+    options(warn=-1)
+    on.exit(options(warn=0))
+
     if (length(group)>1) {
         stop("\n\nCurrently, this function supports only 1 group")
     }
@@ -1181,12 +1185,85 @@ plot_edescribe <- function(data, qline=T, quantiles=c(.025,.975))
 }
 
 
+## {{{ docs }}}
+#' Barplot
+#'
+#' This function generate a barplot
+#'
+#' @param data a data frame
+#' @param variable string with the name of the categorical variable that is going to be used to create the plot
+#' @param title either \code{NULL} or a string with the title of the plot
+#' @param subtitle either \code{NULL} or a string with the subtitle of the plot
+#' @inheritParams gge_describe
+#' 
+#' @export
+## }}}
+gge_barplot2 <- function(data, variable, group=NULL, title = NULL, subtitle=NULL, legend.position='top')
+{
+    options(warn=-1)
+    on.exit(options(warn=0))
+    
+    cat = variable
+    if (!is.null(group)) {
+        g =  data %>% 
+            dplyr::select(cat, group) %>%
+            dplyr::rename(cat = !!cat, group=!!group) %>% 
+            dplyr::mutate(group=factor(group))  %>%
+            dplyr::group_by(cat, group) %>%
+            dplyr::mutate(ylabel = paste0(unique(cat), "\n(",group,"; N=",n(),")") )  %>%
+            dplyr::group_by(ylabel, group) %>% 
+            dplyr::summarise(n=n())  %>% 
+            dplyr::ungroup(.) %>%
+            dplyr::group_by(group) %>% 
+            dplyr::mutate("Percentage"=round(100*n/sum(n),2))  %>%
+            dplyr::mutate(label = paste0(Percentage, "%") ,
+                          ylabel=factor(ylabel, levels=as.character(ylabel[order(Percentage)]))) %>% 
+            ggplot2::ggplot(.) +
+            ggplot2::geom_bar(ggplot2::aes(y= Percentage, x = ylabel, fill=group), stat='identity',position = 'dodge', alpha=.5) + 
+            ggplot2::geom_text(ggplot2::aes(y= Percentage, x = ylabel, label=label), hjust=-.1, size=4)+
+            ggplot2::coord_flip() +
+            ggplot2::ylim(0,100) +
+            ggplot2::xlab("")+
+            ggplot2::ggtitle(cat)+
+            viridis::scale_fill_viridis(option="A", discrete=TRUE, alpha=1, name="", begin=.066, end=.77) +
+            ggplot2::theme(legend.position = "bottom") 
+    }else{
+        g = data %>% 
+            dplyr::select(cat) %>%
+            dplyr::rename(cat = !!cat) %>% 
+            dplyr::group_by(cat) %>%
+            dplyr::mutate(ylabel = paste0(unique(cat), "\n(N=",n(),")") )  %>% 
+            dplyr::group_by(ylabel) %>% 
+            dplyr::summarise(n=n())  %>% dplyr::mutate("Percentage"=round(100*n/sum(n),2)) %>% 
+            dplyr::mutate(label = paste0(Percentage, "%") ,
+                          ylabel=factor(ylabel, levels=as.character(ylabel[order(Percentage)]))) %>% 
+            ggplot2::ggplot(.) +
+            ggplot2::geom_bar(ggplot2::aes(y= Percentage, x = ylabel), stat='identity',position = 'dodge', alpha=.5) + 
+            ggplot2::geom_text(ggplot2::aes(y= Percentage, x = ylabel, label=label), hjust=-.1, size=4)+
+            ggplot2::coord_flip() +
+            ggplot2::ylim(0,100) +
+            ggplot2::xlab("")+
+            ggplot2::ggtitle(cat)
+    }
+    if (!is.null(title) | !is.null(subtitle)) {
+        if (is.null(title)) title=""
+        g = g + ggplot2::ggtitle(title, subtitle=subtitle)
+    }
+    g = g + ggplot2::theme_bw()
+    if (!is.null(group)) {
+        g = g + ggplot2::theme(legend.position = legend.position) 
+    }
+    return(g)
+}
 
 ## ---------
 ## anxillary
 ## ---------
 gge_barplot_one <- function(df, variable, group=NULL)
 {
+    options(warn=-1)
+    on.exit(options(warn=0))
+
     cat = variable
     if (!is.null(group)) {
         g =  df %>% 
