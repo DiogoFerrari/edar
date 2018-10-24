@@ -619,6 +619,7 @@ gge_fit_get_new_data <- function(data, facets, cat.values, n, x)
     newdata = edar_get_new_data(data=data, n=n, x=x, cat.values = cat.values.newdata)
     return(newdata)
 }
+
 ## }}}
 ## {{{ Plot Coefficients }}}
 
@@ -1134,7 +1135,7 @@ compute_if_splines <- function(v, yr)
 #' @param vars.to.interpolate a string vector with the names of the variables to interpolate
 #' @param group a string vector with the names of the grouping variables. The interpolation will be conducted within each group. Note: if you are using time.values and extending the current data set, only the variables specified in \code{group}, \code{vars.to.interpolate}, and \code{time.var} will be extended to fill the values in \code{time.values}. The other variables will receive \code{NA} for the extended cases. If the data set is extended using \code{time.values} parameter and there are two categorical variables that represent the same group used to interpolated in different ways, it is possible to pass that variable in the parameter \code{group} as well to avoid NA values in the extended data set that is returned (see examples) 
 #' @param time.var a string with the name of the variable indicating the interval in which the measurements of the \code{vars.to.interpolate} were collected or are missing. Usually it represents time (years, months) for which there are some NA values in the variables described in \code{vars.to.interpolate}, which we want to substitute for interpolated values.
-#' @param time.values either \code{NULL} (default) or a vector with values in the same unit of time.var. This range will be used to expand the data set and interpolate the values.
+#' @param time.values either \code{NULL} (default) or a vector with values in the same unit of time.var. This range will be used to expand the data set and interpolate the values. If \code{NULL}, only \code{time.var} values are used to interpolate
 #' @param extrapolate.spline boolean, if \code{TRUE} the values intepolated using the spline function will also return extrapolted values
 #'
 #' @details The function linear interpolated values in a variable sufixed with .ili (interplation, linear) and interpolated values using the default method of the \code{spline} function. Those values are stored in a value suffixed with .isp (interpolated, spline)

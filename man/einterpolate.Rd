@@ -16,7 +16,7 @@ einterpolate(data, vars.to.interpolate, group = NULL, time.var = NULL,
 
 \item{time.var}{a string with the name of the variable indicating the interval in which the measurements of the \code{vars.to.interpolate} were collected or are missing. Usually it represents time (years, months) for which there are some NA values in the variables described in \code{vars.to.interpolate}, which we want to substitute for interpolated values.}
 
-\item{time.values}{either \code{NULL} (default) or a vector with values in the same unit of time.var. This range will be used to expand the data set and interpolate the values.}
+\item{time.values}{either \code{NULL} (default) or a vector with values in the same unit of time.var. This range will be used to expand the data set and interpolate the values. If \code{NULL}, only \code{time.var} values are used to interpolate}
 
 \item{extrapolate.spline}{boolean, if \code{TRUE} the values intepolated using the spline function will also return extrapolted values}
 }

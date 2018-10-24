@@ -48,16 +48,16 @@ summarise_alln <- function(df, group=NULL, weight=NULL, spread=F, digits=4)
         dplyr::group_by_("var", .dots=group) %>%
         dplyr::summarise(N      = sum(na),
                          NAs    = sum(is.na(value)),
-                         Mean   = stats::weighted.mean(value, w=weight, na.rm=TRUE),
-                         sd     = sqrt(Hmisc::wtd.var(value, weights=weight, na.rm=TRUE)),
-                         se     = sd/sqrt(N),
-                         Median       = isotone::weighted.median(value, w=weight),
-                         Min    = min(value, na.rm = TRUE),
-                         Max    = max(value, na.rm = TRUE),
-                         q.025 = reldist::wtd.quantile (value, q=0.025, na.rm = TRUE, weight=weight),
-                         q.25  = reldist::wtd.quantile (value, q=0.25, na.rm = TRUE, weight=weight),
-                         q.75  = reldist::wtd.quantile (value, q=0.75, na.rm = TRUE, weight=weight),
-                         q.975 = reldist::wtd.quantile (value, q=0.975, na.rm = TRUE, weight=weight),
+                         Mean   = ifelse(N!=0, stats::weighted.mean(value, w=weight, na.rm=TRUE), NA_real_),
+                         sd     = ifelse(N!=0, sqrt(Hmisc::wtd.var(value, weights=weight, na.rm=TRUE)), NA_real_),
+                         se     = ifelse(N!=0, sd/sqrt(N), NA_real_),
+                         Median = ifelse(N!=0, isotone::weighted.median(value, w=weight), NA_real_),
+                         Min    = ifelse(N!=0, min(value, na.rm = TRUE), NA_real_),
+                         Max    = ifelse(N!=0, max(value, na.rm = TRUE), NA_real_),
+                         q.025  = ifelse(N!=0, reldist::wtd.quantile (value, q=0.025, na.rm = TRUE, weight=weight), NA_real_),
+                         q.25   = ifelse(N!=0, reldist::wtd.quantile (value, q=0.25, na.rm = TRUE, weight=weight), NA_real_),
+                         q.75   = ifelse(N!=0, reldist::wtd.quantile (value, q=0.75, na.rm = TRUE, weight=weight), NA_real_),
+                         q.975  = ifelse(N!=0, reldist::wtd.quantile (value, q=0.975, na.rm = TRUE, weight=weight), NA_real_),
                          )  %>%
         dplyr::mutate(sd = dplyr::case_when(is.nan(sd) ~ 0, TRUE ~ sd)) %>%   
         dplyr::arrange(var)  %>%
@@ -910,7 +910,7 @@ gge_density <- function(df, group=NULL, weight=NULL, mean=TRUE, median=FALSE, co
         dplyr::mutate_all(as.factor)
     tab = df %>% 
         summarise_alln(., group=group, weight="weight", spread=F)
-    aes.statistics = c("Mean","Median",  "Quantile (.25%, 97.5%)",  "Quantile (25%, 75%)")
+    aes.statistics = c("Mean","Median",  "Quantile (2.5%, 97.5%)",  "Quantile (25%, 75%)")
     aes.var.names = c("Average", "Med", "CI.l", "CI.u", "q25", "q75")
     df$Average = aes.statistics [1]
     df$Med     = aes.statistics [2]
@@ -1020,7 +1020,7 @@ gge_histogram <- function(df, group=NULL, weight=NULL, mean=T, median=F, conf.in
     ## preparing the data to plot
     df[,group] = df[,group] %>% dplyr::mutate_all(as.factor)
     tab = df %>% summarise_alln(., group=group, weight="weight", spread=F)
-    aes.statistics = c("Mean","Median",  "Quantile (.25%, 97.5%)",  "Quantile (25%, 75%)")
+    aes.statistics = c("Mean","Median",  "Quantile (2.5%, 97.5%)",  "Quantile (25%, 75%)")
     aes.var.names = c("Average", "Med", "CI.l", "CI.u", "q25", "q75")
     df$Average = aes.statistics [1]
     df$Med     = aes.statistics [2]

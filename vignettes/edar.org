@@ -1038,3 +1038,4 @@ bibliography:~/Dropbox/CienciasSociais/references/references.bib
 # fig-fitted-many-models-bin.png http://dioferrari.files.wordpress.com/2018/05/fig-fitted-many-models-bin.png
 # fig-fitted-many-models-bin-2.png http://dioferrari.files.wordpress.com/2018/05/fig-fitted-many-models-bin-2.png
 # dotwisker-1.png http://dioferrari.files.wordpress.com/2018/05/dotwisker-1.png
+** Interpolation
