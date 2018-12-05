@@ -4,8 +4,7 @@
 \alias{recode.likert5}
 \title{Recode variable that uses likert scale}
 \usage{
-\method{recode}{likert5}(df, vars.to.recode, invert = FALSE,
-  new.levels = NULL)
+recode.likert5(df, vars.to.recode, invert = FALSE, new.levels = NULL)
 }
 \arguments{
 \item{df}{a data.frame}

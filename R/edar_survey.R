@@ -185,7 +185,6 @@ epower <- function(mu1=NULL,mu2=NULL, power_ideal=.8, n.current=NULL, n1.current
 ## Recodings
 ## =====================================================
 
-## {{{ likert scale }}}
 
 ## {{{ docs }}}
 #' Recode variable that uses likert scale
@@ -271,9 +270,6 @@ recode.likert5 <- function(df, vars.to.recode, invert=FALSE, new.levels=NULL)
     return(df)
 }
 
-
-
-## }}}
 
 ## {{{ Recoding occupation }}}
 
