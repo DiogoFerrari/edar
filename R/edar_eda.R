@@ -1221,7 +1221,7 @@ gge_barplot2 <- function(data, variable, group=NULL, title = NULL, subtitle=NULL
             dplyr::ungroup(.)  %>%
             ggplot2::ggplot(.) +
             ggplot2::geom_col(ggplot2::aes(y= Percentage, x = cat, fill=group, group=group), stat='identity', position = 'dodge', alpha=.6) + 
-            ggplot2::geom_text(ggplot2::aes(y= Percentage, x = cat, label=label, group=group), hjust=-.1, size=3, position = position_dodge(1))+
+            ggplot2::geom_text(ggplot2::aes(y= Percentage, x = cat, label=label, group=group), hjust=-.1, size=3, position = ggplot2::position_dodge(1))+
             ggplot2::coord_flip() +
             ggplot2::xlab("")+
             ggplot2::ggtitle(cat)+
