@@ -1209,20 +1209,20 @@ gge_barplot2 <- function(data, variable, group=NULL, title = NULL, subtitle=NULL
             dplyr::select(cat, group) %>%
             dplyr::rename(cat = !!cat, group=!!group) %>% 
             dplyr::mutate(group=factor(group))  %>%
+            dplyr::group_by(cat) %>%
+            dplyr::mutate(cat.label = paste0(cat, "\n(n=",n(),")" ))  %>% 
+            dplyr::ungroup(.)  %>% 
+            dplyr::mutate(cat = cat.label)  %>% 
             dplyr::group_by(cat, group) %>%
-            dplyr::mutate(ylabel = paste0(unique(cat), "\n(",group,"; N=",n(),")") )  %>%
-            dplyr::group_by(ylabel, group) %>% 
-            dplyr::summarise(n=n())  %>% 
-            dplyr::ungroup(.) %>%
-            dplyr::group_by(group) %>% 
-            dplyr::mutate("Percentage"=round(100*n/sum(n),2))  %>%
-            dplyr::mutate(label = paste0(Percentage, "%") ,
-                          ylabel=factor(ylabel, levels=as.character(ylabel[order(Percentage)]))) %>% 
+            dplyr::summarise(N=n())  %>% 
+            dplyr::ungroup(.)  %>% 
+            dplyr::mutate(Percentage= round(100*N/sum(N, na.rm=T),2) )  %>%
+            dplyr::mutate(label = paste0(Percentage, " % (n=",N,")") )  %>%
+            dplyr::ungroup(.)  %>%
             ggplot2::ggplot(.) +
-            ggplot2::geom_bar(ggplot2::aes(y= Percentage, x = ylabel, fill=group), stat='identity',position = 'dodge', alpha=.5) + 
-            ggplot2::geom_text(ggplot2::aes(y= Percentage, x = ylabel, label=label), hjust=-.1, size=4)+
+            ggplot2::geom_col(ggplot2::aes(y= Percentage, x = cat, fill=group, group=group), stat='identity', position = 'dodge', alpha=.6) + 
+            ggplot2::geom_text(ggplot2::aes(y= Percentage, x = cat, label=label, group=group), hjust=-.1, size=3, position = position_dodge(1))+
             ggplot2::coord_flip() +
-            ggplot2::ylim(0,100) +
             ggplot2::xlab("")+
             ggplot2::ggtitle(cat)+
             viridis::scale_fill_viridis(option="A", discrete=TRUE, alpha=1, name="", begin=.066, end=.77) +
@@ -1241,7 +1241,6 @@ gge_barplot2 <- function(data, variable, group=NULL, title = NULL, subtitle=NULL
             ggplot2::geom_bar(ggplot2::aes(y= Percentage, x = ylabel), stat='identity',position = 'dodge', alpha=.5) + 
             ggplot2::geom_text(ggplot2::aes(y= Percentage, x = ylabel, label=label), hjust=-.1, size=4)+
             ggplot2::coord_flip() +
-            ggplot2::ylim(0,100) +
             ggplot2::xlab("")+
             ggplot2::ggtitle(cat)
     }
@@ -1253,6 +1252,7 @@ gge_barplot2 <- function(data, variable, group=NULL, title = NULL, subtitle=NULL
     if (!is.null(group)) {
         g = g + ggplot2::theme(legend.position = legend.position) 
     }
+    g = g + ggplot2::scale_y_continuous(expand = c(0, 0), limits=c(0,105), breaks=c(0,25,50,75,100), labels= )
     return(g)
 }
 
