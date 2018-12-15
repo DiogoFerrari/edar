@@ -1,6 +1,7 @@
 ## {{{ multiple inputation }}}
 
 ## {{{ docs }}}
+
 #' Multiple imputation
 #'
 #' This is a wrap function for the Multiple Imputation package mice.
@@ -39,6 +40,7 @@
 #'                       ind.vars=c("x1", "x2", "cat.var", "cat.var2"))
 #' imp
 #' @export
+
 ## }}}
 emultimputation <- function(data, RHS.formula, dep.vars, ind.vars, m=5, maxit=50, method='pmm', seed=500, digits=4)
 {
@@ -187,6 +189,7 @@ epower <- function(mu1=NULL,mu2=NULL, power_ideal=.8, n.current=NULL, n1.current
 
 
 ## {{{ docs }}}
+
 #' Recode variable that uses likert scale
 #'
 #' This function can be used to quickly recode variables that use 5 points likert scale
@@ -200,6 +203,7 @@ epower <- function(mu1=NULL,mu2=NULL, power_ideal=.8, n.current=NULL, n1.current
 #' @return The function returns the data frame with 6 new variables named <vars.to.recode>5 (numerical variable with 5 levels from 1 to 5),<vars.to.recode>5c (factor with 5 levels), <vars.to.recode>3 (numerical variable with 3 levels, -1, 0, and 1), <vars.to.recode>3c (3 levels categorical variable), <vars.to.recode>2 (2 levels numerical variable), <vars.to.recode>2c (two levels categorical variable).
 #'
 #' @export
+
 ## }}}
 recode.likert5 <- function(df, vars.to.recode, invert=FALSE, new.levels=NULL)
 {
@@ -271,9 +275,9 @@ recode.likert5 <- function(df, vars.to.recode, invert=FALSE, new.levels=NULL)
 }
 
 
-## {{{ Recoding occupation }}}
 
 ## {{{ docs }}}
+
 #' Recode occupation to DGP class scheme
 #'
 #' The function creates a factor with the EGP class scheme
@@ -285,6 +289,7 @@ recode.likert5 <- function(df, vars.to.recode, invert=FALSE, new.levels=NULL)
 #'
 #'
 #' @export
+
 ## }}}
 isco88toEGP <- function(isco88, n.employees=NULL, self.employed=NULL, collapse=FALSE)
 {
@@ -613,4 +618,3 @@ set.esec.labels <- function(esec, n.cat=NULL)
 }
 
 
-## }}}
