@@ -92,5 +92,10 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".",
                                                         "var__interpolated__.isp",
                                                         "vars",
                                                         "cat.label",
-                                                        "old.var"
+                                                        "old.var",
+                                                        "cat.vars",
+                                                        "formula",
+                                                        "model.id",
+                                                        "relevel",
+                                                        "variable___tmp___"
                                                         ))

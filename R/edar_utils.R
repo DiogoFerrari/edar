@@ -155,13 +155,37 @@ colorRampPaletteAlpha <- function(colors, n=32, interpolate='linear') {
 
 ## Pltos
 ## -----
+## {{{ docs }}}
+#' Reorder labels 
+#'
+#' This function reorder labels in a ggplot2 barplot figure with facets (see examples)
+#'
+#'
+#' @param x the name of the variable that need to be ordered
+#' @param by the name of the variable that will be used to order \code{x}
+#' @param within the name of the variable used to create the facets
+#' @param fun (not used)
+#' @param sep default variable to manipulate the labels. Default "__"
+#' @param ... additional parameter...
+#'
+#'
 #' @export
+## }}}
 reorder_within <- function(x, by, within, fun = mean, sep = "___", ...) {
   new_x <- paste(x, within, sep = sep)
   stats::reorder(new_x, by, FUN = fun)
 }
 
+## {{{ docs }}}
+#'
+#' Reorder labels in ggplot
+#'
+#' Function used in conjunction with \link{reorder_within} to reorder labels based on a numerical variable in plots with facets
+#'
+#' @inheritParams reorder_within
+#'
 #' @export
+## }}}
 scale_x_reordered <- function(..., sep = "___") {
   reg <- paste0(sep, ".+$")
   ggplot2::scale_x_discrete(labels = function(x) gsub(reg, "", x), ...)

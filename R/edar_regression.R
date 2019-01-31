@@ -110,14 +110,13 @@ edar_get_fitted <- function(data, smry, formula, newdata=NULL, x=NULL, n=NULL, c
 #'
 #' Get fitted values from summary table
 #' @param data the dataset used to estimate the model
-#' @param smry the summary table organized in data frame (see \link{\code{broom::tidy()}}). It must contain at least three columns: one named \code{term} that follows the pattern of the table return by \code{lm} function; a column named \code{estimate} with the point estimate of the linear coefficient; \code{std.error} or a similar measure used to capture the uncertainty of the \code{esitmate}. The table may contain results of multiple models, in which case it must contain an additional column whose name must be provided to the parameter \code{model.id}.
-#' @param formula an R formula used to estimate the model, as used in the function \link{\code{lm}}, for instance. If the \code{smry} contains multiple models, formula must be a named list. Each element of the list must contain the formula of the respective model, and the names must match the names used in the column to identity the models in the summary table passed in the parameter \code{smry}.
+#' @param smry the summary table organized in data frame (see function \code{broom::tidy()}). It must contain at least three columns: one named \code{term} that follows the pattern of the table return by \code{lm} function; a column named \code{estimate} with the point estimate of the linear coefficient; \code{std.error} or a similar measure used to capture the uncertainty of the \code{esitmate}. The table may contain results of multiple models, in which case it must contain an additional column whose name must be provided to the parameter \code{model.id}.
+#' @param formula an R formula used to estimate the model, as used in the function \link{lm}, for instance. If the \code{smry} contains multiple models, formula must be a named list. Each element of the list must contain the formula of the respective model, and the names must match the names used in the column to identity the models in the summary table passed in the parameter \code{smry}.
 #' @param newdata either \code{NULL} or a data set that will be used to compute the fitted values.
 #' @param x a string with the name of the variable that will be used as varying dependent variable to compute the fitted values.
 #' @param n an integer with the number of data points that will be used to compute the fitted values. Default: 200.
 #' @inheritParams gge_fit
 #'
-#' @examples
 #'
 #' @export
 
