@@ -167,3 +167,84 @@ scale_x_reordered <- function(..., sep = "___") {
   ggplot2::scale_x_discrete(labels = function(x) gsub(reg, "", x), ...)
 }
 
+
+
+## get fitted values from summary tables
+## -------------------------------------
+get_matrix_with_factors <- function(data, cat.values, n)
+{
+    factors = data %>%
+        dplyr::select(intersect(cat.vars, all.vars(formula)))  %>% 
+        dplyr::filter(!duplicated(.)) %>% 
+        dplyr::mutate_all(dplyr::funs(as.character)) %>%
+        tidyr::gather(key = variable, value=value)  %>% 
+        dplyr::filter(!duplicated(.)) %>% 
+        tidyr::unite(., col=cat, sep="", remove=TRUE)  %>%
+        dplyr::mutate(value = 0)  %>% 
+        tidyr::spread(., key=cat, value=value) %>%
+        .[rep(1, n),]
+    if (!is.null(cat.values)) {
+        for (i in 1:length(cat.values))
+        {
+            variable  = paste0(names(cat.values)[i], cat.values[[i]]) 
+            factors = factors %>% dplyr::rename(variable = !!variable)  %>%  dplyr::mutate(variable = 1 %>% as.integer) %>% dplyr::rename_at(vars(variable), dplyr::funs(paste0(variable) ) ) 
+        }
+    }
+    return(factors)
+}
+gnd <- function(data, n, x, cat.values=NULL)
+{
+    variables = names(data)
+    if(!is.null(cat.values)){
+        cat_vars1 = cat.values %>%
+            do.call(expand.grid,.) %>%
+            base::replicate(n, ., simplify = FALSE) %>%
+            dplyr::bind_rows(.) %>%
+            dplyr::arrange_(.dots=names(cat.values)) 
+        cat_vars2 = data %>%
+            tibble::as_data_frame(.) %>%
+            dplyr::select_if(function(col) !is.numeric(col)) %>%
+            dplyr::select(-dplyr::one_of(names(cat.values)))  %>%
+            dplyr::summarize_all(function(x) sort(unique(x))[1])  %>%
+            dplyr::mutate_if(is.factor, as.character) %>%
+            base::replicate(nrow(cat_vars1), ., simplify=FALSE)  %>%
+            dplyr::bind_rows(.)
+        cat_vars = dplyr::bind_cols(cat_vars1, cat_vars2)  %>%
+            tibble::as_data_frame(.) 
+
+        num_vars = data %>%
+            dplyr::select_if(is.numeric)  %>%
+            dplyr::mutate_all(mean, na.rm=T) %>%
+            dplyr::slice(., 1) %>% 
+            .[rep(1,nrow(cat_vars)),] %>%
+            dplyr::bind_rows(.)
+
+        newdata = dplyr::bind_cols(num_vars, cat_vars)
+
+        newx = newdata %>%
+            dplyr::group_by_(.dots=names(cat.values)) %>%
+            dplyr::mutate( x = seq(min(data[,x], na.rm=T), max(data[,x], na.rm=T),length=n()))  %>%
+            dplyr::ungroup(.)  %>% 
+            dplyr::select(x) 
+
+        newdata[,x] = newx
+    }else{
+        cat_vars = data %>%
+            tibble::as_data_frame(.) %>%
+            dplyr::select_if(function(col) !is.numeric(col)) %>%
+            dplyr::summarize_all(function(x) sort(unique(x))[1])  %>%
+            dplyr::mutate_if(is.factor, as.character) %>%
+            .[rep(1,n),]
+        num_vars = data %>%
+            dplyr::select_if(is.numeric)  %>%
+            dplyr::mutate_all(mean, na.rm=T) %>%
+            dplyr::slice(., 1) %>% 
+            .[rep(1,n),]
+        num_vars[,x] = seq(min(data[,x], na.rm=T),max(data[,x], na.rm=T),length=n)
+        newdata = cat_vars %>% dplyr::bind_cols(., num_vars)
+    }
+
+    newdata = newdata %>% dplyr::mutate_if(is.factor, as.character) %>% dplyr::select(variables) 
+    return(newdata)
+}
+

@@ -5,8 +5,9 @@
 \title{Plot fitted values}
 \usage{
 gge_fit(model, data, y, x, formula = NULL, n = 200, cat.values = NULL,
-  show.points = T, pch.col = "#00000044", pch.col.cat = NULL,
-  ylim = NULL, xlim = NULL, xlab = NULL, ylab = NULL, facets = NULL,
+  model.id = NULL, show.points = T, pch.col = "#00000044",
+  pch.pos = "identity", pch.col.cat = NULL, ylim = NULL, xlim = NULL,
+  xlab = NULL, ylab = NULL, facets = NULL,
   facets.title.position = "left", facets.ncol = NULL,
   facets.scales = "fixed", title = NULL, title.position = "left",
   subtitle = NULL, footnote = NULL, legend.show.formulas = TRUE,
@@ -32,9 +33,13 @@ gge_fit(model, data, y, x, formula = NULL, n = 200, cat.values = NULL,
 
 \item{cat.values}{named list of string vectors. The name of each element of the list (the string vectors) must match variable names in the data. The element of the string vectors must be strings with the name of the categories to use in the plot with the fitted values. To generate the fitted values, the numeric columns will be set to their mean value, except the column specified in the parameter \code{x}. The categorical values are set to their first category or the first category in alphabetic order. One can set the categorical variables to different values or use more than one category by setting this parameter \code{cat.value} as desired. For instance, suppose there is a categorical variable in the data set named education, taking the values of \code{High} or \code{Low}, which was used in the model. If \code{cat.value=NULL}, the plot with the predicted values will be fixed at \code{education=High}. One can use \code{education="Low"} by setting \code{cat.value=list(eductation="low")}. One can generate predicted values for both levels of education by setting \code{cat.value=list(eductation=c("low", "high"))}. See more examples in the documentation below.}
 
+\item{model.id}{a string with the name of the column that identifies the model in the table smry.}
+
 \item{show.points}{boolean, indicating if the points from the original data set must be plotted or not}
 
 \item{pch.col}{a string or rgb code.}
+
+\item{pch.pos}{a string with position of the points (e.g., jitter, identity). Default is identity.}
 
 \item{pch.col.cat}{a string vector with the name of the categorical variable in the data to use as color key for the points}
 
