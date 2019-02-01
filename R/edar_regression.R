@@ -451,11 +451,13 @@ edar_get_new_data          <- function(data, n, x, cat.values=NULL)
 #' @param cat.values named list of string vectors. The name of each element of the list (the string vectors) must match variable names in the data. The element of the string vectors must be strings with the name of the categories to use in the plot with the fitted values. To generate the fitted values, the numeric columns will be set to their mean value, except the column specified in the parameter \code{x}. The categorical values are set to their first category or the first category in alphabetic order. One can set the categorical variables to different values or use more than one category by setting this parameter \code{cat.value} as desired. For instance, suppose there is a categorical variable in the data set named education, taking the values of \code{High} or \code{Low}, which was used in the model. If \code{cat.value=NULL}, the plot with the predicted values will be fixed at \code{education=High}. One can use \code{education="Low"} by setting \code{cat.value=list(eductation="low")}. One can generate predicted values for both levels of education by setting \code{cat.value=list(eductation=c("low", "high"))}. See more examples in the documentation below.
 #' @param model.id a string with the name of the column that identifies the model in the table smry.
 #' @param show.points boolean, indicating if the points from the original data set must be plotted or not
+#' @param linetype boolean, if \code{TRUE}, the plot displays different line types if there is more than one fitted line. Default is \code{FALSE}
+#' @param line.size numeric, the size of the fitted line
 #' @param pch.col a string or rgb code.
 #' @param pch.pos a string with position of the points (e.g., jitter, identity). Default is identity. 
 #' @param pch.col.cat a string vector with the name of the categorical variable in the data to use as color key for the points
 #' @param pch.col.palette a named string vector with one element. The name must be the color palette (brewer, viridis and the value a string with the pallete available (ex: "Blues" for brewer palette, "A" for viridis, etc)
-#' @param fill.palette as as for pch.col.palette 
+#' @param fill.palette same as for pch.col.palette, but it controls the color of the interval around the fitted line. It also accepts unnamed vector with string "grey" (use grey scales) or "plain" to use a single grey color
 #' @param xlab string with text to display in the x-axis 
 #' @param ylab string with text to display in the y-axis 
 #' @param xlim two-dimensional numeric vector with the limits of the x-axis 
@@ -620,6 +622,10 @@ gge_fit <- function(model, data, y, x, formula=NULL, n=200, cat.values=NULL, mod
                     pch.col="#00000044", 
                     pch.pos="identity",
                     pch.col.cat=NULL,
+                    ## lineytpe
+                    ## --------
+                    linetype=FALSE,
+                    line.size=.8,
                     ## x,y lims and labs
                     ## -----------------
                     ylim=NULL, xlim=NULL, xlab=NULL, ylab=NULL,
@@ -651,7 +657,7 @@ gge_fit <- function(model, data, y, x, formula=NULL, n=200, cat.values=NULL, mod
                     ## color palettes/colors
                     ## ------
                     pch.col.palette = c(brewer="BrBG"),
-                    fill.palette    = c(brewer="Paired")
+                    fill.palette    = c(viridis="B")
                     )
 {
     warnings("FALSE")
@@ -802,9 +808,15 @@ gge_fit <- function(model, data, y, x, formula=NULL, n=200, cat.values=NULL, mod
     ## fitted values
     ## -------------
     g = g +
-        ggplot2::geom_line(data=pred, ggplot2::aes_string(x= x, ".fitted", group=cat.groups)) +
         ggplot2::geom_ribbon(data=pred, ggplot2::aes_string(x = x, ymin=".ylb", ymax=".yub", group=cat.groups, fill=cat.groups), alpha=0.4)
 
+    ## linetype
+    ## --------
+    if(linetype)
+        g = g + ggplot2::geom_line(data=pred, ggplot2::aes_string(x= x, ".fitted", group=cat.groups, linetype=cat.groups), size=line.size)
+    else{
+        g = g + ggplot2::geom_line(data=pred, ggplot2::aes_string(x= x, ".fitted", group=cat.groups), size=line.size)
+    }
 
     ## facets, legend, title
     ## ---------------------
@@ -838,6 +850,7 @@ gge_fit <- function(model, data, y, x, formula=NULL, n=200, cat.values=NULL, mod
             ggplot2::guides(colour = ggplot2::guide_legend(title.position="top", title.hjust = 0, ncol = legend.ncol.colour),
                             fill   = ggplot2::guide_legend(title.position="top", title.hjust = 0, ncol = legend.ncol.fill  ))
 
+    ## ----
     ## fill
     ## ----
     if(is.null(legend.fill.title)) legend.fill.title = 'Groups'
@@ -845,17 +858,25 @@ gge_fit <- function(model, data, y, x, formula=NULL, n=200, cat.values=NULL, mod
         if(cat.groups != 'Model') legend.fill.title = 'Groups'
     if (any(sapply(cat.values, length)>1) | "Model" %in% cat.groups ) {
         ## if ("Model" %in% cat.groups) {
-        if (names(fill.palette) == 'brewer')  g = g + ggplot2::scale_fill_brewer(palette=fill.palette, name=legend.fill.title )
+        if (!is.null(names(fill.palette))) {
+            if (names(fill.palette) == 'brewer')      g = g + ggplot2::scale_fill_brewer(palette=fill.palette, name=legend.fill.title )
+            if (names(fill.palette) == 'viridis')     g = g + viridis::scale_fill_viridis(option=fill.palette, discrete=TRUE, alpha=1, name=legend.fill.title, begin=0, end=.8, direction=-1 )
+        }else{
+            if (fill.palette == 'plain')              g = g + ggplot2::scale_fill_grey( start = 0.5, end = 0.5, na.value = "red", aesthetics = "fill", name=legend.fill.title)
+            if (fill.palette == 'grey')               g = g + ggplot2::scale_fill_grey( start = 0.2, end = 0.8, na.value = "red", aesthetics = "fill", name=legend.fill.title)
+        }
         ## if (names(fill.palette) == 'dutchmasters')  g = g + scale_fill_dutchmasters(palette=fill.palette, alpha=1)
-        if (names(fill.palette) == 'viridis') g = g + viridis::scale_fill_viridis(option=fill.palette, discrete=TRUE, alpha=1, name=legend.fill.title )
         ## }else{    
         ##     g = g + viridis::scale_fill_viridis(option="viridis", discrete=TRUE, alpha=1)
         ## }
+        g = g + ggplot2::scale_linetype_discrete(name=legend.fill.title) 
     }else{
         g = g + ggplot2::scale_fill_manual(values = rep(pch.col, length(cat.values))) +
+            ggplot2::scale_linetype_discrete(name=legend.fill.title) +
             ggplot2::guides(fill  = FALSE)
             
     }
+
     return(g)
 
     

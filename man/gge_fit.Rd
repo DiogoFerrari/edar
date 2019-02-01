@@ -6,9 +6,9 @@
 \usage{
 gge_fit(model, data, y, x, formula = NULL, n = 200, cat.values = NULL,
   model.id = NULL, show.points = T, pch.col = "#00000044",
-  pch.pos = "identity", pch.col.cat = NULL, ylim = NULL, xlim = NULL,
-  xlab = NULL, ylab = NULL, facets = NULL,
-  facets.title.position = "left", facets.ncol = NULL,
+  pch.pos = "identity", pch.col.cat = NULL, linetype = FALSE,
+  line.size = 0.8, ylim = NULL, xlim = NULL, xlab = NULL, ylab = NULL,
+  facets = NULL, facets.title.position = "left", facets.ncol = NULL,
   facets.scales = "fixed", title = NULL, title.position = "left",
   subtitle = NULL, footnote = NULL, legend.show.formulas = TRUE,
   legend.show.cat = FALSE, legend.position = "top", legend.omit = F,
@@ -16,7 +16,7 @@ gge_fit(model, data, y, x, formula = NULL, n = 200, cat.values = NULL,
   legend.box = "horizontal", legend.ncol.colour = NULL,
   legend.ncol.fill = NULL, legend.col.title = NULL,
   legend.fill.title = NULL, pch.col.palette = c(brewer = "BrBG"),
-  fill.palette = c(brewer = "Paired"))
+  fill.palette = c(viridis = "B"))
 }
 \arguments{
 \item{model}{a model object, a list of them, or a tidy data frame with summary(ies) of the estimation(s). A model object can be one produced as output of \code{\link[stats]{lm} } or \code{\link[stats]{glm}}.  If the tidy summary is provided instead of the model object it must contain the columns \code{term}, \code{estimate} (the point estimate), and std.error (standard error of the estimates). The content of the column \code{term} must match the name of the covariate associated the estimates as produced by \code{attr(terms(formula), 'term.labels')}, and \code{formula} must also be provided as a parameter. If there are more than one model in the summary table, it must have a column identifying the models.}
@@ -42,6 +42,10 @@ gge_fit(model, data, y, x, formula = NULL, n = 200, cat.values = NULL,
 \item{pch.pos}{a string with position of the points (e.g., jitter, identity). Default is identity.}
 
 \item{pch.col.cat}{a string vector with the name of the categorical variable in the data to use as color key for the points}
+
+\item{linetype}{boolean, if \code{TRUE}, the plot displays different line types if there is more than one fitted line. Default is \code{FALSE}}
+
+\item{line.size}{numeric, the size of the fitted line}
 
 \item{ylim}{two-dimensional numeric vector with the limits of the y-axis}
 
@@ -91,7 +95,7 @@ gge_fit(model, data, y, x, formula = NULL, n = 200, cat.values = NULL,
 
 \item{pch.col.palette}{a named string vector with one element. The name must be the color palette (brewer, viridis and the value a string with the pallete available (ex: "Blues" for brewer palette, "A" for viridis, etc)}
 
-\item{fill.palette}{as as for pch.col.palette}
+\item{fill.palette}{same as for pch.col.palette, but it controls the color of the interval around the fitted line. It also accepts unnamed vector with string "grey" (use grey scales) or "plain" to use a single grey color}
 }
 \description{
 This function plot the fitted value or the predicted probability given the model estimated using \code{lm} or \code{glm} and the original data.
