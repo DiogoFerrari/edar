@@ -724,14 +724,30 @@ gge_fit <- function(model, data, y, x, formula=NULL, n=200, cat.values=NULL, mod
             models   = models[names(models)]
             formulas = formula[names(models)]
         
-            doParallel::registerDoParallel(parallel::detectCores() - 1) ## -- Parallel (start) -----------------------------------------
-            "%dopar%" <- foreach::"%dopar%"
-            pred = foreach::foreach(model = models,
-                                    model.label = names(models),
-                                    formula     = formulas,
-                                    .maxcombine = length(models),
-                                    .combine = list, .multicombine=T) %dopar% ( get_fitted(data=data, smry=model, formula=formula, newdata=newdata, x=x, n=n, cat.values=cat.values) %>% cbind(., Model=model.label) %>% dplyr::mutate_if(is.factor, as.character) )
-            doParallel::stopImplicitCluster()  ## --------------------------- Parallel (stop) -------------------------------------------
+            ## doParallel::registerDoParallel(parallel::detectCores() - 1) ## -- Parallel (start) -----------------------------------------
+            ## "%dopar%" <- foreach::"%dopar%"
+            ## pred = foreach::foreach(model = models,
+            ##                         model.label = names(models),
+            ##                         formula     = formulas,
+            ##                         .maxcombine = max(length(models), 2),
+            ##                         .combine = list, .multicombine=T) %dopar% ( get_fitted(data=data, smry=model, formula=formula, newdata=newdata, x=x, n=n, cat.values=cat.values) %>% cbind(., Model=model.label) %>% dplyr::mutate_if(is.factor, as.character) )
+            ## doParallel::stopImplicitCluster()  ## --------------------------- Parallel (stop) -------------------------------------------
+            ## non parallel version (parallel can require large memory)
+            ## ---------------------
+            pred = tibble::data_frame() 
+            for (i in 1:length(models))
+            {
+                model = models[[i]]
+                model.label = names(models)[i]
+                formula = formulas[[i]]
+                ## Debug/Monitoring message --------------------------
+                msg <- paste0('\n','Colleting fitted values for model ', model.label, '\n'); cat(msg)
+                ## ---------------------------------------------------
+                pred = pred %>%
+                    dplyr::bind_rows(., get_fitted(data=data, smry=model, formula=formula, newdata=newdata, x=x, n=n, cat.values=cat.values) %>% cbind(., Model=model.label) %>% dplyr::mutate_if(is.factor, as.character) )
+            }
+
+            
             pred = pred %>% dplyr::bind_rows(.)
             multiple.models.flag=TRUE
             if(legend.show.formulas)
@@ -787,8 +803,7 @@ gge_fit <- function(model, data, y, x, formula=NULL, n=200, cat.values=NULL, mod
     
     ## main plot
     ## ---------
-    g = ggplot2::ggplot(data) +
-        ggplot2::theme_bw() 
+    g = ggplot2::ggplot(data) 
 
     ## show points
     ## -----------

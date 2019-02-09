@@ -45,7 +45,10 @@
 emultimputation <- function(data, RHS.formula, dep.vars, ind.vars, m=5, maxit=50, method='pmm', seed=500, digits=4)
 {
     formula = paste0("y ~ ",  formula)
-
+    ## Debug/Monitoring message --------------------------
+    msg <- paste0('\n','Computing multiple inputation for variable ', paste0(dep.vars, collapse=", ") , '(it may take a while) ... ',  '\n'); cat(msg)
+    ## ---------------------------------------------------
+    
     models.imp.pooled.final <- list()
     i=1
     for (i in 1:length(dep.vars)){
