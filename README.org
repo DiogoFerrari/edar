@@ -1,5 +1,5 @@
 
-* Overview
+* edar @@html:<img src='man/figures/logo.png' align="right" height="139" />@@
 
 Exploratory Data Analysis in R (~edar~)  is a R package designed to reduce the amount of code needed to do EDA in R. It provides a set of wrap functions that incapsulate some [[https://www.tidyverse.org/][tidyverse]] functionalities. 
 
