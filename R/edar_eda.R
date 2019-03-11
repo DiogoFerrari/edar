@@ -118,7 +118,7 @@ summarise_allc <- function(df, group=NULL)
         dplyr::group_by_("var", .dots=group) %>%
         dplyr::summarise(N      = sum(na),
                          NAs    = sum(is.na(value)),
-                         Categories = length(unique(value)),
+                         Categories = length(unique(value[!is.na(value)])),
                          Frequency = paste0(stringr::str_pad(stringr::str_sub(names(table(value)),1,5), width=5, side='right'), " (", formatC(100*table(value)/sum(table(value)),format="f",digits=2), " %)",collapse=", ") ,
                          ## Table     = list(table(value, useNA="always") %>% stats::setNames(., nm=c(names(.)[1:(length(.)-1)], "NAs")) %>% rbind %>% tibble::as_data_frame(.)  %>% cbind(Variable=unique(var)) %>% dplyr::select(Variable, dplyr::everything())  ),
                          Table     = list(table(value, useNA="always") %>% stats::setNames(., nm=(names(.) %>% sapply(., toString)) ) %>% rbind %>% tibble::as_data_frame(.)  %>% cbind(Variable=unique(var)) %>% dplyr::select(Variable, dplyr::everything())  ),
