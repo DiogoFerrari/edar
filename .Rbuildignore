@@ -5,3 +5,6 @@ dev.R
 README.org
 LICENSE.md
 vignettes/
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

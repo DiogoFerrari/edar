@@ -4,9 +4,10 @@
 \alias{gge_contour}
 \title{Contour plot}
 \usage{
-gge_contour(df, x, y, points = FALSE, group = NULL, palette = "Blues",
-  hist.fill = "lightsteelblue2", hist.col = "white", xlim = NULL,
-  xlab = NULL, ylab = NULL, contour.breaks = 200, direction = 1)
+gge_contour(df, x, y, points = FALSE, group = NULL,
+  palette = "Blues", hist.fill = "lightsteelblue2",
+  hist.col = "white", xlim = NULL, xlab = NULL, ylab = NULL,
+  contour.breaks = 200, direction = 1)
 }
 \arguments{
 \item{df}{a data frame}

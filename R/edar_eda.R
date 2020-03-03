@@ -1,4 +1,36 @@
 
+## {{{ ancillary }}}
+
+
+## {{{ docs }}}
+#' Rescale values
+#'
+#' @param y.reference values to use as reference to rescale
+#' @param y.to.rescale values to rescale into y.left range 
+#'
+#' @examples
+#'
+#' @export
+## }}}
+rescale.axis <- function(y.reference, y.to.rescale)
+{
+    ## y  = alpha + beta*x
+    ## y0 = alpha + beta*x0
+    ## => beta  = (y -y0) / (x - x0)
+    ## => alpha = y - beta*x
+    x  = max(y.reference)
+    x0 = min(y.reference)
+    y  = max(y.to.rescale)
+    y0 = min(y.to.rescale)
+    beta  = (y - y0)/(x - x0)
+    alpha = y - beta*x
+    ## y.rescaled = (alpha - y.to.rescale)/(-beta)
+    ## return(y.rescaled)
+    return(c(alpha=alpha, beta=beta))
+}
+
+
+## }}}
 ## {{{ Describe data (dplyr extension) }}}
 
 ## {{{ docs }}}

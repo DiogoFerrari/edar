@@ -4,7 +4,8 @@
 \alias{summarise_alln}
 \title{Summarise numerical variables of the data set}
 \usage{
-summarise_alln(df, group = NULL, weight = NULL, spread = F, digits = 4)
+summarise_alln(df, group = NULL, weight = NULL, spread = F,
+  digits = 4)
 }
 \arguments{
 \item{df}{data frame}

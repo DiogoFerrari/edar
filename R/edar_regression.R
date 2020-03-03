@@ -434,6 +434,36 @@ edar_get_new_data          <- function(data, n, x, cat.values=NULL)
 }
 
 ## }}}
+## {{{ Predicted values }}}
+
+## {{{ docs }}}
+#' Predicted values of regression
+#'
+#' Get the predicted values, includint standard errors and confidence intervals
+#'
+#'
+#' @param object an output of \code{lm}
+#' @param newdata the new data frame to compute the predicted values 
+#'
+#' @export
+## }}}
+epredict <- function(object, newdata)
+{
+    options(warn=-1)
+    on.exit(options(warn=0))
+    if (class(object)=='lm') {
+        tab = broom::augment(object, newdata=newdata)  %>%
+            dplyr::rename(.se.fitted = .se.fit)  %>% 
+            dplyr::mutate(.fitted.low  = .fitted - stats::qnorm(.975)*.se.fitted,
+                          .fitted.high = .fitted + stats::qnorm(.975)*.se.fitted,
+                          ) 
+    }else{
+        tab = broom::augment(object, newdata=newdata)
+    }
+    return(tab)
+}
+
+## }}}
 ## {{{ Plot fitted values    }}}
 
 ## {{{ docs }}}

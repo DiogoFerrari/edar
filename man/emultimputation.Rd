@@ -4,8 +4,8 @@
 \alias{emultimputation}
 \title{Multiple imputation}
 \usage{
-emultimputation(data, RHS.formula, dep.vars, ind.vars, m = 5, maxit = 50,
-  method = "pmm", seed = 500, digits = 4)
+emultimputation(data, RHS.formula, dep.vars, ind.vars, m = 5,
+  maxit = 50, method = "pmm", seed = 500, digits = 4)
 }
 \arguments{
 \item{data}{a data.frame}
@@ -21,13 +21,12 @@ emultimputation(data, RHS.formula, dep.vars, ind.vars, m = 5, maxit = 50,
 \item{maxit}{A scalar giving the number of iterations. The default is 5.}
 
 \item{method}{Can be either a single string, or a vector of strings with
-length \code{ncol(data)}, specifying the univariate imputation method to be
+length \code{length(blocks)}, specifying the imputation method to be
 used for each column in data. If specified as a single string, the same
-method will be used for all columns.  The default imputation method (when no
-argument is specified) depends on the measurement level of the target column
-and are specified by the \code{defaultMethod} argument.  Columns that need
-not be imputed have the empty method \code{''}.  See details for more
-information.}
+method will be used for all blocks. The default imputation method (when no
+argument is specified) depends on the measurement level of the target column,
+as regulated by the \code{defaultMethod} argument. Columns that need
+not be imputed have the empty method \code{""}. See details.}
 
 \item{seed}{An integer that is used as argument by the \code{set.seed()} for
 offsetting the random number generator. Default is to leave the random number

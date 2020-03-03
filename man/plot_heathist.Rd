@@ -4,9 +4,9 @@
 \alias{plot_heathist}
 \title{Heat plot with histogram}
 \usage{
-plot_heathist(x = "", y = "", title = "", subtitle = "", xlab = "x",
-  ylab = "y", breaks = 50, xlim = c(min(x), max(x)), ylim = c(min(y),
-  max(y)))
+plot_heathist(x = "", y = "", title = "", subtitle = "",
+  xlab = "x", ylab = "y", breaks = 50, xlim = c(min(x), max(x)),
+  ylim = c(min(y), max(y)))
 }
 \arguments{
 \item{x}{numeric vector with values to plot}

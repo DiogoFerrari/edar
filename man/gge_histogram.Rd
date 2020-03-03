@@ -4,8 +4,8 @@
 \alias{gge_histogram}
 \title{Plot histograms}
 \usage{
-gge_histogram(df, group = NULL, weight = NULL, mean = T, median = F,
-  conf.int = T, quantile = F, legend.position = "top")
+gge_histogram(df, group = NULL, weight = NULL, mean = T,
+  median = F, conf.int = T, quantile = F, legend.position = "top")
 }
 \arguments{
 \item{df}{a data frame}

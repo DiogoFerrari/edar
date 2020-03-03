@@ -4,11 +4,12 @@
 \alias{gge_fit}
 \title{Plot fitted values}
 \usage{
-gge_fit(model, data, y, x, formula = NULL, n = 200, cat.values = NULL,
-  model.id = NULL, show.points = T, pch.col = "#00000044",
-  pch.pos = "identity", pch.col.cat = NULL, linetype = FALSE,
-  line.size = 0.8, ylim = NULL, xlim = NULL, xlab = NULL, ylab = NULL,
-  facets = NULL, facets.title.position = "left", facets.ncol = NULL,
+gge_fit(model, data, y, x, formula = NULL, n = 200,
+  cat.values = NULL, model.id = NULL, show.points = T,
+  pch.col = "#00000044", pch.pos = "identity", pch.col.cat = NULL,
+  linetype = FALSE, line.size = 0.8, ylim = NULL, xlim = NULL,
+  xlab = NULL, ylab = NULL, facets = NULL,
+  facets.title.position = "left", facets.ncol = NULL,
   facets.scales = "fixed", title = NULL, title.position = "left",
   subtitle = NULL, footnote = NULL, legend.show.formulas = TRUE,
   legend.show.cat = FALSE, legend.position = "top", legend.omit = F,
