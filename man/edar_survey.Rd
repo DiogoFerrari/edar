@@ -4,7 +4,8 @@
 \name{edar_survey}
 \alias{edar_survey}
 \title{A National Survey from Brazil}
-\format{A data frame with 700 rows and 16 columns:
+\format{
+A data frame with 700 rows and 16 columns:
 
 \describe{
  \item{gender}{factor with "men" and "woman"}
@@ -24,7 +25,8 @@
  \item{minimum.wage}{factor, captures the answer to "Who should decide about the minimum wage policy?". The levels are "Each city should decide", "Each state should decide", "Should be the same accros the country"}
  \item{unemployment.policy}{factor, captures the answer to "Who should decide about the unemployment policy?". The levels are "Each city should decide", "Each state should decide", "Should be the same accros the country"}
  \item{red.to.poor}{factor, captures the answer to "Who should decide about policies to redistribute income to poor?". The levels are "Each city should decide", "Each state should decide", "Should be the same accros the country"}
-}}
+}
+}
 \source{
 \url{http://web.fflch.usp.br/centrodametropole/}
 }

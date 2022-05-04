@@ -3672,7 +3672,7 @@ egp_get_n_classes <- function(egp, n.classes)
         egp[egp %in%  c(7, 11)] = 3
         egp[egp %in%  c(8:9)]   = 4
         egp[egp %in%  c(10)]    = 5
-        egp = factor(egp, levels=1:7, labels=c(
+        egp = factor(egp, levels=1:5, labels=c(
                                           "I-III      White-collar workers",
                                           "IV.a+IV.b  Petty bourgeoisie",
                                           "IV.c+VII.b Farm workers",
@@ -3684,7 +3684,7 @@ egp_get_n_classes <- function(egp, n.classes)
         egp[egp %in%  c(1:6)]   = 1
         egp[egp %in%  c(7, 11)] = 2
         egp[egp %in%  c(8:10)]  = 3
-        egp = factor(egp, levels=1:7, labels=c(
+        egp = factor(egp, levels=1:3, labels=c(
                                           "I-II+IV.a-b  Non-manual workers",
                                           "IV.c+VII.b  Farm workers",
                                           "V+VI+VI.a Manual workers"

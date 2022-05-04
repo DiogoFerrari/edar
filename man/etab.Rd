@@ -4,8 +4,12 @@
 \alias{etab}
 \title{Scientific-like table for model summary}
 \usage{
-etab(model, digits = 4, hc = FALSE, hc.type = c("hc3", "hc0", "hc1",
-  "hc2", "hc4"))
+etab(
+  model,
+  digits = 4,
+  hc = FALSE,
+  hc.type = c("hc3", "hc0", "hc1", "hc2", "hc4")
+)
 }
 \arguments{
 \item{model}{an output of \code{lm}, \code{glm}, \code{\link[nnet]{multinom}} functions, or a tidy summary of those objects. It can also be a list (named or not) with combinations of outputs of \code{lm}, \code{glm}, \code{\link[nnet]{multinom}}, or a tidy summary of such list produced by tidye}

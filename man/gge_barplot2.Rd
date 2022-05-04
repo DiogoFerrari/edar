@@ -4,8 +4,14 @@
 \alias{gge_barplot2}
 \title{Barplot}
 \usage{
-gge_barplot2(data, variable, group = NULL, title = NULL,
-  subtitle = NULL, legend.position = "top")
+gge_barplot2(
+  data,
+  variable,
+  group = NULL,
+  title = NULL,
+  subtitle = NULL,
+  legend.position = "top"
+)
 }
 \arguments{
 \item{data}{a data frame}

@@ -4,8 +4,15 @@
 \alias{plot_heat}
 \title{Heat plot}
 \usage{
-plot_heat(x = "", y = "", xlab = "x", ylab = "y", title = "",
-  text = "", axis = TRUE)
+plot_heat(
+  x = "",
+  y = "",
+  xlab = "x",
+  ylab = "y",
+  title = "",
+  text = "",
+  axis = TRUE
+)
 }
 \arguments{
 \item{x, y}{numeric vector with values to plot}

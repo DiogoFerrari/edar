@@ -4,8 +4,14 @@
 \alias{einterpolate}
 \title{Interpolation}
 \usage{
-einterpolate(data, vars.to.interpolate, group = NULL, time.var = NULL,
-  time.values = NULL, extrapolate.spline = FALSE)
+einterpolate(
+  data,
+  vars.to.interpolate,
+  group = NULL,
+  time.var = NULL,
+  time.values = NULL,
+  extrapolate.spline = FALSE
+)
 }
 \arguments{
 \item{data}{a data frame to interpolate. It must contain at least the variables we want to interpolate and the \code{time.var}, which marks the intervals we want to fill with interpolated value.}

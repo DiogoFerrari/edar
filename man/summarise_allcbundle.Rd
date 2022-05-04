@@ -24,13 +24,13 @@ data(edar_survey)
 tab =  summarise_allcbundle(edar_survey)
 tab
 tab$Table[[4]]
-tab$Tablep[[4]]
-tab$Tablel[[4]]
+tab$tabp[[4]]
+tab$tabl[[4]]
 tab = summarise_allcbundle( edar_survey, group="gender")
 tab
 tab$Table[[5]]
-tab$Tablep[[5]]
-tab$Tablel[[5]]
+tab$tabp[[5]]
+tab$tabl[[5]]
 
 # or with pipe
 # edar_survey  \%>\% summarise_allcbundle(., group="gender")

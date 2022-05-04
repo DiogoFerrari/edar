@@ -4,8 +4,14 @@
 \alias{edar_bundle_cat}
 \title{Smart univariate summary of the categorical variables}
 \usage{
-edar_bundle_cat(data, vars = NULL, print.summary = NULL,
-  weight = NULL, digits = 4, width.size = 150)
+edar_bundle_cat(
+  data,
+  vars = NULL,
+  print.summary = NULL,
+  weight = NULL,
+  digits = 4,
+  width.size = 150
+)
 }
 \arguments{
 \item{data}{a data frame}

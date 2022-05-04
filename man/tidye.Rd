@@ -4,8 +4,14 @@
 \alias{tidye}
 \title{Tidy linear model summary}
 \usage{
-tidye(model, digits = 4, hc = FALSE, hc.type = c("hc3", "hc0", "hc1",
-  "hc2", "hc4"), tibble = TRUE, keep.nohc = FALSE)
+tidye(
+  model,
+  digits = 4,
+  hc = FALSE,
+  hc.type = c("hc3", "hc0", "hc1", "hc2", "hc4"),
+  tibble = TRUE,
+  keep.nohc = FALSE
+)
 }
 \arguments{
 \item{model}{an output of \code{lm}, \code{glm}, or \code{\link[nnet]{multinom}} functions. It can also be a list (named or not) with combinations of those objects}

@@ -4,8 +4,16 @@
 \alias{epower}
 \title{Compute power of a test}
 \usage{
-epower(mu1 = NULL, mu2 = NULL, power_ideal = 0.8, n.current = NULL,
-  n1.current = NULL, n2.current = NULL, title = NULL, lines = T)
+epower(
+  mu1 = NULL,
+  mu2 = NULL,
+  power_ideal = 0.8,
+  n.current = NULL,
+  n1.current = NULL,
+  n2.current = NULL,
+  title = NULL,
+  lines = T
+)
 }
 \arguments{
 \item{mu1}{a numeric vector with expected observed proportion of the first group. It must be between 0 and 1}

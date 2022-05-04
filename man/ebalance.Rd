@@ -4,9 +4,16 @@
 \alias{ebalance}
 \title{Descriptive Statistics in the Treatment and Control Groups}
 \usage{
-ebalance(data, treatmentVar, alpha = 0.05, ttest = F,
-  showMahalanobisDist = T, showpscore = T, showLinPscore = T,
-  col.size = 120)
+ebalance(
+  data,
+  treatmentVar,
+  alpha = 0.05,
+  ttest = F,
+  showMahalanobisDist = T,
+  showpscore = T,
+  showLinPscore = T,
+  col.size = 120
+)
 }
 \arguments{
 \item{data}{A data frame that contains a dummy indicator

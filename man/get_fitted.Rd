@@ -4,8 +4,16 @@
 \alias{get_fitted}
 \title{Get fitted values}
 \usage{
-get_fitted(data, smry, formula = NULL, newdata = NULL, x = NULL,
-  n = 200, cat.values = NULL, model.id = NULL)
+get_fitted(
+  data,
+  smry,
+  formula = NULL,
+  newdata = NULL,
+  x = NULL,
+  n = 200,
+  cat.values = NULL,
+  model.id = NULL
+)
 }
 \arguments{
 \item{data}{the dataset used to estimate the model}

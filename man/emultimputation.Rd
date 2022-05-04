@@ -4,8 +4,17 @@
 \alias{emultimputation}
 \title{Multiple imputation}
 \usage{
-emultimputation(data, RHS.formula, dep.vars, ind.vars, m = 5,
-  maxit = 50, method = "pmm", seed = 500, digits = 4)
+emultimputation(
+  data,
+  RHS.formula,
+  dep.vars,
+  ind.vars,
+  m = 5,
+  maxit = 50,
+  method = "pmm",
+  seed = 500,
+  digits = 4
+)
 }
 \arguments{
 \item{data}{a data.frame}

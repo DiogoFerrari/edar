@@ -4,9 +4,19 @@
 \alias{gge_describe}
 \title{Descriptive Plots}
 \usage{
-gge_describe(df, group = NULL, weight = NULL, mean = TRUE,
-  median = FALSE, conf.int = TRUE, quantile = FALSE, n.plots = 16,
-  common.legend = TRUE, hist = FALSE, legend.position = "top")
+gge_describe(
+  df,
+  group = NULL,
+  weight = NULL,
+  mean = TRUE,
+  median = FALSE,
+  conf.int = TRUE,
+  quantile = FALSE,
+  n.plots = 16,
+  common.legend = TRUE,
+  hist = FALSE,
+  legend.position = "top"
+)
 }
 \arguments{
 \item{df}{a data frame}

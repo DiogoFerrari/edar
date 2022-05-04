@@ -1,8 +1,8 @@
 
 ## {{{ ancillary }}}
 
-
 ## {{{ docs }}}
+
 #' Rescale values
 #'
 #' @param y.reference values to use as reference to rescale
@@ -11,6 +11,7 @@
 #' @examples
 #'
 #' @export
+
 ## }}}
 rescale.axis <- function(y.reference, y.to.rescale)
 {
@@ -29,6 +30,58 @@ rescale.axis <- function(y.reference, y.to.rescale)
     return(c(alpha=alpha, beta=beta))
 }
 
+## }}}
+## {{{ data manipulation }}}
+
+
+## {{{ docs }}}
+
+#' Recode labelled columns
+#'
+#' This function recode labelled columns
+#'
+#' @param df a data frame
+#' @param var a string with the name of the variable in the data frame
+#'            to be recoded
+#' @param newvar a string with the name of the new variable that will
+#'               receive the recoded columns. By default, it uses the
+#'               original variable (var)
+#' @param newvar_label string with the label for the new variable 
+#' @param recode a named vector. The names are the code of the labels in the
+#'               old variable. The values are the new values
+#' @param sep a string to use to separate labels when joining values
+#'            during the recoding
+#' 
+#' @return It returns a tibble data frame with recoded column
+#'
+#' @examples
+#'
+#' 
+#' @export
+## }}}
+recode <- function(df, var, newvar=var, newvar_label=NULL, missing=NULL,
+                   recode, sep=' / ')
+{
+    v = df[,var] %>%  dplyr::pull(.)
+    df[, newvar] = dplyr::recode(.x=v, !!!recode, 
+                              ## .default = NULL,
+                              ## .missing = 77,
+                              ## .keep_value_labels=T,
+                              .combine_value_labels = TRUE,
+                              .sep = sep
+                               )
+    if (!is.null(missing)) {
+        v = df[,newvar] %>% dplyr::pull(.)
+        df[,newvar] = sjlabelled::set_na(x=v, na=missing, drop.levels=T)
+    }
+    if (!is.null(newvar_label)) {
+        lab = newvar_label
+        names(lab) = newvar
+        df = df %>%
+            labelled::set_variable_labels(., !!!lab)
+    }
+    return(df)
+}
 
 ## }}}
 ## {{{ Describe data (dplyr extension) }}}
@@ -151,9 +204,22 @@ summarise_allc <- function(df, group=NULL)
         dplyr::summarise(N      = sum(na),
                          NAs    = sum(is.na(value)),
                          Categories = length(unique(value[!is.na(value)])),
-                         Frequency = paste0(stringr::str_pad(stringr::str_sub(names(table(value)),1,5), width=5, side='right'), " (", formatC(100*table(value)/sum(table(value)),format="f",digits=2), " %)",collapse=", ") ,
-                         ## Table     = list(table(value, useNA="always") %>% stats::setNames(., nm=c(names(.)[1:(length(.)-1)], "NAs")) %>% rbind %>% tibble::as_data_frame(.)  %>% cbind(Variable=unique(var)) %>% dplyr::select(Variable, dplyr::everything())  ),
-                         Table     = list(table(value, useNA="always") %>% stats::setNames(., nm=(names(.) %>% sapply(., toString)) ) %>% rbind %>% tibble::as_data_frame(.)  %>% cbind(Variable=unique(var)) %>% dplyr::select(Variable, dplyr::everything())  ),
+                         Frequency = paste0(stringr::str_pad(stringr::str_sub(names(table(value)),1,5),
+                                                             width=5, side='right'),
+                                            " (", formatC(100*table(value)/sum(table(value)),format="f",digits=2), " %)",
+                                            collapse=", ") ,
+                         Table     = list(table(value, useNA="always")
+                                          %>% stats::setNames(., nm=(names(.) %>% sapply(., toString)) )
+                                          %>% rbind 
+                                          %>% tibble::as_data_frame(.)  
+                                          %>% cbind(Variable=unique(var)) 
+                                          %>% dplyr::select(Variable, dplyr::everything())  ),
+                         tabl     = list(table(value, useNA="always")
+                                           %>% stats::setNames(., nm=(names(.) %>% sapply(., toString)) )
+                                           %>% rbind 
+                                           %>% tibble::as_data_frame(.)  
+                                           %>% cbind(Variable=unique(var)) 
+                                           %>% dplyr::select(Variable, dplyr::everything())  ),
                          Categories.Labels = paste0(sort(unique(value)), collapse=", ") ,
                          )   %>% 
         dplyr::ungroup(.) %>% 
@@ -180,13 +246,13 @@ summarise_allc <- function(df, group=NULL)
 #' tab =  summarise_allcbundle(edar_survey)
 #' tab
 #' tab$Table[[4]]
-#' tab$Tablep[[4]]
-#' tab$Tablel[[4]]
+#' tab$tabp[[4]]
+#' tab$tabl[[4]]
 #' tab = summarise_allcbundle( edar_survey, group="gender")
 #' tab
 #' tab$Table[[5]]
-#' tab$Tablep[[5]]
-#' tab$Tablel[[5]]
+#' tab$tabp[[5]]
+#' tab$tabl[[5]]
 #'
 #' # or with pipe
 #' # edar_survey  %>% summarise_allcbundle(., group="gender")
@@ -216,7 +282,7 @@ summarise_allcbundle_g0 <- function(df, group=NULL)
         dplyr::full_join(., vars , by=c("Categories.Labels"))  %>%
         dplyr::select(N.Variables, Variables, dplyr::contains("Labels"), Table)  %>%
         dplyr::ungroup(.) %>%
-        dplyr::mutate(Tablep = purrr::map(.x=Table, ~ .x %>% 
+        dplyr::mutate(tabp = purrr::map(.x=Table, ~ .x %>% 
                                                  tidyr::gather(key = cat, value=N, -Variable)  %>%
                                                  dplyr::group_by(Variable) %>% 
                                                  dplyr::mutate(Frequency = round(100*N/sum(N),2)) %>%
@@ -228,7 +294,7 @@ summarise_allcbundle_g0 <- function(df, group=NULL)
                                                  dplyr::select(Variable,   'NA', dplyr::everything() ) %>% 
                                                  dplyr::select(c(1, 3:ncol(.)), 2 )
                                    ),
-                      Tablel = purrr::map(.x=Table, ~ .x %>% 
+                      tabl = purrr::map(.x=Table, ~ .x %>% 
                                                  tidyr::gather(key = cat, value=N, -Variable)  %>%
                                                  dplyr::group_by(Variable) %>% 
                                                  dplyr::mutate(Frequency = paste0(round(100*N/sum(N),2), " % (N=",  N,")") ) %>%
@@ -241,6 +307,7 @@ summarise_allcbundle_g0 <- function(df, group=NULL)
                                                  dplyr::select(c(1, 3:ncol(.)), 2 )
                                      ),
                       ) 
+    tab = tab %>% dplyr::rename(tab=Table) 
 
     return(tab)
 }
@@ -264,7 +331,7 @@ summarise_allcbundle_g1 <- function(df, group=NULL)
         dplyr::group_by(Categories.Labels) %>%
         dplyr::summarise(Table   = list(purrr::map2(.x=group,.y = Table, .f=function(.x,.y) cbind(group=.x,.y)) %>% do.call(rbind,. )%>% dplyr::arrange(Variable, group))  ) %>% 
         dplyr::ungroup(.) %>%
-        dplyr::mutate(Tablep = purrr::map(.x=Table, ~ .x %>% 
+        dplyr::mutate(tabp = purrr::map(.x=Table, ~ .x %>% 
                                                  tidyr::gather(key = cat, value=N, -Variable, -group)  %>%
                                                  dplyr::group_by(Variable, group) %>% 
                                                  dplyr::mutate(Frequency = round(100*N/sum(N),2)) %>%
@@ -277,7 +344,7 @@ summarise_allcbundle_g1 <- function(df, group=NULL)
                                                  dplyr::select(c(1, 2, 4:ncol(.)), 3 ) %>%
                                                  dplyr::arrange(Variable, group) 
                                    ),
-                      Tablel = purrr::map(.x=Table, ~ .x %>% 
+                      tabl = purrr::map(.x=Table, ~ .x %>% 
                                                  tidyr::gather(key = cat, value=N, -Variable, -group)  %>%
                                                  dplyr::group_by(Variable, group) %>% 
                                                  dplyr::mutate(Frequency = paste0(N, " (", round(100*N/sum(N),2) ," %)") ) %>%
@@ -291,7 +358,7 @@ summarise_allcbundle_g1 <- function(df, group=NULL)
                                                  dplyr::arrange(Variable, group) 
                                    ),
                       )
-
+    tab = tab %>% dplyr::rename(tab=Table) 
     return(tab)
 }
 

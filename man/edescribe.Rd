@@ -4,8 +4,14 @@
 \alias{edescribe}
 \title{Describe the variables of a data frame}
 \usage{
-edescribe(data, weight = NULL, minMax = T, digits = 2,
-  maxVars = NULL, col.size = 120)
+edescribe(
+  data,
+  weight = NULL,
+  minMax = T,
+  digits = 2,
+  maxVars = NULL,
+  col.size = 120
+)
 }
 \arguments{
 \item{data}{a data frame}

@@ -4,11 +4,21 @@
 \alias{gge_coef}
 \title{Dotwhisker plot}
 \usage{
-gge_coef(model, xlab = "Coefficient Estimate", ylab = "",
-  var.order = NULL, model.id = NULL, title = NULL, subtitle = NULL,
-  footnote = NULL, legend.position = "top", legend.title = "",
-  title.position = "left", hc = FALSE, hc.type = c("hc3", "hc0",
-  "hc1", "hc2", "hc4"))
+gge_coef(
+  model,
+  xlab = "Coefficient Estimate",
+  ylab = "",
+  var.order = NULL,
+  model.id = NULL,
+  title = NULL,
+  subtitle = NULL,
+  footnote = NULL,
+  legend.position = "top",
+  legend.title = "",
+  title.position = "left",
+  hc = FALSE,
+  hc.type = c("hc3", "hc0", "hc1", "hc2", "hc4")
+)
 }
 \arguments{
 \item{model}{either an object from \code{lm}, \code{glm}, or a \code{nnet::multinom} or a tidy data.frame with the model summary. If the data frame is provided, it must contain a column named term (the name of the covariates), estimate (the point estimate), and either std.error (standard errors of the estimates) or conf.low or conf.high (low and high intervals of the point estimate). If there are more than one model in the data.frame, it must contain a column with labels identifying each model.}

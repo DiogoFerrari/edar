@@ -3,7 +3,6 @@
 \docType{package}
 \name{edar}
 \alias{edar}
-\alias{edar-package}
 \title{edar: A package for code-efficient Exploratory Data Analysis in R}
 \description{
 The package provides functions that allows efficient exploratory

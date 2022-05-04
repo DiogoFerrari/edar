@@ -4,8 +4,15 @@
 \alias{gge_density}
 \title{Plot densities}
 \usage{
-gge_density(df, group = NULL, weight = NULL, mean = TRUE,
-  median = FALSE, conf.int = TRUE, quantile = FALSE)
+gge_density(
+  df,
+  group = NULL,
+  weight = NULL,
+  mean = TRUE,
+  median = FALSE,
+  conf.int = TRUE,
+  quantile = FALSE
+)
 }
 \arguments{
 \item{df}{a data frame}
