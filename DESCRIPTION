@@ -1,57 +1,26 @@
 Package: edar
 Title: Exploratory Data Analysis in R
-Version: 1.0.0.0000
+Version: 0.0.0.1000
 Authors@R: person("Diogo", "Ferrari", email="diogoferrari@gmail.com", role=c("aut", "cre"))
-Description: Package provides a set of wrap functions to conduct fast exploratory data analysis with minimum code.
-Depends: R (>= 3.4.1), mice
+Description: The package provides a set of wrapper functions to conduct fast exploratory data analysis and create reports with minimal code.
 License: MIT + file LICENSE
 URL: https://github.com/DiogoFerrari/edar
 BugReports: https://github.com/DiogoFerrari/edar/issues
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.2
-Imports: viridis,
-    broom,
-    car,
-    corrplot,
-    doParallel,
-    dplyr,
-    ellipse,
-    faraway,
-    GGally,
-    ggExtra,
-    ggplot2,
-    ggpubr,
-    ggrepel,
-    grDevices,
-    gtable,
-    Hmisc,
-    isotone,
-	labelled,
-    magrittr,
-    mvtnorm,
-    MASS,
-    plm,
-    plot3D,
-    plotly,
+RoxygenNote: 7.3.2
+Imports:
+    huxtable,
+    glue,
+    janitor,
+    kableExtra,
+    labelled,
     purrr,
-    pwr,
-    questionr,
-    RColorBrewer,
-    Rcpp,
-    reldist,
     sjlabelled,
-    stringr,
-    survey,
-    tidyverse,
+    sjmisc,
     tibble,
-    tidyr,
-    tm,
-    wordcloud,
-    raster,
-    dotwhisker,
-    nnet,
-    foreach,
+    tidyverse,
+    tools
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr

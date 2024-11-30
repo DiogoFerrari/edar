@@ -1,0 +1,157 @@
+\documentclass{article}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage[normalem]{ulem}
+\usepackage{colortbl}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{calc}
+\usepackage{tabularx}
+\usepackage{threeparttable}
+\usepackage{wrapfig}
+\usepackage{adjustbox}
+\usepackage{hyperref}
+% These are LaTeX packages. You can install them using your LaTex management software,
+% or by running `huxtable::install_latex_dependencies()` from within R.
+% Other packages may be required if you use non-standard tabulars (e.g. tabulary).
+\pagenumbering{gobble}
+
+\begin{document}
+
+
+  \providecommand{\huxb}[2]{\arrayrulecolor[RGB]{#1}\global\arrayrulewidth=#2pt}
+  \providecommand{\huxvb}[2]{\color[RGB]{#1}\vrule width #2pt}
+  \providecommand{\huxtpad}[1]{\rule{0pt}{#1}}
+  \providecommand{\huxbpad}[1]{\rule[-#1]{0pt}{#1}}
+
+\begin{table}[ht]
+\begin{raggedright}
+\begin{threeparttable}
+\captionsetup{justification=raggedright,singlelinecheck=off}
+\caption{
+Variable: Treatment condition (treat)
+}
+ \setlength{\tabcolsep}{0pt}
+\begin{tabularx}{300\textwidth}{p{30\textwidth} p{30\textwidth} p{30\textwidth} p{30\textwidth} p{30\textwidth} p{30\textwidth} p{60\textwidth}}
+
+
+\hhline{>{\huxb{0, 0, 0}{0.4}}->{\huxb{0, 0, 0}{0.4}}->{\huxb{0, 0, 0}{0.4}}->{\huxb{0, 0, 0}{0.4}}->{\huxb{0, 0, 0}{0.4}}->{\huxb{0, 0, 0}{0.4}}->{\huxb{0, 0, 0}{0.4}}-}
+\arrayrulecolor{black}
+
+\multicolumn{1}{!{\huxvb{0, 0, 0}{0}}p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{0pt}\parbox[b]{30\textwidth-0pt-4pt}{\huxtpad{0pt + 1em}\raggedright \textbf{educ}\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{0pt + 1em}\raggedleft \textbf{Value}\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{0pt + 1em}\raggedright \textbf{Label}\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{0pt + 1em}\raggedleft \textbf{N}\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{0pt + 1em}\raggedleft \textbf{Perc.}\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{0pt + 1em}\raggedleft \textbf{SE}\huxbpad{4pt}}} &
+\multicolumn{1}{p{60\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{60\textwidth-4pt-0pt}{\huxtpad{0pt + 1em}\raggedright \textbf{95\% CI}\huxbpad{4pt}}} \tabularnewline[-0.5pt]
+
+
+\hhline{>{\huxb{0, 0, 0}{0.4}}->{\huxb{0, 0, 0}{0.4}}->{\huxb{0, 0, 0}{0.4}}->{\huxb{0, 0, 0}{0.4}}->{\huxb{0, 0, 0}{0.4}}->{\huxb{0, 0, 0}{0.4}}->{\huxb{0, 0, 0}{0.4}}-}
+\arrayrulecolor{black}
+
+\multicolumn{1}{!{\huxvb{0, 0, 0}{0}}p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{0pt}\parbox[b]{30\textwidth-0pt-4pt}{\huxtpad{4pt + 1em}\raggedright 1.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 0.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedright Control\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 99.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 33.67\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 4.75\huxbpad{4pt}}} &
+\multicolumn{1}{p{60\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{60\textwidth-4pt-0pt}{\huxtpad{4pt + 1em}\raggedright (24.36, 42.98)\huxbpad{4pt}}} \tabularnewline[-0.5pt]
+
+
+\hhline{}
+\arrayrulecolor{black}
+
+\multicolumn{1}{!{\huxvb{0, 0, 0}{0}}p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{0pt}\parbox[b]{30\textwidth-0pt-4pt}{\huxtpad{4pt + 1em}\raggedright 1.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 1.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedright Low dose\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 105.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 35.71\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 4.68\huxbpad{4pt}}} &
+\multicolumn{1}{p{60\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{60\textwidth-4pt-0pt}{\huxtpad{4pt + 1em}\raggedright (26.55, 44.87)\huxbpad{4pt}}} \tabularnewline[-0.5pt]
+
+
+\hhline{}
+\arrayrulecolor{black}
+
+\multicolumn{1}{!{\huxvb{0, 0, 0}{0}}p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{0pt}\parbox[b]{30\textwidth-0pt-4pt}{\huxtpad{4pt + 1em}\raggedright 1.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 2.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedright High dose\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 90.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 30.61\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 4.86\huxbpad{4pt}}} &
+\multicolumn{1}{p{60\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{60\textwidth-4pt-0pt}{\huxtpad{4pt + 1em}\raggedright (21.09, 40.13)\huxbpad{4pt}}} \tabularnewline[-0.5pt]
+
+
+\hhline{}
+\arrayrulecolor{black}
+
+\multicolumn{1}{!{\huxvb{0, 0, 0}{0}}p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{0pt}\parbox[b]{30\textwidth-0pt-4pt}{\huxtpad{4pt + 1em}\raggedright 1.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft NA\hphantom{0}\hphantom{0}\hphantom{0}\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedright NA\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 0.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 0.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft NaN\hphantom{0}\hphantom{0}\hphantom{0}\huxbpad{4pt}}} &
+\multicolumn{1}{p{60\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{60\textwidth-4pt-0pt}{\huxtpad{4pt + 1em}\raggedright (NaN, NaN)\huxbpad{4pt}}} \tabularnewline[-0.5pt]
+
+
+\hhline{}
+\arrayrulecolor{black}
+
+\multicolumn{1}{!{\huxvb{0, 0, 0}{0}}p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{0pt}\parbox[b]{30\textwidth-0pt-4pt}{\huxtpad{4pt + 1em}\raggedright 0.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 0.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedright Control\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 128.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 31.53\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 4.11\huxbpad{4pt}}} &
+\multicolumn{1}{p{60\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{60\textwidth-4pt-0pt}{\huxtpad{4pt + 1em}\raggedright (23.48, 39.58)\huxbpad{4pt}}} \tabularnewline[-0.5pt]
+
+
+\hhline{}
+\arrayrulecolor{black}
+
+\multicolumn{1}{!{\huxvb{0, 0, 0}{0}}p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{0pt}\parbox[b]{30\textwidth-0pt-4pt}{\huxtpad{4pt + 1em}\raggedright 0.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 1.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedright Low dose\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 132.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 32.51\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 4.08\huxbpad{4pt}}} &
+\multicolumn{1}{p{60\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{60\textwidth-4pt-0pt}{\huxtpad{4pt + 1em}\raggedright (24.52, 40.50)\huxbpad{4pt}}} \tabularnewline[-0.5pt]
+
+
+\hhline{}
+\arrayrulecolor{black}
+
+\multicolumn{1}{!{\huxvb{0, 0, 0}{0}}p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{0pt}\parbox[b]{30\textwidth-0pt-4pt}{\huxtpad{4pt + 1em}\raggedright 0.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 2.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedright High dose\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 146.00\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 35.96\huxbpad{4pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 3.97\huxbpad{4pt}}} &
+\multicolumn{1}{p{60\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{60\textwidth-4pt-0pt}{\huxtpad{4pt + 1em}\raggedright (28.18, 43.74)\huxbpad{4pt}}} \tabularnewline[-0.5pt]
+
+
+\hhline{}
+\arrayrulecolor{black}
+
+\multicolumn{1}{!{\huxvb{0, 0, 0}{0}}p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{0pt}\parbox[b]{30\textwidth-0pt-4pt}{\huxtpad{4pt + 1em}\raggedright 0.00\huxbpad{0pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft NA\hphantom{0}\hphantom{0}\hphantom{0}\huxbpad{0pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedright NA\huxbpad{0pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 0.00\huxbpad{0pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft 0.00\huxbpad{0pt}}} &
+\multicolumn{1}{p{30\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{30\textwidth-4pt-4pt}{\huxtpad{4pt + 1em}\raggedleft NaN\hphantom{0}\hphantom{0}\hphantom{0}\huxbpad{0pt}}} &
+\multicolumn{1}{p{60\textwidth}!{\huxvb{0, 0, 0}{0}}}{\hspace{4pt}\parbox[b]{60\textwidth-4pt-0pt}{\huxtpad{4pt + 1em}\raggedright (NaN, NaN)\huxbpad{0pt}}} \tabularnewline[-0.5pt]
+
+
+\hhline{>{\huxb{0, 0, 0}{0.4}}->{\huxb{0, 0, 0}{0.4}}->{\huxb{0, 0, 0}{0.4}}->{\huxb{0, 0, 0}{0.4}}->{\huxb{0, 0, 0}{0.4}}->{\huxb{0, 0, 0}{0.4}}->{\huxb{0, 0, 0}{0.4}}-}
+\arrayrulecolor{black}
+\end{tabularx}
+\end{threeparttable}\par\end{raggedright}
+
+\end{table}
+
+
+
+\end{document}

@@ -1,7 +1,6 @@
 # required (by devtools) to link the cpp code 
 #' @importFrom magrittr "%>%"
 #' @importFrom dplyr n
-#' @importFrom mice mice
 NULL
 
 .onLoad <- function(libname, pkgname)
@@ -24,11 +23,7 @@ NULL
 }
 .onAttach <- function(libname, pkgname)
 {
-    packageStartupMessage('
-## =====================================================
-## edar: Exploratory Data Analysis in R
-## =====================================================
-')
+    packageStartupMessage('')
 }
 
 ## global varibles for dplyr (used only so that the check ignores it, it does not actually creates global variables)
